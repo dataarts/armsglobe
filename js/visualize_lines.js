@@ -2,7 +2,7 @@ function makeConnectionLineGeometry( exporter, importer, value, type ){
 	if( exporter.countryName == undefined || importer.countryName == undefined )
 		return undefined;
 
-	console.log("making connection between " + exporter.countryName + " and " + importer.countryName + " with code " + type );
+	// console.log("making connection between " + exporter.countryName + " and " + importer.countryName + " with code " + type );
 
 	var distanceBetweenCountryCenter = exporter.center.clone().subSelf(importer.center).length();	
 

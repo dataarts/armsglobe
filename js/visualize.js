@@ -273,20 +273,12 @@ function selectVisualization( linearData, year, countries, action, categories ){
 	//	add it to scene graph
 	visualizationMesh.add( mesh );	
 
-	for( var i in countryData ){
-		var countryMesh = countryData[i];
-		countryMesh.material.color.setHSV(0,0, 0.05);
-	}
-
 	for( var i in mesh.affectedCountries ){
 		var country = mesh.affectedCountries[i];
-		var countryMesh = countryData[country];
-		countryMesh.material.color.setHSV( countryMesh.hue, countryMesh.saturation, 1.0);
-
 		attachMarkerToCountry( country );
 	}
 
-	console.log( mesh.affectedCountries );
+	// console.log( mesh.affectedCountries );
 	// highlightCountry( mesh.affectedCountries );
 
 }
