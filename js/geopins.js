@@ -1,4 +1,4 @@
-function loadGeoData( pinsdata ){
+function loadGeoData( latlonData ){
     //	-----------------------------------------------------------------------------
     //	Load the world geo data json, per country	
 
@@ -6,8 +6,8 @@ function loadGeoData( pinsdata ){
 	var rad = 100;
 
 	//	iterate through each set of country pins
-	for ( var i in pinsdata.countries ) {										
-		var country = pinsdata.countries[i];	
+	for ( var i in latlonData.countries ) {										
+		var country = latlonData.countries[i];	
 		
 		//	can we even find the country in the list?
 		// if( countryLookup[country.n.toUpperCase()] === undefined ){
@@ -36,7 +36,7 @@ function loadGeoData( pinsdata ){
 		countryData[country.countryName] = country;	
 	}		
 
-	console.log(countryData);
+	// console.log(countryData);
 }					
 
 //	convenience function to get the country object by name

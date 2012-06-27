@@ -18,15 +18,64 @@ var backTexture;
 var worldCanvas;
 var sphere;
 var rotating;	
-var visualizationMesh;		
+var visualizationMesh;							
 
-var countryLookup;			
-var countryData = new Object();				
+//	contains the data loaded from the arms data file
+//	contains a list of years, followed by trades within that year
+//	properties for each "trade" is: e - exporter, i - importer, v - value (USD), wc - weapons code (see table)
 var timeBins;
-var pinsdata;			    		    			    
 
-var selectedCountry = null;				//	the currently selected country
+//	contains latlon data for each country
+var latlonData;			    
 
+//	contains above but organized as a mapped list via ['countryname'] = countryobject
+//	each country object has data like center of country in 3d space, lat lon, country name, and country code
+var countryData = new Object();		
+
+//	contains a list of country code to country name for running lookups
+var countryLookup;		    
+
+var selectableYears = [];
+var selectableCountries = [];			    
+
+/*
+	930100 – military weapons, and includes some light weapons and artillery as well as machine guns and assault rifles etc.  
+	930190 – military firearms – eg assault rifles, machineguns (sub, light, heavy etc), combat shotguns, machine pistols etc
+	930200 – pistols and revolvers
+	930320 – Sporting shotguns (anything that isn’t rated as a military item).
+	930330 – Sporting rifles (basically anything that isn’t fully automatic).
+	930621 – shotgun shells
+	930630 – small caliber ammo (anything below 14.5mm which isn’t fired from a shotgun.
+*/
+
+//	a list of weapon 'codes'
+//	now they are just strings of categories
+//	Category Name : Category Code
+var weaponLookup = {
+	'Military Weapons' 		: 'mil',
+	'Civilian Weapons'		: 'civ',
+	'Ammunition'			: 'ammo',
+};
+
+//	a list of the reverse for easy lookup
+var reverseWeaponLookup = new Object();
+for( var i in weaponLookup ){
+	var name = i;
+	var code = weaponLookup[i];
+	reverseWeaponLookup[code] = name;
+}	    	
+
+//	A list of category colors
+var categoryColors = {
+	'mil' : 0xdd380c,
+	'civ' : 0x3dba00,
+	'ammo' : 0x154492,
+}
+
+//	the currently selected country
+var selectedCountry = null;
+
+//	when the app is idle this will be true
 var idle = false;
 
 //	for svg loading
@@ -149,26 +198,7 @@ function initScene() {
 	worldCanvas = document.createElement('canvas');
 	worldCanvas.id = 'worldCanvas';
 	worldCanvas.width = 1024;
-	worldCanvas.height = 1024;				
-	
-
-	var start = "<svg x='0px' y='0px' width='4096px' height='2048px' viewBox='-1833.626 -529.136 4096 2048'>";
-	var end = "</svg>";
-
-	var loadedSVG = assets['images/worldmap_equirectangular_simplified.svg'];				
-
-	var list = loadedSVG.querySelectorAll( 'path' );
-	for( var i in list ){
-		var element = list[i];
-		if( element.setAttribute === undefined )
-			continue;
-		element.setAttribute( 'fill', '#222222' );					
-		element.setAttribute( 'stroke', '#ffffff' );		
-	}
-
-	// console.time('canvg');
-	// // canvg( worldCanvas, start + loadedSVG.innerHTML + end, {ignoreClear:true} );	
-	// console.timeEnd('canvg');				
+	worldCanvas.height = 1024;							
 
     //	-----------------------------------------------------------------------------
     //	Create the backing (sphere)
@@ -202,6 +232,7 @@ function initScene() {
 			var set = bin[s];
 			// if( set.v < 1000000 )
 			// 	continue;
+
 			var exporterName = set.e.toUpperCase();
 			var importerName = set.i.toUpperCase();
 
@@ -219,7 +250,7 @@ function initScene() {
 	
 	// load geo data (country lat lons in this case)
 	console.time('loadGeoData');
-	var geography = loadGeoData( pinsdata );				
+	loadGeoData( latlonData );				
 	console.timeEnd('loadGeoData');				
 
 	console.time('buildDataVizGeometries');
@@ -283,11 +314,13 @@ function animate() {
 			if (mesh.update !== undefined) {
 				mesh.update();
 			} 
-			if (mesh.marker !== undefined ){
-				mesh.marker.update();
-			}
 		}
-	);			    	
+	);	
+
+	for( var i in markers ){
+		var marker = markers[i];
+		marker.update();
+	}		    	
 
 }
 
@@ -295,49 +328,6 @@ function render() {
 	renderer.clear();		    					
     renderer.render( scene, camera );				
 }		   
-
-function onMarkerHover( event ){
-	var hx = event.clientX - window.innerWidth * 0.5;
-	var hy = event.clientY - window.innerHeight * 0.5;
-	var dx = mouseX - hx;
-	var dy = mouseY - hy;
-	var d = Math.sqrt( dx * dx + dy * dy );
-	if( event.target.style.visibility == 'visible' )
-		console.log('clicked on something!!');				
-}
-
-function attachMarkerToCountry( countryName ){
-	//	look up the name to mesh
-	countryName = countryName.toUpperCase();
-	var mesh = countryData[countryName];
-	if( mesh === undefined )
-		return;
-	mesh.marker = new SVGToy( assetList[0], overlay );
-	mesh.marker.update = function(){
-		var matrix = rotating.matrixWorld;
-		var abspos = matrix.multiplyVector3( mesh.center.clone() );
-		var screenPos = screenXY(abspos);
-		mesh.marker.setPosition( screenPos.x, screenPos.y,0 );	
-		if( abspos.z > 60 )
-			mesh.marker.show();
-		else
-			mesh.marker.hide();
-	}
-
-	mesh.marker.svg.parentMesh = mesh;
-	mesh.marker.svg.addEventListener( 'click', onMarkerHover, false );
-}		
-
-function removeMarkerFromCountry( countryName ){
-	countryName = countryName.toUpperCase();
-	var mesh = countryData[countryName];
-	if( mesh === undefined )
-		return;
-	if( mesh.marker === undefined )
-		return;
-	mesh.marker.removeFromDom();
-	mesh.marker = undefined;				
-}
 
 function findCode(countryName){
 	countryName = countryName.toUpperCase();

@@ -1,35 +1,3 @@
-/*
-	930100 – military weapons, and includes some light weapons and artillery as well as machine guns and assault rifles etc.  
-	930190 – military firearms – eg assault rifles, machineguns (sub, light, heavy etc), combat shotguns, machine pistols etc
-	930200 – pistols and revolvers
-	930320 – Sporting shotguns (anything that isn’t rated as a military item).
-	930330 – Sporting rifles (basically anything that isn’t fully automatic).
-	930621 – shotgun shells
-	930630 – small caliber ammo (anything below 14.5mm which isn’t fired from a shotgun.
-*/
-
-var weaponLookup = {
-	'Military Weapons' 		: 'mil',
-	'Civilian Weapons'		: 'civ',
-	'Ammunition'			: 'ammo',
-};
-
-var categoryColors = {
-	'mil' : 0xdd380c,
-	'civ' : 0x3dba00,
-	'ammo' : 0x154492,
-}
-
-var reverseWeaponLookup = new Object();
-for( var i in weaponLookup ){
-	var name = i;
-	var code = weaponLookup[i];
-	reverseWeaponLookup[code] = name;
-}
-
-var selectableYears = [];
-var selectableCountries = [];
-
 function buildDataVizGeometries( linearData ){	
 	for( var i in linearData ){
 		var yearBin = linearData[i].data;
@@ -172,7 +140,13 @@ function getVisualizedMesh( linearData, year, countries, action, categories ){
 	linesGeo.colors = lineColors;	
 
 	//	make a final mesh out of this composite
-	var splineOutline = new THREE.Line( linesGeo, new THREE.LineBasicMaterial( { color: 0xffffff, opacity: 1.0, blending: THREE.NormalBlending, transparent:true, depthWrite: false, vertexColors: true, linewidth: 1 } ) );
+	var splineOutline = new THREE.Line( linesGeo, new THREE.LineBasicMaterial( 
+		{ 	color: 0xffffff, opacity: 1.0, blending: 
+			THREE.AdditiveBlending, transparent:true, 
+			depthWrite: false, vertexColors: true, 
+			linewidth: 1 } ) 
+	);
+
 	splineOutline.renderDepth = false;
 
 

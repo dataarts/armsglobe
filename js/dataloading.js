@@ -10,7 +10,7 @@ function loadWorldPins( callback ){
 	  // If we've received the data
 	  if ( xhr.readyState === 4 && xhr.status === 200 ) {
 	      // Parse the JSON
-	      pinsdata = JSON.parse( xhr.responseText );
+	      latlonData = JSON.parse( xhr.responseText );
 	      if( callback )
 	      	callback();				     
 	    }
@@ -23,7 +23,7 @@ function loadWorldPins( callback ){
 function loadContentData(categoryName, callback){	
 	var filePath = "categories/" + categoryName + ".json";
 	filePath = encodeURI( filePath );
-	console.log(filePath);
+	// console.log(filePath);
 			
 	xhr = new XMLHttpRequest();
 	xhr.open( 'GET', filePath, true );
@@ -32,7 +32,7 @@ function loadContentData(categoryName, callback){
 	    	timeBins = JSON.parse( xhr.responseText ).timeBins;
 		
 			maxValue = 0;
-			console.log(timeBins);
+			// console.log(timeBins);
 
 			startTime = timeBins[0].t;
 	    	endTime = timeBins[timeBins.length-1].t;
@@ -54,7 +54,7 @@ function loadCountryCodes( callback ){
 	cxhr.open( 'GET', isoFile, true );
 	cxhr.onreadystatechange = function() {
 		if ( cxhr.readyState === 4 && cxhr.status === 200 ) {
-	    	countryLookup = JSON.parse( cxhr.responseText );		    	
+	    	countryLookup = JSON.parse( cxhr.responseText );	
 	    	console.log("loaded country codes");
 	    	callback();
 	    }
