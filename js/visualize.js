@@ -40,7 +40,7 @@ function buildDataVizGeometries( linearData ){
 		//	todo:
 		//	cache the vertex data into json and simply serve it
 		// break;
-		// if( parseInt(year) > 1992 ) {
+		// if( parseInt(year) > 1994 ) {
 			break;
 		// }		
 	}			
@@ -253,6 +253,6 @@ function selectVisualization( linearData, year, countries, action, categories ){
 	}
 
 	// console.log( mesh.affectedCountries );
-	// highlightCountry( mesh.affectedCountries );
+	highlightCountry( mesh.affectedCountries );
 
 }

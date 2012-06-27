@@ -76,6 +76,34 @@
 			}
 		</script>
 
+		<script id="globeVertexShader" type="x-shader/x-vertex">
+			varying vec3 vNormal;
+			varying vec2 vUv;
+			void main() {								
+				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0);
+				vNormal = normalize( normalMatrix * normal );
+				vUv = uv;
+			}
+		</script>
+
+		<script id="globeFragmentShader" type="x-shader/x-fragment">	
+			uniform sampler2D mapIndex;
+			uniform sampler2D lookup;
+			varying vec3 vNormal;
+			varying vec2 vUv;	
+			void main() {				
+				
+				// vec4 indexedColor = clamp( indexedColor, 0.0, 1.0 );	
+
+				vec4 mapColor = texture2D( mapIndex, vUv );	
+				float indexedColor = mapColor.x;	
+				vec2 lookupUV = vec2( indexedColor, 0. );
+				vec4 lookupColor = texture2D( lookup, lookupUV );				
+				float mask = lookupColor.x;
+				gl_FragColor = vec4( mask * 0.95 );											
+			}
+		</script>			
+
 		<script src="js/main.js" type="text/javascript"></script>	
 
 
