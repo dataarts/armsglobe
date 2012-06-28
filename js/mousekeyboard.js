@@ -51,7 +51,7 @@ function onKeyDown( event ){
 
 function handleMWheel( delta ) {
 	camera.scale.z += delta * 0.1;
-	camera.scale.z = constrain( camera.scale.z, 0.8, 2.4 );
+	camera.scale.z = constrain( camera.scale.z, 0.8, 3.5 );
 }
 
 function onMouseWheel( event ){

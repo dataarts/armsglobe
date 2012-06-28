@@ -96,3 +96,11 @@ function buildHexColumnGeo(rad, height){
 	var extrudedGeo = new THREE.ExtrudeGeometry(shape, options);
 	return extrudedGeo;	    	
 }
+
+function map(v, i1, i2, o1, o2) {
+   return o1 + (o2 - o1) * (v - i1) / (i2 - i1);
+ }
+
+ function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}

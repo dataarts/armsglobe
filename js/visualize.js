@@ -129,11 +129,32 @@ function getVisualizedMesh( linearData, year, countries, action, categories ){
 
 			if( $.inArray( exporterName, affectedCountries ) < 0 ){
 				affectedCountries.push(exporterName);
-			}			
+			}							
 
 			if( $.inArray( importerName, affectedCountries ) < 0 ){
 				affectedCountries.push(importerName);
 			}
+
+			var vb = set.v;
+			var exporterCountry = countryData[exporterName];
+			if( exporterCountry.mapColor === undefined ){
+				exporterCountry.mapColor = vb;
+			}
+			else{				
+				exporterCountry.mapColor += vb;
+			}			
+
+			var importerCountry = countryData[importerName];
+			if( importerCountry.mapColor === undefined ){
+				importerCountry.mapColor = vb;
+			}
+			else{				
+				importerCountry.mapColor += vb;
+			}	
+
+			exporterCountry.exportedAmount += vb;
+			importerCountry.importedAmount += vb;		
+
 		}		
 	}
 
@@ -227,6 +248,13 @@ function getVisualizedMesh( linearData, year, countries, action, categories ){
 }
 
 function selectVisualization( linearData, year, countries, action, categories ){
+	//	clear off the country's internally held color data we used from last highlight
+	for( var i in countryData ){
+		var country = countryData[i];
+		country.exportedAmount = 0;
+		country.importedAmount = 0;
+		country.mapColor = 0;
+	}
 
 	//	clear markers
 	for( var i in selectableCountries ){
@@ -248,8 +276,9 @@ function selectVisualization( linearData, year, countries, action, categories ){
 	visualizationMesh.add( mesh );	
 
 	for( var i in mesh.affectedCountries ){
-		var country = mesh.affectedCountries[i];
-		attachMarkerToCountry( country );
+		var countryName = mesh.affectedCountries[i];
+		var country = countryData[countryName];
+		attachMarkerToCountry( countryName, country.mapColor );
 	}
 
 	// console.log( mesh.affectedCountries );

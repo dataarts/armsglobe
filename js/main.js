@@ -206,13 +206,19 @@ function initScene() {
 	lookupTexture.minFilter = THREE.NearestFilter;
 	lookupTexture.needsUpdate = true;
 
-	var indexedMapTexture = THREE.ImageUtils.loadTexture( "images/map_indexed.png" );
+	var indexedMapTexture = THREE.ImageUtils.loadTexture( 'images/map_indexed.png' );
 	indexedMapTexture.needsUpdate = true;
 	indexedMapTexture.magFilter = THREE.NearestFilter;
 	indexedMapTexture.minFilter = THREE.NearestFilter;
+
+	var outlinedMapTexture = THREE.ImageUtils.loadTexture( 'images/map_outline.png' );
+	// outlinedMapTexture.magFilter = THREE.NearestFilter;
+	// outlinedMapTexture.minFilter = THREE.NearestFilter;
+
 	var uniforms = {
 		'mapIndex': { type: 't', value: 0, texture: indexedMapTexture  },		
 		'lookup': { type: 't', value: 1, texture: lookupTexture },
+		'outline': { type: 't', value: 2, texture: outlinedMapTexture },
 	};
 
 	var shaderMaterial = new THREE.ShaderMaterial( {
@@ -381,7 +387,8 @@ var countryColorMap = {'PE':1,
 'AW':210,'LI':211,'VG':212,'SH':213,'JE':214,'AI':215,'MF_1_':216,'GG':217,'SM':218,'BM':219,'TV':220,'NR':221,'GI':222,'PN':223,'MC':224,'VA':225,
 'IM':226,'GU':227,'SG':228};
 
-function highlightCountry( countries ){				
+function highlightCountry( countries ){	
+
 	var countryCodes = [];
 	for( var i in countries ){
 		var code = findCode(countries[i]);
@@ -392,13 +399,28 @@ function highlightCountry( countries ){
 	ctx.clearRect(0,0,256,1);
 
 	//	color index 0 is the ocean, leave it something neutral
-	ctx.fillStyle = 'rgb(100,100,100)';
+	ctx.fillStyle = 'rgb(10,10,10)';
 	ctx.fillRect( 0, 0, 1, 1 );
+
+	// for( var i = 0; i<255; i++ ){
+	// 	var fillCSS = 'rgb(' + i + ',' + 0 + ',' + i + ')';
+	// 	ctx.fillStyle = fillCSS;
+	// 	ctx.fillRect( i, 0, 1, 1 );
+	// }
 	
-	ctx.fillStyle = 'rgb(255,255,255)';
 	for( var i in countryCodes ){
 		var countryCode = countryCodes[i];
 		var colorIndex = countryColorMap[ countryCode ];
+
+		var mapColor = countryData[countries[i]].mapColor;
+		// var fillCSS = '#ff0000';
+		var fillCSS = '#000000';
+		if( mapColor !== undefined ){
+			var k = map( mapColor, 0, 200000000, 0, 255 );
+			k = Math.floor( constrain( k, 0, 255 ) );
+			fillCSS = 'rgb(' + k + ',' + k + ',' + k + ')';
+		}
+		ctx.fillStyle = fillCSS;
 		ctx.fillRect( colorIndex, 0, 1, 1 );
 	}
 	

@@ -215,4 +215,31 @@ a.button.pause:hover {
 	width:						100%;
 	height:						100%;
 	pointer-events:				none;
-}			
+}		
+
+.marker {
+	position:				absolute;
+	display:				inline-block;
+	/*width:					100px;
+	height:					20px;*/
+	background-color: 		rgba(0,0,0,.87);	
+	color:					#ffffff;
+	font-size:				4pt;
+	-moz-user-select:		-moz-none;
+	-khtml-user-select:		none;
+	-webkit-user-select:	none;
+	margin: 				0px;
+	border:					0px;
+	padding:				10px;
+	overflow: 				hidden;		
+}	
+
+.country {
+	float:					left;
+	margin-right:			10px;
+}
+
+.detail {
+	color:					#aaaaaa;
+	float:					right;
+}

@@ -10,6 +10,13 @@
 
 	<body onload="start()" id="dataviz" class="">
 
+		<div id="marker_template" class="marker" style="left:'0px';top:'0px'">
+			<span id="countryText" class="country">
+			</span>
+			<span id="detailText" class="detail">
+			</span>
+		</div>
+
 		<div id="visualization" >			
 			<!-- 2D overlay elements go in here -->
 
@@ -90,6 +97,7 @@
 		<script id="globeFragmentShader" type="x-shader/x-fragment">	
 			uniform sampler2D mapIndex;
 			uniform sampler2D lookup;
+			uniform sampler2D outline;
 			varying vec3 vNormal;
 			varying vec2 vUv;	
 			void main() {				
@@ -101,7 +109,10 @@
 				vec2 lookupUV = vec2( indexedColor, 0. );
 				vec4 lookupColor = texture2D( lookup, lookupUV );				
 				float mask = lookupColor.x;
-				gl_FragColor = vec4( mask * 0.95 );											
+				float outlineColor = texture2D( outline, vUv ).x;
+				gl_FragColor = vec4( lookupColor.x + outlineColor, lookupColor.y + outlineColor, lookupColor.z + outlineColor, 1.  );						
+				// gl_FragColor = vec4( lookupColor );												
+				// gl_FragColor = vec4(texture2D( lookup, vUv ).xyz,1.);
 			}
 		</script>			
 
