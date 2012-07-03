@@ -24,7 +24,13 @@ function attachMarkerToCountry( countryName, importance ){
 	country.marker = marker;
 	container.appendChild( marker );
 
+	marker.countryName = countryName;
+
 	marker.importance = importance;
+	marker.selected = false;
+
+	if( countryName === selectedCountry.countryName.toUpperCase() )
+		marker.selected = true;
 
 	marker.setPosition = function(x,y,z){
 		this.style.left = x + 'px';
@@ -45,7 +51,7 @@ function attachMarkerToCountry( countryName, importance ){
 
 	marker.setSize = function( s ){		
 		this.style.fontSize = s + 'pt';		
-		this.detailLayer.style.fontSize = Math.floor( 2 + s/2 ) + 'pt';
+		this.detailLayer.style.fontSize = Math.floor( 2 + s * 0.5 ) + 'pt';
 	}
 
 	marker.update = function(){
@@ -54,25 +60,52 @@ function attachMarkerToCountry( countryName, importance ){
 		var screenPos = screenXY(abspos);			
 
 		var s = 0.2 + camera.scale.z * 3;
-		var importanceScale = this.importance / 10000000;
+		var importanceScale = this.importance / 5000000;
 		importanceScale = constrain( importanceScale, 0, 18 );
 		s += importanceScale;
+
+		if( this.tiny )
+			s *= 0.75;
+
+		if( this.selected )
+			s = 30;
+		
 		this.setSize( s ); 
 
-		this.setVisible( ( abspos.z > 60 ) && s > 6 );	
+		// if( this.selected )
+			// this.setVisible( true )
+		// else
+			this.setVisible( ( abspos.z > 60 ) && s > 5 );	
 
 		var zIndex = Math.floor( 1000 - abspos.z + s );
+		if( this.selected )
+			zIndex = 10000;
+
 		this.setPosition( screenPos.x, screenPos.y, zIndex );	
 	}
 
-	var nameLayer = marker.querySelector( '#countryText' );
-	nameLayer.innerHTML = countryName;
-	
-	if( country.exportedAmount > 0 )
-		detailLayer.innerHTML = "exported: $" + numberWithCommas(country.exportedAmount) + "<br>";
+	var nameLayer = marker.querySelector( '#countryText' );		
 
-	if( country.importedAmount > 0 )
-		detailLayer.innerHTML += "imported: $" + numberWithCommas(country.importedAmount);	
+	//	right now, something arbitrary like 10 mil dollars or more to be highlighted
+	var tiny = (importance < 20000000) && (!marker.selected);	
+	marker.tiny = tiny;
+
+	// if( tiny )
+	// 	nameLayer.innerHTML = country.countryCode;	
+	// else
+		nameLayer.innerHTML = countryName;	
+
+	// marker.nameLayer = nameLayer;
+	// marker.nameLayerText = countryName;
+	// marker.nameLayerShorten = country.countryCode;;	
+	
+	if( !tiny ) {
+		if( country.exportedAmount > 0 )
+			detailLayer.innerHTML = "exported: $" + numberWithCommas(country.exportedAmount) + "<br>";
+
+		if( country.importedAmount > 0 )
+			detailLayer.innerHTML += "imported: $" + numberWithCommas(country.importedAmount);	
+	}
 
 	// country.marker = new SVGToy( assetList[0], overlay );
 	// country.marker.update = function(){
@@ -87,6 +120,13 @@ function attachMarkerToCountry( countryName, importance ){
 	// }
 
 	// country.marker.svg.addEventListener( 'click', onMarkerHover, false );
+
+	var markerSelect = function(e){
+		var selection = selectionData;
+		var categories = selection.getCategories();		    		
+		selectVisualization( timeBins, selection.selectedYear, [this.countryName], selection.importExportFilter, categories );	
+	};
+	marker.addEventListener('click', markerSelect, false);
 
 	markers.push( marker );
 }		

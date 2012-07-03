@@ -9,8 +9,7 @@ var glContainer = document.getElementById( 'glContainer' );
 var isoFile = 'country_iso3166.json';
 var latlonFile = 'country_lat_lon.json'
 
-var camera, scene, renderer, controls,
-geometry, material, colors;
+var camera, scene, renderer, controls;
 
 var pinsBase, pinsBaseMat;
 var lookupCanvas
@@ -73,8 +72,14 @@ var categoryColors = {
 	'ammo' : 0x154492,
 }
 
+var exportColor = 0xdd380c;
+var importColor = 0x154492;
+
 //	the currently selected country
 var selectedCountry = null;
+
+//	contains info about what year, what countries, categories, etc that's being visualized
+var selectionData;
 
 //	when the app is idle this will be true
 var idle = false;
@@ -407,6 +412,8 @@ function highlightCountry( countries ){
 	// 	ctx.fillStyle = fillCSS;
 	// 	ctx.fillRect( i, 0, 1, 1 );
 	// }
+
+	var selectedCountryCode = selectedCountry.countryCode;
 	
 	for( var i in countryCodes ){
 		var countryCode = countryCodes[i];
@@ -414,12 +421,14 @@ function highlightCountry( countries ){
 
 		var mapColor = countryData[countries[i]].mapColor;
 		// var fillCSS = '#ff0000';
-		var fillCSS = '#000000';
-		if( mapColor !== undefined ){
-			var k = map( mapColor, 0, 200000000, 0, 255 );
-			k = Math.floor( constrain( k, 0, 255 ) );
-			fillCSS = 'rgb(' + k + ',' + k + ',' + k + ')';
-		}
+		var fillCSS = '#333333';
+		if( countryCode === selectedCountryCode )
+			fillCSS = '#eeeeee'
+		// if( mapColor !== undefined ){
+		// 	var k = map( mapColor, 0, 200000000, 0, 255 );
+		// 	k = Math.floor( constrain( k, 0, 255 ) );
+		// 	fillCSS = 'rgb(' + k + ',' + k + ',' + k + ')';
+		// }
 		ctx.fillStyle = fillCSS;
 		ctx.fillRect( colorIndex, 0, 1, 1 );
 	}

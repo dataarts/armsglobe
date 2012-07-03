@@ -20,6 +20,7 @@ var controllers = {
 
 function buildGUI(){	
 	var selection = new Selection();
+	selectionData = selection;
 
 	var updateVisualization = function(){
 		var categories = selection.getCategories();		    		

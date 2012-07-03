@@ -40,7 +40,7 @@ function buildDataVizGeometries( linearData ){
 		//	todo:
 		//	cache the vertex data into json and simply serve it
 		// break;
-		// if( parseInt(year) > 1994 ) {
+		// if( parseInt(year) > 2004 ) {
 			break;
 		// }		
 	}			
@@ -91,24 +91,26 @@ function getVisualizedMesh( linearData, year, countries, action, categories ){
 			if( set.lineGeometry === undefined )
 				continue;
 
+			var thisLineIsExport = false;
+
+			if(exporterName == selectedCountry.countryName ){
+				thisLineIsExport = true;
+			}
+
+			var lineColor = thisLineIsExport ? new THREE.Color(exportColor) : new THREE.Color(importColor);
+
 			var lastColor;
 			//	grab the colors from the vertices
 			for( s in set.lineGeometry.vertices ){
 				var v = set.lineGeometry.vertices[s];		
-				lineColors.push(v.color);
-				lastColor = v.color;
+				lineColors.push(lineColor);
+				lastColor = lineColor;
 			}
 
 			//	merge it all together
 			THREE.GeometryUtils.merge( linesGeo, set.lineGeometry );
 
 			var particleColor = lastColor.clone();		
-			// particleColor.r *= 8;
-			// particleColor.g *= 8;
-			// particleColor.b *= 8;
-			particleColor.r = Math.min(particleColor.r, 1);
-			particleColor.g = Math.min(particleColor.g, 1);
-			particleColor.b = Math.min(particleColor.b, 1);
 			var points = set.lineGeometry.vertices;
 			var particleCount = Math.floor(set.v / 2000 / set.lineGeometry.vertices.length) + 1;
 			for( var s=0; s<particleCount; s++ ){
@@ -214,7 +216,7 @@ function getVisualizedMesh( linearData, year, countries, action, categories ){
 
 	for( var v = 0; v < vertices.length; v++ ) {		
 		values_size[ v ] = pSystem.geometry.vertices[v].size;
-		values_color[ v ] = pSystem.geometry.colors[v];
+		values_color[ v ] = particleColors[v];
 	}
 
 	pSystem.update = function(){	
@@ -248,6 +250,10 @@ function getVisualizedMesh( linearData, year, countries, action, categories ){
 }
 
 function selectVisualization( linearData, year, countries, action, categories ){
+	//	we're only doing one country for now so...
+	selectedCountry = countryData[countries[0].toUpperCase()];
+	console.log(selectedCountry);
+
 	//	clear off the country's internally held color data we used from last highlight
 	for( var i in countryData ){
 		var country = countryData[i];

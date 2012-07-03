@@ -46,10 +46,9 @@ function makeConnectionLineGeometry( exporter, importer, value, type ){
 
 	//	there may be multiple types of sales to a country
 	//	split them up a bit so they don't overlap
-	var crossNormal = mid.clone().normalize().crossSelf( normal );
-	crossNormal.normalize();
-	// var opposite = exporter.connection[importer.countryName] % 2 == 0 ? 1 : -0.5;
-	mid.addSelf( crossNormal.clone().multiplyScalar( exporter.connection[importer.countryName] * 2.0) );
+	// var crossNormal = mid.clone().normalize().crossSelf( normal );
+	// crossNormal.normalize();	
+	// mid.addSelf( crossNormal.clone().multiplyScalar( exporter.connection[importer.countryName] * 2.0) );
 
 	/*				     
 				The curve looks like this:

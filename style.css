@@ -232,6 +232,7 @@ a.button.pause:hover {
 	border:					0px;
 	padding:				10px;
 	overflow: 				hidden;		
+	cursor:					pointer;
 }	
 
 .country {
