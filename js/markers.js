@@ -28,6 +28,7 @@ function attachMarkerToCountry( countryName, importance ){
 
 	marker.importance = importance;
 	marker.selected = false;
+	marker.hover = false;
 
 	if( countryName === selectedCountry.countryName.toUpperCase() )
 		marker.selected = true;
@@ -69,6 +70,9 @@ function attachMarkerToCountry( countryName, importance ){
 
 		if( this.selected )
 			s = 30;
+
+		if( this.hover )
+			s = 15;
 		
 		this.setSize( s ); 
 
@@ -99,27 +103,34 @@ function attachMarkerToCountry( countryName, importance ){
 	// marker.nameLayerText = countryName;
 	// marker.nameLayerShorten = country.countryCode;;	
 	
-	if( !tiny ) {
-		if( country.exportedAmount > 0 )
-			detailLayer.innerHTML = "exported: $" + numberWithCommas(country.exportedAmount) + "<br>";
+	var importExportText = "";
+	if( country.exportedAmount > 0 )
+		importExportText += "exported: $" + numberWithCommas(country.exportedAmount) + "<br>";
 
-		if( country.importedAmount > 0 )
-			detailLayer.innerHTML += "imported: $" + numberWithCommas(country.importedAmount);	
+	if( country.importedAmount > 0 )
+		importExportText += "imported: $" + numberWithCommas(country.importedAmount);		
+
+	marker.importExportText = importExportText;
+
+
+	var markerOver = function(e){
+		this.detailLayer.innerHTML = importExportText;
+		this.hover = true;
 	}
 
-	// country.marker = new SVGToy( assetList[0], overlay );
-	// country.marker.update = function(){
-	// 	var matrix = rotating.matrixWorld;
-	// 	var abspos = matrix.multiplyVector3( country.center.clone() );
-	// 	var screenPos = screenXY(abspos);
-	// 	country.marker.setPosition( screenPos.x, screenPos.y,0 );	
-	// 	if( abspos.z > 60 )
-	// 		country.marker.show();
-	// 	else
-	// 		country.marker.hide();
-	// }
+	var markerOut = function(e){
+		this.detailLayer.innerHTML = "";
+		this.hover = false;
+	}
 
-	// country.marker.svg.addEventListener( 'click', onMarkerHover, false );
+	if( !tiny ) {		
+		detailLayer.innerHTML = importExportText;
+	}
+	else{
+		marker.addEventListener( 'mouseover', markerOver, false );
+		marker.addEventListener( 'mouseout', markerOut, false );
+	}
+
 
 	var markerSelect = function(e){
 		var selection = selectionData;

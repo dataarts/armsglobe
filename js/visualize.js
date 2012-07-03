@@ -40,9 +40,9 @@ function buildDataVizGeometries( linearData ){
 		//	todo:
 		//	cache the vertex data into json and simply serve it
 		// break;
-		// if( parseInt(year) > 2004 ) {
+		if( parseInt(year) > 1996 ) {
 			break;
-		// }		
+		}		
 	}			
 }
 
