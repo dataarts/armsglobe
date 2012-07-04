@@ -1,6 +1,9 @@
 function buildDataVizGeometries( linearData ){	
+
+	var loadLayer = document.getElementById('loading');
+
 	for( var i in linearData ){
-		var yearBin = linearData[i].data;
+		var yearBin = linearData[i].data;		
 
 		var year = linearData[i].t;
 		selectableYears.push(year);	
@@ -21,29 +24,21 @@ function buildDataVizGeometries( linearData ){
 				continue;			
 
 			//	visualize this event
-			set.lineGeometry = makeConnectionLineGeometry( exporter, importer, set.v, set.wc );	
+			set.lineGeometry = makeConnectionLineGeometry( exporter, importer, set.v, set.wc );		
+
+			// if( s % 1000 == 0 )
+			// 	console.log( 'calculating ' + s + ' of ' + yearBin.length + ' in year ' + year);
 		}
 
-		//	clear out temp connections data
-		for( var s in yearBin ){
-			var set = yearBin[s];
-			var exporterName = set.e.toUpperCase();
-			var importerName = set.i.toUpperCase();
-
-			exporter = countryData[exporterName];
-			if( exporter === undefined || importer === undefined )
-				continue;			
-			exporter.connections = undefined;
-		}
-
-		//	hack now to only do one year... as this operation takes a while		
-		//	todo:
-		//	cache the vertex data into json and simply serve it
+		//	use this break to only visualize one year (1992)
 		// break;
-		if( parseInt(year) > 1996 ) {
-			break;
-		}		
+
+		//	how to make this work?
+		// loadLayer.innerHTML = 'loading data for ' + year + '...';
+		// console.log(loadLayer.innerHTML);
 	}			
+
+	loadLayer.style.display = 'none';	
 }
 
 function getVisualizedMesh( linearData, year, countries, action, categories ){
@@ -112,7 +107,8 @@ function getVisualizedMesh( linearData, year, countries, action, categories ){
 
 			var particleColor = lastColor.clone();		
 			var points = set.lineGeometry.vertices;
-			var particleCount = Math.floor(set.v / 2000 / set.lineGeometry.vertices.length) + 1;
+			var particleCount = Math.floor(set.v / 8000 / set.lineGeometry.vertices.length) + 1;
+			var particleSize = set.lineGeometry.size;			
 			for( var s=0; s<particleCount; s++ ){
 				// var rIndex = Math.floor( Math.random() * points.length );
 				// var rIndex = Math.min(s,points.length-1);
@@ -125,7 +121,7 @@ function getVisualizedMesh( linearData, year, countries, action, categories ){
 				particle.moveIndex = rIndex;
 				particle.path = points;
 				particlesGeo.vertices.push( particle );	
-				particle.size = point.size;
+				particle.size = particleSize;
 				particleColors.push( particleColor );						
 			}			
 
@@ -155,10 +151,26 @@ function getVisualizedMesh( linearData, year, countries, action, categories ){
 			}	
 
 			exporterCountry.exportedAmount += vb;
-			importerCountry.importedAmount += vb;		
+			importerCountry.importedAmount += vb;
+
+			if( exporterCountry == selectedCountry ){				
+				selectedCountry.summary.exported[set.wc] += set.v;
+				selectedCountry.summary.exported.total += set.v;				
+			}		
+			if( importerCountry == selectedCountry ){
+				selectedCountry.summary.imported[set.wc] += set.v;
+				selectedCountry.summary.imported.total += set.v;
+			}
+
+			if( importerCountry == selectedCountry || exporterCountry == selectedCountry ){
+				selectedCountry.summary.total += set.v;	
+			}
+
 
 		}		
 	}
+
+	// console.log(selectedCountry);
 
 	linesGeo.colors = lineColors;	
 
@@ -229,15 +241,6 @@ function getVisualizedMesh( linearData, year, countries, action, categories ){
 			if( particle.moveIndex >= moveLength )
 				particle.moveIndex = 0;							
 			particle.copy( path[particle.moveIndex] );
-			// var noiseY = time + particle.moveIndex;
-			// noiseY = 0;
-			// var offsetX = PerlinNoise.noise(particle.x * 0.1, noiseY, 0 );
-			// var offsetY = PerlinNoise.noise(particle.y * 0.1, noiseY, 0 );
-			// var offsetZ = PerlinNoise.noise(particle.z * 0.1, noiseY, 0 );
-			// var off = this.geometry.colors[i].r * 10;
-			// particle.x += offsetX * off;
-			// particle.y += offsetY * off;			
-			// particle.z += offsetZ * off;		
 		}
 		this.geometry.verticesNeedUpdate = true;
 	};		
@@ -250,9 +253,28 @@ function getVisualizedMesh( linearData, year, countries, action, categories ){
 }
 
 function selectVisualization( linearData, year, countries, action, categories ){
+
 	//	we're only doing one country for now so...
 	selectedCountry = countryData[countries[0].toUpperCase()];
-	console.log(selectedCountry);
+
+	selectedCountry.summary = {
+		imported: {
+			mil: 0,
+			civ: 0,
+			ammo: 0,
+			total: 0,
+		},
+		exported: {
+			mil: 0,
+			civ: 0,
+			ammo: 0,
+			total: 0,
+		},
+		total: 0,
+		historical: getHistoricalData(selectedCountry),
+	};
+
+	// console.log(selectedCountry);
 
 	//	clear off the country's internally held color data we used from last highlight
 	for( var i in countryData ){

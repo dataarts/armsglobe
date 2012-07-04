@@ -244,3 +244,13 @@ a.button.pause:hover {
 	color:					#aaaaaa;
 	float:					right;
 }
+
+#loading{
+	position:				absolute;
+	display:				inline-block;
+	background-color: 		#111111;
+	top:					50%;
+	left:					12%;
+	color:					#ffffff;
+	padding:				16px;
+}

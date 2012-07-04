@@ -141,47 +141,11 @@ var Selection = function(){
 //	-----------------------------------------------------------------------------
 //	All the initialization stuff for THREE
 function initScene() {
-    //	-----------------------------------------------------------------------------
-    //	Setup our renderer
-	renderer = new THREE.WebGLRenderer({antialias:false});
-	renderer.setSize( window.innerWidth, window.innerHeight );
-	renderer.autoClear = false;	
-	
-	renderer.sortObjects = false;		
-	renderer.generateMipmaps = false;					
-
-	glContainer.appendChild( renderer.domElement );							
-
 
 	//	-----------------------------------------------------------------------------
     //	Let's make a scene		
 	scene = new THREE.Scene();
-	scene.matrixAutoUpdate = false;				
-
-
-    //	-----------------------------------------------------------------------------
-    //	Event listeners
-	document.addEventListener( 'mousemove', onDocumentMouseMove, true );
-	document.addEventListener( 'windowResize', onDocumentResize, false );
-
-	masterContainer.addEventListener( 'mousedown', onDocumentMouseDown, true );	
-	masterContainer.addEventListener( 'mouseup', onDocumentMouseUp, false );	
-	masterContainer.addEventListener( 'click', onClick, false );	
-	masterContainer.addEventListener( 'mousewheel', onMouseWheel, false );
-
-	document.addEventListener( 'keydown', onKeyDown, false);												    			    	
-
-    //	-----------------------------------------------------------------------------
-    //	Setup our camera
-    camera = new THREE.PerspectiveCamera( 12, window.innerWidth / window.innerHeight, 1, 20000 ); 		        
-	camera.position.z = 1400;
-	camera.position.y = 0;
-	camera.lookAt(scene.width/2, scene.height/2);	
-	scene.add( camera );	  
-
-	var windowResize = THREEx.WindowResize(renderer, camera)	
-
-
+	scene.matrixAutoUpdate = false;		
 	// scene.fog = new THREE.FogExp2( 0xBBBBBB, 0.00003 );		        		       
 
 	scene.add( new THREE.AmbientLight( 0x505050 ) );				
@@ -302,6 +266,41 @@ function initScene() {
 
 	//	test for highlighting specific countries
 	// highlightCountry( ["United States", "Switzerland", "China"] );
+
+
+    //	-----------------------------------------------------------------------------
+    //	Setup our renderer
+	renderer = new THREE.WebGLRenderer({antialias:false});
+	renderer.setSize( window.innerWidth, window.innerHeight );
+	renderer.autoClear = false;	
+	
+	renderer.sortObjects = false;		
+	renderer.generateMipmaps = false;					
+
+	glContainer.appendChild( renderer.domElement );									
+
+
+    //	-----------------------------------------------------------------------------
+    //	Event listeners
+	document.addEventListener( 'mousemove', onDocumentMouseMove, true );
+	document.addEventListener( 'windowResize', onDocumentResize, false );
+
+	masterContainer.addEventListener( 'mousedown', onDocumentMouseDown, true );	
+	masterContainer.addEventListener( 'mouseup', onDocumentMouseUp, false );	
+	masterContainer.addEventListener( 'click', onClick, false );	
+	masterContainer.addEventListener( 'mousewheel', onMouseWheel, false );
+
+	document.addEventListener( 'keydown', onKeyDown, false);												    			    	
+
+    //	-----------------------------------------------------------------------------
+    //	Setup our camera
+    camera = new THREE.PerspectiveCamera( 12, window.innerWidth / window.innerHeight, 1, 20000 ); 		        
+	camera.position.z = 1400;
+	camera.position.y = 0;
+	camera.lookAt(scene.width/2, scene.height/2);	
+	scene.add( camera );	  
+
+	var windowResize = THREEx.WindowResize(renderer, camera)		
 }
 	
 
@@ -436,3 +435,33 @@ function highlightCountry( countries ){
 	lookupTexture.needsUpdate = true;
 }
 
+function getHistoricalData( country ){
+	var history = [];	
+
+	var countryName = country.countryName;
+
+	var filteredCategories = selectionData.getCategories();
+
+	for( var i in timeBins ){
+		var yearBin = timeBins[i].data;		
+		var value = {imports: 0, exports:0};
+		for( var s in yearBin ){
+			var set = yearBin[s];
+			var categoryName = reverseWeaponLookup[set.wc];
+			var relevantCategory = $.inArray(categoryName, filteredCategories ) >= 0;				
+
+			if( relevantCategory == false )
+				continue;
+
+			var exporterCountryName = set.e.toUpperCase();
+			var importerCountryName = set.i.toUpperCase();
+			if( exporterCountryName == countryName )
+				value.exports += set.v;
+			if( importerCountryName == countryName )
+				value.imports += set.v;
+		}
+		history.push(value);
+	}
+	// console.log(history);
+	return history;
+}

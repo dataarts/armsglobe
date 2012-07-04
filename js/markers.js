@@ -82,7 +82,7 @@ function attachMarkerToCountry( countryName, importance ){
 			this.setVisible( ( abspos.z > 60 ) && s > 5 );	
 
 		var zIndex = Math.floor( 1000 - abspos.z + s );
-		if( this.selected )
+		if( this.selected || this.hover )
 			zIndex = 10000;
 
 		this.setPosition( screenPos.x, screenPos.y, zIndex );	
