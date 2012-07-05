@@ -72,7 +72,7 @@ var d3Graphs = {
             return reverseWeaponLookup[d.type].split(' ')[0].toUpperCase();
         }).attr('text-anchor','end').attr('y',15).attr('class',function(d){ return 'import '+d.type});
         importLabels.append('text').text(function(d) {
-            return d.amount;
+            return numberFormatCondens(d.amount);
         }).attr('text-anchor','end');
         var exportLabels = this.barGraphSVG.selectAll("g.exportLabel").data(exportArray);
         exportLabels.enter().append("g").attr('class',function(d) {
@@ -93,9 +93,8 @@ var d3Graphs = {
             return reverseWeaponLookup[d.type].split(' ')[0].toUpperCase();
         }).attr('y',15).attr('class',function(d) { return 'export '+ d.type});
         exportLabels.append('text').text(function(d) {
-            return d.amount;
+            return numberFormatCondens(d.amount);
         });
-        
         
         var importTotalLabel = this.barGraphSVG.selectAll('text.totalLabel').data([1]);
         importTotalLabel.enter().append('text').attr('x',midX).attr('text-anchor','end')
@@ -113,3 +112,44 @@ var d3Graphs = {
         
     }
 }
+
+/*
+This is going to be a number formatter. Example of use:
+
+var bigNumber = 57028715;
+var formated = numberFormatCondens(57028715);
+return formated; //should show 57B for 57 Billion
+
+*/
+function numberFormatCondens( val ) {
+    
+    //strip out any strings ($,-etc)
+
+    //how many decimal places
+    //decPlaces = getDecimals(val);
+    console.log("number"+ val);
+    decPlaces = val.toString().length - 1;
+
+    console.log( 'dec: ' + decPlaces );
+
+    //enumerate abbreviations
+    var abbrev = [ "K" , "M", "B", "T", "G" ]; //G would be a Gazillion! hopefully we won't ever see this.
+
+    for( var i=abbrev.length - 1; i >= 0; i--) {
+
+        var size = Math.pow(10, (i + 1) * 3 );
+
+        if( size <= val ) {
+            //round
+            val = Math.round( val * decPlaces / size) / decPlaces;
+            val = Math.round(val)/100; //allow for 2 decimal places
+
+            //add letter for abbrev
+            val += abbrev[i];
+
+            break;
+        }
+    }
+    return '$'+val;
+}
+
