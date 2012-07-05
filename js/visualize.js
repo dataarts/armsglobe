@@ -170,7 +170,7 @@ function getVisualizedMesh( linearData, year, countries, action, categories ){
 		}		
 	}
 
-	// console.log(selectedCountry);
+	console.log(selectedCountry);
 
 	linesGeo.colors = lineColors;	
 
@@ -311,5 +311,7 @@ function selectVisualization( linearData, year, countries, action, categories ){
 
 	// console.log( mesh.affectedCountries );
 	highlightCountry( mesh.affectedCountries );
-
+    
+    d3Graphs.showHud();
+    d3Graphs.drawBarGraph();
 }

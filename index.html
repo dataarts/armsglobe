@@ -52,6 +52,7 @@
 		<script src="js/visualize_lines.js"></script>
 		<script src="js/markers.js"></script>	
 		<script src="js/svgtoy.js" type="text/javascript"></script>	
+		<script src="js/d3.v2.min.js"></script>
 		<script src="js/ui.controls.js"></script>
 
 		<script type="x-shader/x-vertex" id="vertexshader">
@@ -124,7 +125,13 @@
 
 
 		<!-- All other hud can go here-->
-
+        <div id="hudHeader">
+            <h1>Global Arms Trade Visualization</h1>
+            <input type="text" name="country" class="countryTextInput" value="UNITED STATES"> 
+            <input type="button" value="SEARCH" class="searchBtn armsBtn">
+            <input type="button" value="ABOUT" class="aboutBtn armsBtn">
+            
+        </div>
 
 	</body>
 </html>	
