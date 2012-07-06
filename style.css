@@ -269,7 +269,9 @@ a.button.pause:hover {
 
 
 /*Styles by Pitch*/
-
+.clear {
+    clear:both;
+}
 /*
 Elements to control the title and country selector
 */
@@ -360,6 +362,14 @@ Bar graph on left
     left: 20%;
     background: #2b2b2b;
     display: none;
+    
+   	-webkit-border-top-left-radius:	5px;
+	-moz-border-radius-topleft: 5px;
+	border-top-left-radius: 5px;
+	-webkit-border-top-right-radius:	5px;
+	-moz-border-radius-topright: 5px;
+	border-top-right-radius: 5px;
+	
 }
 #history ul {
     list-style-type:none;
@@ -376,4 +386,74 @@ Bar graph on left
     width: 44px;
     float: left;
     text-align: center;
+}
+#history .graph {
+    display: none;
+}
+#history .close {
+    width: 8px;
+    height: 8px;
+    background: url('close.png') 0 0 no-repeat;
+    margin-right: 8px;
+    margin-top: 5px;
+    float: right;
+    cursor: pointer;
+}
+
+#history .labels {
+    margin-right: 35px;
+}
+#history .labels .change {
+    font-family: RopaSans;
+    font-size: 28px;
+    color: white;
+    margin-left: 31px;
+    float: left;
+    margin-top: 15px;
+}
+#history .labels .imports {
+    float: right;
+    font-family: Roboto;
+    font-size: 15px;
+    color:#2e81bb;
+    margin-top: 25px;
+}
+#history .labels .exports {
+    float: right;
+    font-family: Roboto;
+    font-size: 15px;
+    color: #f99318;
+    margin-top: 25px;
+    margin-left: 10px;
+}
+#histogram path {
+    fill: none;
+}
+#histogram .export {
+    stroke: #f99318
+}
+#histogram .import {
+    stroke: #2e81bb;
+}
+#histogram .tick {
+    fill:none;
+    stroke: #959595;
+}
+#histogram .tickLbl {
+    fill: #fff;
+    font-size: 18px;
+}
+#histogram .plusMinus {
+    font-size: 18px;
+    fill: #fff;
+}
+#graphIcon {
+    width: 42px;
+    height: 42px;
+    position: absolute;
+    bottom: 10px;
+    left: 1150px;
+    cursor: pointer;
+    background: url('graphIcon.png') 0 0 no-repeat;
+    display: none;
 }

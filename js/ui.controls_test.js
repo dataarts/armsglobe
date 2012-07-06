@@ -9,24 +9,158 @@ var d3Graphs = {
 	barGraphHeight: 800,
 	barGraphTopPadding: 20,
 	barGraphBottomPadding: 50,
+	histogramWidth: 856,
+	histogramHeight: 140,
+	histogramLeftPadding:31,
+	histogramRightPadding: 31,
+	histogramVertPadding:10,
 	barGraphSVG: d3.select("body").append("svg"),
-	historgramSVG: d3.select("body").append('svg'),
+	histogramSVG: null,
+	histogramYScale: null,
+	histogramXScale: null,
 	cumImportY: 0,cumExportY: 0,
     cumImportLblY: 0,cumExportLblY: 0,
+    inited: false,
+    histogramOpen: false,
     initGraphs: function() {
         this.showHud();
         this.drawBarGraph();
         this.drawHistogram();
     },
     showHud: function() {
+        if(this.inited) return;
+        this.inited = true;
         $("#hudHeader").show();
         $("#history").show();
+        $("#graphIcon").show();
+        $("#graphIcon").click(d3Graphs.graphIconClick);
+        $("#history .close").click(d3Graphs.closeHistogram);
     },
+    graphIconClick: function() {
+        if(!d3Graphs.histogramOpen) {
+            d3Graphs.histogramOpen = true;
+            $("#history .graph").slideDown();
+        } else {
+            d3Graphs.closeHistogram();
+        }
+    },
+    closeHistogram: function() {
+        d3Graphs.histogramOpen = false;
+        $("#history .graph").slideUp();
+    },
+    line: d3.svg.line()
+        // assign the X function to plot our line as we wish
+    .x(function(d,i) { 
+        return d3Graphs.histogramXScale(i) + d3Graphs.histogramLeftPadding; 
+     })
+    .y(function(d) { 
+        return d3Graphs.histogramYScale(d) + d3Graphs.histogramVertPadding; 
+    }),
     drawHistogram:function() {
-    
+        if(this.histogramSVG == null) {
+            this.histogramSVG = d3.select('#history .container').append('svg');
+            this.histogramSVG.attr('id','histogram').attr('width',this.histogramWidth).attr('height',this.histogramHeight);
+        }
+        var importArray = [0];
+        var exportArray = [0];
+        var historical = selectedCountry.summary.historical;
+        var numHistory = historical.length;
+        var absMax = 0;
+        for(var i = 1; i < numHistory; i++) {
+            var importPrev = historical[i-1].imports;
+            var importCur = historical[i].imports;
+            var importDiff = (importCur - importPrev) / importPrev * 100;
+            var exportPrev = historical[i-1].exports;
+            var exportCur = historical[i].exports;
+            var exportDiff = (exportCur - exportPrev) / exportPrev * 100;
+            importArray.push(importDiff);
+            exportArray.push(exportDiff); 
+            if(Math.abs(importDiff) > absMax) {
+                absMax = Math.abs(importDiff);
+            }
+            if(Math.abs(exportDiff) > absMax) {
+                absMax = Math.abs(exportDiff);
+            }
+            
+        }
+        console.log("abs Max "+absMax);
+        this.histogramYScale = d3.scale.linear().domain([absMax,-absMax]).range([0, this.histogramHeight - this.histogramVertPadding*2]);
+        this.histogramXScale = d3.scale.linear().domain([0,exportArray.length-1]).range([0, this.histogramWidth - this.histogramLeftPadding - this.histogramRightPadding]);
+        
+        var tickData = this.histogramYScale.ticks(4);
+        var containsZero = false;
+        var numTicks = tickData.length;
+        for(var i = 0; i < numTicks; i++) {
+            if(tickData[i] == 0) {
+                containsZero = true;
+                break;
+            }
+        }
+        if(!containsZero) {
+            tickData.push(0);
+        }
+        //tick lines
+        var ticks = this.histogramSVG.selectAll('line.tick').data(tickData);
+        ticks.enter().append('svg:line').attr('class','tick');
+        ticks.attr('y1',function(d) {
+        console.log(d);
+            return d3Graphs.histogramYScale(d) + d3Graphs.histogramVertPadding;
+        }).attr('y2', function(d) {
+            return d3Graphs.histogramYScale(d) + d3Graphs.histogramVertPadding;
+        }).attr('x1',this.histogramLeftPadding).attr('x2',this.histogramWidth - this.histogramRightPadding)
+        .attr('stroke-dasharray',function(d) {
+            if(d == 0) {
+              return null;
+            }
+            return '3,1';
+        }).attr('stroke-width',function(d) {
+            if(d == 0) {
+                return 2;
+            }
+            return 1;
+        });
+        //tick labels
+        var tickLabels = this.histogramSVG.selectAll("text.tickLblLeft").data(tickData);
+        tickLabels.enter().append('svg:text').attr('class','tickLbl tickLblLeft').attr('text-anchor','end');
+        tickLabels.attr('x', d3Graphs.histogramLeftPadding-3).attr('y',function(d) {
+            return d3Graphs.histogramYScale(d) + d3Graphs.histogramVertPadding + 6;
+        }).text(function(d) { return Math.abs(d); }).attr('display', function(d) {
+            if(d == 0) { return 'none'; }
+            return null;
+        });
+        var tickLabelsRight = this.histogramSVG.selectAll("text.tickLblRight").data(tickData);
+        tickLabelsRight.enter().append('svg:text').attr('class','tickLbl tickLblRight');
+        tickLabelsRight.attr('x', d3Graphs.histogramWidth - d3Graphs.histogramRightPadding+3).attr('y',function(d) {
+            return d3Graphs.histogramYScale(d) + d3Graphs.histogramVertPadding + 6;
+        }).text(function(d) { return Math.abs(d); }).attr('display', function(d) {
+            if(d == 0) { return 'none'; }
+            return null;
+        });
+        ticks.exit().remove();
+        tickLabels.exit().remove();
+        tickLabelsRight.exit().remove();
+        //+ and -
+        var plusMinus = this.histogramSVG.selectAll("text.plusMinus").data(["+","—","+","—"]); //those are &mdash;s
+        plusMinus.enter().append('svg:text').attr('class','plusMinus').attr('text-anchor',function(d,i) {
+            if(i < 2) return 'end';
+            return null;
+        }).attr('x',function(d,i) {
+            var plusOffset = 3;
+            if(i < 2) return d3Graphs.histogramLeftPadding + (d == '+' ? -plusOffset : 0) -2;
+            return d3Graphs.histogramWidth - d3Graphs.histogramRightPadding + (d == '+' ? plusOffset : 0)+2;
+        }).attr('y',function(d,i) {
+            var yOffset = 10;
+            return d3Graphs.histogramYScale(0) + d3Graphs.histogramVertPadding +  6 + (d == '+' ? -yOffset : yOffset); 
+        }).text(String);
+        //lines
+        var importLine = this.histogramSVG.selectAll("path.import").data([1]);
+        importLine.enter().append('svg:path').attr('class','import');
+        importLine.attr('d',this.line(importArray));
+        var exportLine = this.histogramSVG.selectAll("path.export").data([1]);
+        exportLine.enter().append('svg:path').attr('class','export');
+        exportLine.attr('d',this.line(exportArray));
     },
     drawBarGraph: function() {
-        console.log('dbg');
         this.barGraphSVG.attr('id','barGraph').attr('width',d3Graphs.barGraphWidth).attr('height',d3Graphs.barGraphHeight);
         var importArray = [];
         var exportArray = [];
