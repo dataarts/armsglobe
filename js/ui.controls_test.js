@@ -10,10 +10,20 @@ var d3Graphs = {
 	barGraphTopPadding: 20,
 	barGraphBottomPadding: 50,
 	barGraphSVG: d3.select("body").append("svg"),
+	historgramSVG: d3.select("body").append('svg'),
 	cumImportY: 0,cumExportY: 0,
     cumImportLblY: 0,cumExportLblY: 0,
+    initGraphs: function() {
+        this.showHud();
+        this.drawBarGraph();
+        this.drawHistogram();
+    },
     showHud: function() {
         $("#hudHeader").show();
+        $("#history").show();
+    },
+    drawHistogram:function() {
+    
     },
     drawBarGraph: function() {
         console.log('dbg');
@@ -125,6 +135,7 @@ return formated; //should show 57B for 57 Billion
 
 */
 function abbreviateNumber(value) {
+    
     var newValue = value;
     if (value >= 1000) {
         var suffixes = ["", "K", "M", "B","T"];

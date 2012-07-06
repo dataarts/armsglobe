@@ -312,6 +312,5 @@ function selectVisualization( linearData, year, countries, action, categories ){
 	// console.log( mesh.affectedCountries );
 	highlightCountry( mesh.affectedCountries );
     
-    d3Graphs.showHud();
-    d3Graphs.drawBarGraph();
+    d3Graphs.initGraphs();
 }

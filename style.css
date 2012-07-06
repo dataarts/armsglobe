@@ -313,9 +313,9 @@ Elements to control the title and country selector
 Bar graph on left
 */
 #barGraph {
-    position: 				absolute;
-    top:					190px;
-    left:					0;
+    position: absolute;
+    bottom:10px;
+    left:0;
 }
 #barGraph .import.ammo {
 	fill: 					#308a8a;
@@ -353,4 +353,27 @@ Bar graph on left
     font-family: 			Roboto;
     font-size: 				15px;
     fill: 					#2e81bb;
+}
+#history {
+    position: absolute;
+    bottom: 0;
+    left: 20%;
+    background: #2b2b2b;
+    display: none;
+}
+#history ul {
+    list-style-type:none;
+    margin:10px;
+    padding:0;
+    padding-bottom: 15px;
+    padding-top:22px;
+    color: white;
+    font-size: 16px;
+    font-family: Roboto;
+    background: url('timelineBG.png') 8px 0 no-repeat;
+}
+#history ul li {
+    width: 44px;
+    float: left;
+    text-align: center;
 }
