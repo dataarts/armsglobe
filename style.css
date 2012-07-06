@@ -359,7 +359,7 @@ Bar graph on left
 #history {
     position: absolute;
     bottom: 0;
-    left: 20%;
+    left: 527px;
     background: #2b2b2b;
     display: none;
     
@@ -386,6 +386,14 @@ Bar graph on left
     width: 44px;
     float: left;
     text-align: center;
+}
+#history .timeline #handle {
+    width: 36px;
+    height: 36px;
+    background: url('yearHandle.png') 2px 0 no-repeat;
+    position: absolute;
+    bottom: 20px;
+    left: 15px;
 }
 #history .graph {
     display: none;
@@ -428,6 +436,7 @@ Bar graph on left
 }
 #histogram path {
     fill: none;
+    stroke-width: 3px;
 }
 #histogram .export {
     stroke: #f99318
@@ -441,7 +450,8 @@ Bar graph on left
 }
 #histogram .tickLbl {
     fill: #fff;
-    font-size: 18px;
+    font-size: 11px;
+    font-family: Roboto;
 }
 #histogram .plusMinus {
     font-size: 18px;
@@ -452,7 +462,7 @@ Bar graph on left
     height: 42px;
     position: absolute;
     bottom: 10px;
-    left: 1150px;
+    left: 1395px;
     cursor: pointer;
     background: url('graphIcon.png') 0 0 no-repeat;
     display: none;

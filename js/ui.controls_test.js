@@ -22,6 +22,8 @@ var d3Graphs = {
     cumImportLblY: 0,cumExportLblY: 0,
     inited: false,
     histogramOpen: false,
+    handleLeftOffset: 15,
+    handleInterval: 44,
     initGraphs: function() {
         this.showHud();
         this.drawBarGraph();
@@ -35,6 +37,7 @@ var d3Graphs = {
         $("#graphIcon").show();
         $("#graphIcon").click(d3Graphs.graphIconClick);
         $("#history .close").click(d3Graphs.closeHistogram);
+        $("#handle").draggable({axis: 'x',containment: "parent",grid:[this.handleInterval, this.handleInterval] });
     },
     graphIconClick: function() {
         if(!d3Graphs.histogramOpen) {
@@ -67,10 +70,10 @@ var d3Graphs = {
         var numHistory = historical.length;
         var absMax = 0;
         for(var i = 1; i < numHistory; i++) {
-            var importPrev = historical[i-1].imports;
+            var importPrev = historical[0].imports;
             var importCur = historical[i].imports;
             var importDiff = (importCur - importPrev) / importPrev * 100;
-            var exportPrev = historical[i-1].exports;
+            var exportPrev = historical[0].exports;
             var exportCur = historical[i].exports;
             var exportDiff = (exportCur - exportPrev) / exportPrev * 100;
             importArray.push(importDiff);
@@ -123,7 +126,7 @@ var d3Graphs = {
         var tickLabels = this.histogramSVG.selectAll("text.tickLblLeft").data(tickData);
         tickLabels.enter().append('svg:text').attr('class','tickLbl tickLblLeft').attr('text-anchor','end');
         tickLabels.attr('x', d3Graphs.histogramLeftPadding-3).attr('y',function(d) {
-            return d3Graphs.histogramYScale(d) + d3Graphs.histogramVertPadding + 6;
+            return d3Graphs.histogramYScale(d) + d3Graphs.histogramVertPadding + 4;
         }).text(function(d) { return Math.abs(d); }).attr('display', function(d) {
             if(d == 0) { return 'none'; }
             return null;
@@ -131,7 +134,7 @@ var d3Graphs = {
         var tickLabelsRight = this.histogramSVG.selectAll("text.tickLblRight").data(tickData);
         tickLabelsRight.enter().append('svg:text').attr('class','tickLbl tickLblRight');
         tickLabelsRight.attr('x', d3Graphs.histogramWidth - d3Graphs.histogramRightPadding+3).attr('y',function(d) {
-            return d3Graphs.histogramYScale(d) + d3Graphs.histogramVertPadding + 6;
+            return d3Graphs.histogramYScale(d) + d3Graphs.histogramVertPadding + 4;
         }).text(function(d) { return Math.abs(d); }).attr('display', function(d) {
             if(d == 0) { return 'none'; }
             return null;
@@ -257,6 +260,12 @@ var d3Graphs = {
         var exportLabel = this.barGraphSVG.selectAll('text.exportLabel').data([1]).enter().append('text').attr('x',midX+10).text('EXPORTS')
             .attr('class','exportLabel').attr('y', this.barGraphHeight - this.barGraphBottomPadding + 45);
         
+    },
+    dragHandleStart: function(event) {
+        console.log('start');
+        event.dataTransfer.setData('text/uri-list','yearHandle.png');
+        event.dataTransfer.setDragImage(document.getElementById('handle'),0,0);
+        event.dataTransfer.effectAllowed='move';
     }
 }
 
