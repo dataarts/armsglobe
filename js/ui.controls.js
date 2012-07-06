@@ -72,7 +72,7 @@ var d3Graphs = {
             return reverseWeaponLookup[d.type].split(' ')[0].toUpperCase();
         }).attr('text-anchor','end').attr('y',15).attr('class',function(d){ return 'import '+d.type});
         importLabels.append('text').text(function(d) {
-            return numberFormatCondens(d.amount);
+            return abbreviateNumber(d.amount);
         }).attr('text-anchor','end');
         var exportLabels = this.barGraphSVG.selectAll("g.exportLabel").data(exportArray);
         exportLabels.enter().append("g").attr('class',function(d) {
@@ -93,20 +93,23 @@ var d3Graphs = {
             return reverseWeaponLookup[d.type].split(' ')[0].toUpperCase();
         }).attr('y',15).attr('class',function(d) { return 'export '+ d.type});
         exportLabels.append('text').text(function(d) {
-            return numberFormatCondens(d.amount);
+            return abbreviateNumber(d.amount);
         });
         
         var importTotalLabel = this.barGraphSVG.selectAll('text.totalLabel').data([1]);
         importTotalLabel.enter().append('text').attr('x',midX).attr('text-anchor','end')
             .attr('class','totalLabel').attr('y',this.barGraphHeight- this.barGraphBottomPadding + 25);
-        console.log(importTotal);
-        console.log(importTotalLabel);
-        importTotalLabel.text(function(d) { console.log('total' + importTotal); return importTotal });
+        
+        importTotalLabel.text(abbreviateNumber(importTotal));
+        
         var exportTotalLabel = this.barGraphSVG.selectAll('text.totalLabel.totalLabel2').data([1]);
         exportTotalLabel.enter().append('text').attr('x',midX+10).attr('class','totalLabel totalLabel2').attr('y', this.barGraphHeight - this.barGraphBottomPadding+25);
-        exportTotalLabel.text(exportTotal);
+        exportTotalLabel.text(abbreviateNumber(exportTotal));
+        
+        //Import label at bottom
         var importLabel = this.barGraphSVG.selectAll('text.importLabel').data([1]).enter().append('text').attr('x',midX).attr('text-anchor','end').text('IMPORTS')
             .attr('class','importLabel').attr('y', this.barGraphHeight - this.barGraphBottomPadding + 45);
+        //Export label at bottom
         var exportLabel = this.barGraphSVG.selectAll('text.exportLabel').data([1]).enter().append('text').attr('x',midX+10).text('EXPORTS')
             .attr('class','exportLabel').attr('y', this.barGraphHeight - this.barGraphBottomPadding + 45);
         
@@ -117,39 +120,24 @@ var d3Graphs = {
 This is going to be a number formatter. Example of use:
 
 var bigNumber = 57028715;
-var formated = numberFormatCondens(57028715);
+var formated = abbreviateNumber(57028715);
 return formated; //should show 57B for 57 Billion
 
 */
-function numberFormatCondens( val ) {
-    
-    //strip out any strings ($,-etc)
-
-    //how many decimal places
-    //decPlaces = getDecimals(val);
-    console.log("number"+ val);
-    decPlaces = val.toString().length - 1;
-
-    console.log( 'dec: ' + decPlaces );
-
-    //enumerate abbreviations
-    var abbrev = [ "K" , "M", "B", "T", "G" ]; //G would be a Gazillion! hopefully we won't ever see this.
-
-    for( var i=abbrev.length - 1; i >= 0; i--) {
-
-        var size = Math.pow(10, (i + 1) * 3 );
-
-        if( size <= val ) {
-            //round
-            val = Math.round( val * decPlaces / size) / decPlaces;
-            val = Math.round(val)/100; //allow for 2 decimal places
-
-            //add letter for abbrev
-            val += abbrev[i];
-
-            break;
+function abbreviateNumber(value) {
+    var newValue = value;
+    if (value >= 1000) {
+        var suffixes = ["", "K", "M", "B","T"];
+        var suffixNum = Math.floor( (""+value).length/3 );
+        var shortValue = '';
+        for (var precision = 3; precision >= 1; precision--) {
+            shortValue = parseFloat( (suffixNum != 0 ? (value / Math.pow(1000,suffixNum) ) : value).toPrecision(precision));
+            var dotLessShortValue = (shortValue + '').replace(/[^a-zA-Z 0-9]+/g,'');
+            if (dotLessShortValue.length <= 3) { break; }
         }
+        if (shortValue % 1 != 0)  shortNum = shortValue.toFixed(1);
+        newValue = shortValue+suffixes[suffixNum];
     }
-    return '$'+val;
+    return '$' + newValue;
 }
 
