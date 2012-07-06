@@ -236,6 +236,7 @@ a.button.pause:hover {
 	background-color: 		rgba(0,0,0,.87);	
 	color:					#ffffff;
 	font-size:				4pt;
+    font-family: 			'RopaSans';
 	-moz-user-select:		-moz-none;
 	-khtml-user-select:		none;
 	-webkit-user-select:	none;
@@ -268,81 +269,88 @@ a.button.pause:hover {
 
 
 /*Styles by Pitch*/
+
+/*
+Elements to control the title and country selector
+*/
 #hudHeader {
-    display: none;
-    position: absolute;
-    left: 35px;
-    top: 37px;
-    color: #fff;
-    font-family: 'RopaSans';
+    display: 				none;
+    position: 				absolute;
+    left: 					30px;
+    top: 					30px;
+    color: 					#fff;
+    font-family: 			'RopaSans';
 }
 #hudHeader h1 {
-    font-size: 42px;
-    font-family: 'RopaSans';
-    margin: 0 0 25px 0;
+    font-size: 				42px;
+    font-family: 			'RopaSans';
+    margin: 				0 0 25px 0;
 }
 #hudHeader .countryTextInput {
-    font-size: 22px;
-    width: 330px;
-    padding-left: 5px;
-   	-webkit-border-radius: 4px;
-	-moz-border-radius: 4px;
-	border-radius: 4px;
-	font-family: 'RopaSans';
+    font-size: 				22px;
+    width: 					330px;
+    padding-left: 			5px;
+   	-webkit-border-radius:  4px;
+	-moz-border-radius: 	4px;
+	border-radius: 			4px;
+	font-family: 			'RopaSans';
     
 }
 #hudHeader .armsBtn {
-    background: #333333;
-    padding: 2px 10px;
-    color: white;
-    border: 0;
-    font-size: 25px;
-   	-webkit-border-radius: 4px;
-	-moz-border-radius: 4px;
-	border-radius: 4px;
-	font-family: 'RopaSans';
-	cursor: pointer;
+    background: 			#333333;
+    padding: 				2px 10px;
+    color: 					white;
+    border: 				0;
+    font-size: 				25px;
+   	-webkit-border-radius: 	4px;
+	-moz-border-radius: 	4px;
+	border-radius: 			4px;
+	font-family: 			'RopaSans';
+	cursor: 				pointer;
 }
 
+/*
+Bar graph on left
+*/
 #barGraph {
-    position: absolute;
-    top:190px;
-    left:0;
+    position: 				absolute;
+    top:					190px;
+    left:					0;
 }
 #barGraph .import.ammo {
-	fill: #308a8a;
+	fill: 					#308a8a;
 }
 #barGraph .import.civ {
-	fill: #72b4d7;
+	fill: 					#72b4d7;
 }
 #barGraph .import.mil {
-	fill:#1482bd;
+	fill:					#1482bd;
 }
 #barGraph .export.ammo {
-	fill: #785201;
+	fill: 					#785201;
 }
 #barGraph .export.civ {
-	fill: #f6c867;
+	fill: 					#f6c867;
 }
 #barGraph .export.mil {
-	fill:#f0a401;
+	fill:					#f0a401;
 }
 #barGraph .importLabel text,#barGraph .exportLabel text {
-	fill: white;
-    font-family:Roboto;
+	fill: 					white;
+    font-family:			Roboto;
 }
 #barGraph .totalLabel {
-    fill: white;
-    font-family:Roboto;
-    font-size: 24px;
+    fill: 					white;
+    font-family:			Roboto;
+    font-size: 				24px;
 }
 #barGraph .exportLabel {
-    font-family: Roboto;
-    font-size: 15px;
-    fill: #f99318;
+    font-family: 			Roboto;
+    font-size: 				15px;
+    fill: 					#f99318;
 }
 #barGraph .importLabel {
-    font-family: Roboto;
-    font-size: 15px;
-    fill: #2e81bb;
+    font-family: 			Roboto;
+    font-size: 				15px;
+    fill: 					#2e81bb;
 }
