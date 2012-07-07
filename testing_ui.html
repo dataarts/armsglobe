@@ -11,7 +11,7 @@
 	<body onload="start()" id="dataviz" class="">
 
 		<div id="loading">
-			Loading UN Arms Trade Data from 1992 to 2010... please wait.
+			Loading UN Arms Trade Data from 1992 to 2010... please wait.<br/>Press H to hide the old UI so you can see the new.
 		</div>
 
 		<div id="marker_template" class="marker" style="left:'0px';top:'0px'">
@@ -128,6 +128,9 @@
 		<!-- All other hud can go here-->
         <div id="hudHeader">
             <h1>Global Arms Trade Visualization</h1>
+			<input type="button" value="SEARCH" class="searchBtn armsBtn">
+			<input type="text" name="country" class="countryTextInput" value="UNITED STATES">  
+            <input type="button" value="ABOUT" class="aboutBtn armsBtn">
         </div>
         <div id="history">
             <div class="graph">

@@ -164,6 +164,7 @@ var d3Graphs = {
         exportLine.attr('d',this.line(exportArray));
     },
     drawBarGraph: function() {
+        
         this.barGraphSVG.attr('id','barGraph').attr('width',d3Graphs.barGraphWidth).attr('height',d3Graphs.barGraphHeight);
         var importArray = [];
         var exportArray = [];
