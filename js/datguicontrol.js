@@ -70,5 +70,6 @@ function buildGUI(){
 		c = catFilter.add( selection.categories, i );	
 		c.onFinishChange( categoryFunction );
 	}
+	gui.close();
 	
 }

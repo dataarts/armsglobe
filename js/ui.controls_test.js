@@ -35,9 +35,49 @@ var d3Graphs = {
         $("#hudHeader").show();
         $("#history").show();
         $("#graphIcon").show();
+        $("#importExportBtns").show();
         $("#graphIcon").click(d3Graphs.graphIconClick);
         $("#history .close").click(d3Graphs.closeHistogram);
-        $("#handle").draggable({axis: 'x',containment: "parent",grid:[this.handleInterval, this.handleInterval] });
+        $("#handle").draggable({axis: 'x',containment: "parent",grid:[this.handleInterval, this.handleInterval], stop: d3Graphs.dropHandle });
+        $("#hudHeader .searchBtn").click(d3Graphs.updateViz);
+        $("#importExportBtns .imex>div").not(".label").click(d3Graphs.importExportBtnClick);
+        $("#hudHeader .countryTextInput").autocomplete({ source:selectableCountries });
+        $("#hudHeader .countryTextInput").keyup(d3Graphs.countryKeyUp);
+        $(document).on("click",".ui-autocomplete li",d3Graphs.menuItemClick);
+    },
+    menuItemClick:function(event) {
+        d3Graphs.updateViz();
+    },
+    countryKeyUp: function(event) {
+        if(event.keyCode == 13 /*ENTER */) {
+            d3Graphs.updateViz();
+        }
+    },
+    
+    updateViz:function() {
+        var yearOffset = $("#handle").css('left');
+        yearOffset = yearOffset.substr(0,yearOffset.length-2);
+        yearOffset -= d3Graphs.handleLeftOffset;
+        yearOffset /= d3Graphs.handleInterval;
+        var year = yearOffset + 1992;
+        
+        var country = $("#hudHeader .countryTextInput").val().toUpperCase();
+        if(typeof countryData[country] == 'undefined') {
+            return;
+        }
+        selectVisualization(timeBins, year,[country],"both",["Military Weapons", "Civilian Weapons", "Ammunition"] );
+    },
+    dropHandle:function() {
+        d3Graphs.updateViz();
+    },
+    importExportBtnClick:function() {
+//        console.log("click");  
+        var check = $(this).find('.check');
+        if(check.hasClass('inactive')) {
+            check.removeClass('inactive');
+        } else {
+            check.addClass('inactive');
+        }
     },
     graphIconClick: function() {
         if(!d3Graphs.histogramOpen) {
