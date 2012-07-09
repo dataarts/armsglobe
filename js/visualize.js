@@ -121,6 +121,10 @@ function getVisualizedMesh( linearData, year, countries, exportCategories, impor
 				var point = points[rIndex];						
 				var particle = point.clone();
 				particle.moveIndex = rIndex;
+				particle.nextIndex = rIndex+1;
+				if(particle.nextIndex >= points.length )
+					particle.nextIndex = 0;
+				particle.lerpN = 0;
 				particle.path = points;
 				particlesGeo.vertices.push( particle );	
 				particle.size = particleSize;
@@ -195,7 +199,7 @@ function getVisualizedMesh( linearData, year, countries, exportCategories, impor
 	uniforms = {
 		amplitude: { type: "f", value: 1.0 },
 		color:     { type: "c", value: new THREE.Color( 0xffffff ) },
-		texture:   { type: "t", value: 0, texture: THREE.ImageUtils.loadTexture( "images/map_mask.png" ) },
+		texture:   { type: "t", value: 0, texture: THREE.ImageUtils.loadTexture( "images/particleA.png" ) },
 	};
 
 	var shaderMaterial = new THREE.ShaderMaterial( {
@@ -239,10 +243,24 @@ function getVisualizedMesh( linearData, year, countries, exportCategories, impor
 			var particle = this.geometry.vertices[i];
 			var path = particle.path;
 			var moveLength = path.length;
-			particle.moveIndex ++;
-			if( particle.moveIndex >= moveLength )
-				particle.moveIndex = 0;							
-			particle.copy( path[particle.moveIndex] );
+			
+			particle.lerpN += 0.05;
+			if(particle.lerpN > 1){
+				particle.lerpN = 0;
+				particle.moveIndex = particle.nextIndex;
+				particle.nextIndex++;
+				if( particle.nextIndex >= path.length ){
+					particle.moveIndex = 0;
+					particle.nextIndex = 1;
+				}
+			}
+
+			var currentPoint = path[particle.moveIndex];
+			var nextPoint = path[particle.nextIndex];
+			
+
+			particle.copy( currentPoint );
+			particle.lerpSelf( nextPoint, particle.lerpN );			
 		}
 		this.geometry.verticesNeedUpdate = true;
 	};		
