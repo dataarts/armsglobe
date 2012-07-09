@@ -399,6 +399,9 @@ Bar graph on left
     width: 44px;
     float: left;
     text-align: center;
+    margin-top: -30px;
+    padding-top: 30px;
+    cursor: pointer;
 }
 #history .timeline #handle {
     width: 36px;
@@ -470,6 +473,9 @@ Bar graph on left
     font-size: 18px;
     fill: #fff;
 }
+#histogram ellipse.year {
+    fill: #fff;
+}
 #importExportBtns {
     position: absolute;
     right: 20px;
@@ -497,6 +503,12 @@ Bar graph on left
 	-moz-border-radius: 	4px;
 	border-radius: 			4px;
 	cursor: pointer;
+	-webkit-touch-callout: none;
+	-webkit-user-select:none;
+	-khtml-user-select:none;
+	-moz-user-select:none;
+	-ms-user-select:none;
+	user-select:none;
 }
 #importExportBtns>div>.label {
     width: 115px;
@@ -508,7 +520,6 @@ Bar graph on left
     vertical-align: middle;
     padding-top: 3px;
     height: 31px;
-    cursor: text;
 }
 #importExportBtns .imports .label {
     color: #2e81bb
