@@ -20,8 +20,8 @@ function loadWorldPins( callback ){
 	xhr.send( null );			    	
 }
 
-function loadContentData(categoryName, callback){	
-	var filePath = "categories/" + categoryName + ".json";
+function loadContentData(callback){	
+	var filePath = "categories/All.json";
 	filePath = encodeURI( filePath );
 	// console.log(filePath);
 			
@@ -39,10 +39,7 @@ function loadContentData(categoryName, callback){
 	    	timeLength = endTime - startTime;				    											    	
 
 			if(callback)
-				callback();		
-				
-			displayedCategoryName = categoryName;					
-
+				callback();				
 	    	console.log("finished read data file");	   	
 	    }
 	};

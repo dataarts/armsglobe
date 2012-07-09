@@ -1,21 +1,10 @@
 var controllers = {
-	category: 		"All",
 	speed: 			3,							
 	multiplier: 	0.5,
-	lineWidth: 		2,		
-	useOpacity: 	false,	
-	opacityAmount: 	1,
-	hueDiff: 		0.03,
-	borderColor: 	"#6b647d",
-	sphereColor: 	"#090903",
 	backgroundColor:"#000000",
-	textColor: 		"#ffffff",
-	baseSize: 		165,
-	ignoreUS: 		false,		
 	zoom: 			1,
 	spin: 			0,
 	transitionTime: 2000,
-	con: 			"",
 };	
 
 function buildGUI(){	
@@ -23,31 +12,14 @@ function buildGUI(){
 	selectionData = selection;
 
 	var updateVisualization = function(){
-		var categories = selection.getCategories();		    		
-		selectVisualization( timeBins, selection.selectedYear, [selection.selectedCountry], selection.importExportFilter, categories );	
+		selectVisualization( timeBins, selection.selectedYear, [selection.selectedCountry], selection.getExportCategories(), selection.getImportCategories() );	
 	}		    	
 
 	var changeFunction = function(v){
 		updateVisualization();
 	}	
 
-	var filterFunction = function(v){
-		if( selection.showExports && !selection.showImports )
-			selection.importExportFilter = 'exports';
-		else
-		if( !selection.showExports && selection.showImports )
-			selection.importExportFilter = 'imports';
-		else
-		if( selection.showExports && selection.showImports )
-			selection.importExportFilter = 'both';
-		else
-			selection.importExportFilter = 'none';
-
-		updateVisualization();	
-	}	    	
-
 	var categoryFunction = function(v){
-		var selectedCategories = selection.getCategories();
 		updateVisualization();
 	}
 
@@ -58,18 +30,25 @@ function buildGUI(){
 	c = gui.add( selection, 'selectedCountry', selectableCountries );
 	c.onFinishChange( changeFunction );		
 
-	c = gui.add( selection, 'showExports' );
-	c.onFinishChange( filterFunction );
+	// c = gui.add( selection, 'showExports' );
+	// c.onFinishChange( filterFunction );
 
-	c = gui.add( selection, 'showImports' );
-	c.onFinishChange( filterFunction );
+	// c = gui.add( selection, 'showImports' );
+	// c.onFinishChange( filterFunction );
 
-	var catFilter = gui.addFolder('Weapon Types');
-	for( var i in selection.categories ){
-		var catSwitch = selection.categories[i];
-		c = catFilter.add( selection.categories, i );	
+	var catFilterExports = gui.addFolder('Exports');
+	for( var i in selection.exportCategories ){
+		var catSwitch = selection.exportCategories[i];
+		c = catFilterExports.add( selection.exportCategories, i );	
 		c.onFinishChange( categoryFunction );
 	}
+
+	var catFilterImports = gui.addFolder('Imports');
+	for( var i in selection.importCategories ){
+		var catSwitch = selection.importCategories[i];
+		c = catFilterImports.add( selection.importCategories, i );	
+		c.onFinishChange( categoryFunction );
+	}	
 	gui.close();
 	
 }

@@ -41,7 +41,7 @@ function buildDataVizGeometries( linearData ){
 	loadLayer.style.display = 'none';	
 }
 
-function getVisualizedMesh( linearData, year, countries, action, categories ){
+function getVisualizedMesh( linearData, year, countries, exportCategories, importCategories ){
 	//	for comparison purposes, all caps the country names
 	for( var i in countries ){
 		countries[i] = countries[i].toUpperCase();
@@ -62,9 +62,9 @@ function getVisualizedMesh( linearData, year, countries, action, categories ){
 	var particlesGeo = new THREE.Geometry();
 	var particleColors = [];			
 
-	var careAboutExports = ( action === 'exports' );
-	var careAboutImports = ( action === 'imports' );
-	var careAboutBoth = ( action === 'both' );
+	// var careAboutExports = ( action === 'exports' );
+	// var careAboutImports = ( action === 'imports' );
+	// var careAboutBoth = ( action === 'both' );
 
 	//	go through the data from year, and find all relevant geometries
 	for( i in bin ){
@@ -75,13 +75,15 @@ function getVisualizedMesh( linearData, year, countries, action, categories ){
 		var importerName = set.i.toUpperCase();
 		var relevantExport = $.inArray(exporterName, countries) >= 0;
 		var relevantImport = $.inArray(importerName, countries) >= 0;
-		var useExporter = (careAboutBoth || careAboutExports) && relevantExport;
-		var useImporter = (careAboutBoth || careAboutImports) && relevantImport;
+
+		var useExporter = relevantExport;
+		var useImporter = relevantImport;
 
 		var categoryName = reverseWeaponLookup[set.wc];
-		var relevantCategory = $.inArray(categoryName,categories) >= 0;		
+		var relevantExportCategory = relevantExport && $.inArray(categoryName,exportCategories) >= 0;		
+		var relevantImportCategory = relevantImport && $.inArray(categoryName,importCategories) >= 0;		
 
-		if( (useImporter || useExporter) && relevantCategory ){
+		if( (useImporter || useExporter) && (relevantExportCategory || relevantImportCategory) ){
 			//	we may not have line geometry... (?)
 			if( set.lineGeometry === undefined )
 				continue;
@@ -252,7 +254,7 @@ function getVisualizedMesh( linearData, year, countries, action, categories ){
 	return splineOutline;	
 }
 
-function selectVisualization( linearData, year, countries, action, categories ){
+function selectVisualization( linearData, year, countries, exportCategories, importCategories ){
 
 	//	we're only doing one country for now so...
 	selectedCountry = countryData[countries[0].toUpperCase()];
@@ -297,7 +299,7 @@ function selectVisualization( linearData, year, countries, action, categories ){
 
 	//	build the mesh
 	console.time('getVisualizedMesh');
-	var mesh = getVisualizedMesh( timeBins, year, countries, action, categories );				
+	var mesh = getVisualizedMesh( timeBins, year, countries, exportCategories, importCategories );				
 	console.timeEnd('getVisualizedMesh');
 
 	//	add it to scene graph

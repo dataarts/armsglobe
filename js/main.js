@@ -99,8 +99,7 @@ function start( e ){
 				function(){
 					loadWorldPins(
 						function(){										
-							loadContentData(
-								controllers.category,
+							loadContentData(								
 								function(){																	
 									initScene();
 									animate();		
@@ -119,19 +118,30 @@ function start( e ){
 var Selection = function(){
 	this.selectedYear = '1992';
 	this.selectedCountry = 'United States';
-	this.showExports = true;
-	this.showImports = true;
-	this.importExportFilter = 'both';
+	// this.showExports = true;
+	// this.showImports = true;
+	// this.importExportFilter = 'both';
 
-	this.categories = new Object();
+	this.exportCategories = new Object();
+	this.importCategories = new Object();
 	for( var i in weaponLookup ){
-		this.categories[i] = true;
+		this.exportCategories[i] = true;
+		this.importCategories[i] = true;
 	}				
 
-	this.getCategories = function(){
+	this.getExportCategories = function(){
 		var list = [];
-		for( var i in this.categories ){
-			if( this.categories[i] )
+		for( var i in this.exportCategories ){
+			if( this.exportCategories[i] )
+				list.push(i);
+		}
+		return list;
+	}		
+
+	this.getImportCategories = function(){
+		var list = [];
+		for( var i in this.importCategories ){
+			if( this.importCategories[i] )
 				list.push(i);
 		}
 		return list;
@@ -262,7 +272,7 @@ function initScene() {
 
 	buildGUI();
 
-	selectVisualization( timeBins, '1992', ['United States'], 'both', ['Military Weapons','Civilian Weapons', 'Ammunition'] );					
+	selectVisualization( timeBins, '1992', ['United States'], ['Military Weapons','Civilian Weapons', 'Ammunition'], ['Military Weapons','Civilian Weapons', 'Ammunition'] );					
 
 	//	test for highlighting specific countries
 	// highlightCountry( ["United States", "Switzerland", "China"] );
@@ -440,7 +450,8 @@ function getHistoricalData( country ){
 
 	var countryName = country.countryName;
 
-	var filteredCategories = selectionData.getCategories();
+	var exportCategories = selectionData.getExportCategories();
+	var importCategories = selectionData.getImportCategories();
 
 	for( var i in timeBins ){
 		var yearBin = timeBins[i].data;		
@@ -448,13 +459,19 @@ function getHistoricalData( country ){
 		for( var s in yearBin ){
 			var set = yearBin[s];
 			var categoryName = reverseWeaponLookup[set.wc];
-			var relevantCategory = $.inArray(categoryName, filteredCategories ) >= 0;				
+
+			var exporterCountryName = set.e.toUpperCase();
+			var importerCountryName = set.i.toUpperCase();			
+			var relevantCategory = ( countryName == exporterCountryName && $.inArray(categoryName, exportCategories ) >= 0 ) || 
+								   ( countryName == importerCountryName && $.inArray(categoryName, importCategories ) >= 0 );				
 
 			if( relevantCategory == false )
 				continue;
 
-			var exporterCountryName = set.e.toUpperCase();
-			var importerCountryName = set.i.toUpperCase();
+			//	ignore all unidentified country data
+			if( countryData[exporterCountryName] === undefined || countryData[importerCountryName] === undefined )
+				continue;
+			
 			if( exporterCountryName == countryName )
 				value.exports += set.v;
 			if( importerCountryName == countryName )
