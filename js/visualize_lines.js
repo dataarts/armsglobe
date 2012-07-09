@@ -59,15 +59,19 @@ function makeConnectionLineGeometry( exporter, importer, value, type ){
 
 	//	collect the vertices
 	var points = splineCurveA.getPoints( vertexCountDesired );
+
+	//	remove the very last point since it will be duplicated on the next half of the curve
+	points = points.splice(0,points.length-1);
+
 	points = points.concat( splineCurveB.getPoints( vertexCountDesired ) );
 
 	//	add one final point to the center of the earth
 	//	we need this for drawing multiple arcs, but piled into one geometry buffer
 	points.push( vec3_origin );
 
-	var val = value * 0.0001;
+	var val = value * 0.0003;
 	
-	var size = 10 + Math.sqrt(val);
+	var size = (10 + Math.sqrt(val));
 
 	//	create a line geometry out of these
 	var curveGeometry = THREE.Curve.Utils.createLineGeometry( points );
