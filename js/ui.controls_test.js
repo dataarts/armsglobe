@@ -24,6 +24,11 @@ var d3Graphs = {
     histogramOpen: false,
     handleLeftOffset: 15,
     handleInterval: 44,
+    windowResizeTimeout: -1,
+    setCountry: function(country) {
+        $("#hudHeader .countryTextInput").val(country);
+        d3Graphs.updateViz();
+    },
     initGraphs: function() {
         this.showHud();
         this.drawBarGraph();
@@ -33,17 +38,53 @@ var d3Graphs = {
         if(this.inited) return;
         this.inited = true;
         $("#hudHeader").show();
+        d3Graphs.positionHistory();
         $("#history").show();
         $("#graphIcon").show();
         $("#importExportBtns").show();
         $("#graphIcon").click(d3Graphs.graphIconClick);
         $("#history .close").click(d3Graphs.closeHistogram);
+        $("#history ul li").click(d3Graphs.clickTimeline);
         $("#handle").draggable({axis: 'x',containment: "parent",grid:[this.handleInterval, this.handleInterval], stop: d3Graphs.dropHandle });
         $("#hudHeader .searchBtn").click(d3Graphs.updateViz);
         $("#importExportBtns .imex>div").not(".label").click(d3Graphs.importExportBtnClick);
+        $("#importExportBtns .imex .label").click(d3Graphs.importExportLabelClick);
         $("#hudHeader .countryTextInput").autocomplete({ source:selectableCountries });
         $("#hudHeader .countryTextInput").keyup(d3Graphs.countryKeyUp);
+        $("#hudHeader .countryTextInput").focus(d3Graphs.countryFocus);
         $(document).on("click",".ui-autocomplete li",d3Graphs.menuItemClick);
+        $(window).resize(d3Graphs.windowResizeCB);
+        
+    },
+    clickTimeline:function() {
+        var year = $(this).html();
+        if(year < 10) {
+            year = (year * 1) + 2000;
+        }
+        if(year < 100) {
+            year = (year * 1) + 1900
+        }
+        var index = year - 1992;
+        var leftPos = d3Graphs.handleLeftOffset + d3Graphs.handleInterval * index;
+        $("#handle").css('left',leftPos+"px");
+        d3Graphs.updateViz();
+    },
+    windowResizeCB:function() {
+        clearTimeout(d3Graphs.windowResizeTimeout);
+        d3Graphs.windowResizeTimeout = setTimeout(d3Graphs.positionHistory, 250);
+    },
+    positionHistory: function() {
+        var graphIconPadding = 20;
+        var historyWidth = $("#history").width();
+        var totalWidth = historyWidth + $("#graphIcon").width() + graphIconPadding;
+        var windowWidth = $(window).width();
+        var historyLeftPos = (windowWidth - totalWidth) / 2.0;
+        $("#history").css('left',historyLeftPos+"px");
+        $("#graphIcon").css('left',historyLeftPos + historyWidth + graphIconPadding+'px');
+    },
+    countryFocus:function(event) {
+        console.log("focus");
+        setTimeout(function() { $('#hudHeader .countryTextInput').select() },50);
     },
     menuItemClick:function(event) {
         d3Graphs.updateViz();
@@ -70,6 +111,23 @@ var d3Graphs = {
     dropHandle:function() {
         d3Graphs.updateViz();
     },
+    importExportLabelClick: function() {
+        var btns = $(this).prevAll();
+        var numInactive = 0;
+        for(var i = 0; i < btns.length; i++) {
+            if($(btns[i]).find('.inactive').length > 0) {
+                numInactive++;
+            }
+        }
+        if(numInactive <= 1) {
+            //add inactive
+            $(btns).find('.check').addClass('inactive');
+        } else {
+            //remove inactive
+            $(btns).find('.check').removeClass('inactive');
+        }
+        d3Graphs.updateViz();
+    },
     importExportBtnClick:function() {
 //        console.log("click");  
         var check = $(this).find('.check');
@@ -78,6 +136,7 @@ var d3Graphs = {
         } else {
             check.addClass('inactive');
         }
+        d3Graphs.updateViz();
     },
     graphIconClick: function() {
         if(!d3Graphs.histogramOpen) {
@@ -202,6 +261,18 @@ var d3Graphs = {
         var exportLine = this.histogramSVG.selectAll("path.export").data([1]);
         exportLine.enter().append('svg:path').attr('class','export');
         exportLine.attr('d',this.line(exportArray));
+        
+        //active year labels
+        
+        var yearOffset = $("#handle").css('left');
+        yearOffset = yearOffset.substr(0,yearOffset.length-2);
+        yearOffset -= d3Graphs.handleLeftOffset;
+        yearOffset /= d3Graphs.handleInterval;
+        var activeYearData = [{x:yearOffset, y: importArray[yearOffset]}, {x: yearOffset, y: exportArray[yearOffset]}];
+        var yearDots = this.histogramSVG.selectAll("ellipse.year").data(activeYearData);
+        yearDots.enter().append('ellipse').attr('class','year').attr('rx',4).attr('ry',4)
+            .attr('cx',function(d) { return d3Graphs.histogramLeftPadding + d3Graphs.histogramXScale(d.x);})
+            .attr('cy',function(d) { return d3Graphs.histogramVertPadding + d3Graphs.histogramYScale(d.y)});
     },
     drawBarGraph: function() {
         
