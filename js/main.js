@@ -488,6 +488,10 @@ function getHistoricalData( country ){
 }
 
 function getPickColor(){
+	var affectedCountries = undefined;
+	if( visualizationMesh.children[0] !== undefined )
+		affectedCountries = visualizationMesh.children[0].affectedCountries;
+
 	highlightCountry([]);
 	rotating.remove(visualizationMesh);
 	mapUniforms['outlineLevel'].value = 0;
@@ -525,5 +529,9 @@ function getPickColor(){
 	mapUniforms['outlineLevel'].value = 1;
 	rotating.add(visualizationMesh);
 
+
+	if( affectedCountries !== undefined ){
+		highlightCountry(affectedCountries);
+	}
 	return buf[0]; 	
 }
