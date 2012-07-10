@@ -200,7 +200,7 @@ function initScene() {
 		'mapIndex': { type: 't', value: 0, texture: indexedMapTexture  },		
 		'lookup': { type: 't', value: 1, texture: lookupTexture },
 		'outline': { type: 't', value: 2, texture: outlinedMapTexture },
-		'outlineLevel': {type: 'f', value: 0 },
+		'outlineLevel': {type: 'f', value: 1 },
 	};
 	mapUniforms = uniforms;
 
