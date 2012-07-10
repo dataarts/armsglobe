@@ -385,12 +385,12 @@ Bar graph on left
 #barGraph .exportLabel {
     font-family: 			Roboto;
     font-size: 				14px;
-    fill: 					#e83e0a;
+    fill: 					#FFA90B;
 }
 #barGraph .importLabel {
     font-family: 			Roboto;
     font-size: 				14px;
-    fill: 					#154492;
+    fill: 					#70B4CB;
 }
 
 /* histogram and timeline at bottom */
@@ -463,14 +463,14 @@ Bar graph on left
     float: right;
     font-family: Roboto;
     font-size: 14px;
-    color:#154492;
+    color:#70B4CB;
     margin-top: 25px;
 }
 #history .labels .exports {
     float: right;
     font-family: Roboto;
     font-size: 14px;
-    color: #e83e0a;
+    color: #FFA90B;
     margin-top: 25px;
     margin-left: 10px;
 }
@@ -479,10 +479,10 @@ Bar graph on left
     stroke-width: 2px;
 }
 #histogram .export {
-    stroke: #e83e0a
+    stroke: #FFA90B
 }
 #histogram .import {
-    stroke: #154492;
+    stroke: #70B4CB;
 }
 #histogram .tick {
     fill:           none;
@@ -555,10 +555,10 @@ Bar graph on left
     padding-top:        3px;
 }
 #importExportBtns .imports .label {
-    color:              #154492
+    color:              #70B4CB
 }
 #importExportBtns .exports .label {
-    color:              #e83e0a;
+    color:              #FFA90B;
 }
 #importExportBtns .imports {
     margin-bottom:      5px;
