@@ -20,6 +20,8 @@ var sphere;
 var rotating;	
 var visualizationMesh;							
 
+var mapUniforms;
+
 //	contains the data loaded from the arms data file
 //	contains a list of years, followed by trades within that year
 //	properties for each "trade" is: e - exporter, i - importer, v - value (USD), wc - weapons code (see table)
@@ -117,7 +119,7 @@ function start( e ){
 
 var Selection = function(){
 	this.selectedYear = '1992';
-	this.selectedCountry = 'United States';
+	this.selectedCountry = 'UNITED STATES';
 	// this.showExports = true;
 	// this.showImports = true;
 	// this.importExportFilter = 'both';
@@ -198,7 +200,9 @@ function initScene() {
 		'mapIndex': { type: 't', value: 0, texture: indexedMapTexture  },		
 		'lookup': { type: 't', value: 1, texture: lookupTexture },
 		'outline': { type: 't', value: 2, texture: outlinedMapTexture },
+		'outlineLevel': {type: 'f', value: 0 },
 	};
+	mapUniforms = uniforms;
 
 	var shaderMaterial = new THREE.ShaderMaterial( {
 
@@ -236,6 +240,7 @@ function initScene() {
 	sphere.id = "base";	
 	rotating.add( sphere );	
 
+
 	for( var i in timeBins ){					
 		var bin = timeBins[i].data;
 		for( var s in bin ){
@@ -256,7 +261,7 @@ function initScene() {
 		}
 	}
 
-	// console.log( selectableCountries );
+	console.log( selectableCountries );
 	
 	// load geo data (country lat lons in this case)
 	console.time('loadGeoData');
@@ -272,9 +277,9 @@ function initScene() {
 
 	buildGUI();
 
-	selectVisualization( timeBins, '1992', ['United States'], ['Military Weapons','Civilian Weapons', 'Ammunition'], ['Military Weapons','Civilian Weapons', 'Ammunition'] );					
+	selectVisualization( timeBins, '1992', ['UNITED STATES'], ['Military Weapons','Civilian Weapons', 'Ammunition'], ['Military Weapons','Civilian Weapons', 'Ammunition'] );					
 
-	//	test for highlighting specific countries
+		// test for highlighting specific countries
 	// highlightCountry( ["United States", "Switzerland", "China"] );
 
 
@@ -282,7 +287,7 @@ function initScene() {
     //	Setup our renderer
 	renderer = new THREE.WebGLRenderer({antialias:false});
 	renderer.setSize( window.innerWidth, window.innerHeight );
-	renderer.autoClear = false;	
+	renderer.autoClear = false;
 	
 	renderer.sortObjects = false;		
 	renderer.generateMipmaps = false;					
@@ -346,7 +351,7 @@ function animate() {
 
 	TWEEN.update();		
 	rotating.rotation.x = rotateX;
-	rotating.rotation.y = rotateY;		
+	rotating.rotation.y = rotateY;	
 
     render();	
     		        		       
@@ -402,7 +407,6 @@ var countryColorMap = {'PE':1,
 'IM':226,'GU':227,'SG':228};
 
 function highlightCountry( countries ){	
-
 	var countryCodes = [];
 	for( var i in countries ){
 		var code = findCode(countries[i]);
@@ -481,4 +485,45 @@ function getHistoricalData( country ){
 	}
 	// console.log(history);
 	return history;
+}
+
+function getPickColor(){
+	highlightCountry([]);
+	rotating.remove(visualizationMesh);
+	mapUniforms['outlineLevel'].value = 0;
+	lookupTexture.needsUpdate = true;
+
+	renderer.autoClear = false;
+	renderer.autoClearColor = false;
+	renderer.autoClearDepth = false;
+	renderer.autoClearStencil = false;	
+	renderer.preserve
+
+    renderer.clear();
+    renderer.render(scene,camera);
+
+    var gl = renderer.context;
+    gl.preserveDrawingBuffer = true;
+
+	var mx = ( mouseX + renderer.context.canvas.width/2 );//(mouseX + renderer.context.canvas.width/2) * 0.25;
+	var my = ( -mouseY + renderer.context.canvas.height/2 );//(-mouseY + renderer.context.canvas.height/2) * 0.25;
+	mx = Math.floor( mx );
+	my = Math.floor( my );
+
+	var buf = new Uint8Array( 4 );		    	
+	// console.log(buf);
+	gl.readPixels( mx, my, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, buf );
+	// console.log(buf);		
+
+	renderer.autoClear = true;
+	renderer.autoClearColor = true;
+	renderer.autoClearDepth = true;
+	renderer.autoClearStencil = true;
+
+	gl.preserveDrawingBuffer = false;	
+
+	mapUniforms['outlineLevel'].value = 1;
+	rotating.add(visualizationMesh);
+
+	return buf[0]; 	
 }

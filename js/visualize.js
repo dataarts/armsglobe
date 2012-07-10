@@ -31,7 +31,7 @@ function buildDataVizGeometries( linearData ){
 		}
 
 		//	use this break to only visualize one year (1992)
-		// break;
+		break;
 
 		//	how to make this work?
 		// loadLayer.innerHTML = 'loading data for ' + year + '...';
@@ -273,7 +273,6 @@ function getVisualizedMesh( linearData, year, countries, exportCategories, impor
 }
 
 function selectVisualization( linearData, year, countries, exportCategories, importCategories ){
-
 	//	we're only doing one country for now so...
 	selectedCountry = countryData[countries[0].toUpperCase()];
 

@@ -44,6 +44,25 @@ function onClick( event ){
 	//	make the rest not work if the event was actually a drag style click
 	if( Math.abs(pressX - mouseX) > 3 || Math.abs(pressY - mouseY) > 3 )
 		return;				
+
+
+	var pickColorIndex = getPickColor();	
+	//	find it
+	for( var i in countryColorMap ){
+		var countryCode = i;
+		var countryColorIndex = countryColorMap[i];
+		if( pickColorIndex == countryColorIndex ){
+			var countryName = countryLookup[countryCode];
+			if( countryName === undefined )
+				return;
+			if( $.inArray(countryName, selectableCountries) <= -1 )
+				return;
+			// console.log(countryName);
+			var selection = selectionData;
+			selection.selectedCountry = countryName;
+			selectVisualization( timeBins, selection.selectedYear, [selection.selectedCountry], selection.getExportCategories(), selection.getImportCategories() );	
+		}
+	}	
 }
 
 function onKeyDown( event ){	
