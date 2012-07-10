@@ -7,6 +7,7 @@ This code will control the primary functions of the UI in the ArmsGlobe app
 var d3Graphs = {
     barGraphWidth: 300,
 	barGraphHeight: 800,
+    barWidth: 14,
 	barGraphTopPadding: 20,
 	barGraphBottomPadding: 50,
 	histogramWidth: 856,
@@ -150,8 +151,7 @@ var d3Graphs = {
         }
         d3Graphs.updateViz();
     },
-    importExportBtnClick:function() {
-//        console.log("click");  
+    importExportBtnClick:function() { 
         var check = $(this).find('.check');
         if(check.hasClass('inactive')) {
             check.removeClass('inactive');
@@ -346,7 +346,7 @@ var d3Graphs = {
         this.cumImportY = this.cumExportY = 0;
         importRects.enter().append('rect').attr('class', function(d) {
             return 'import '+d.type;
-        }).attr('x',midX - 20).attr('width',20);
+        }).attr('x',midX - this.barWidth).attr('width',this.barWidth);
         
         importRects.attr('y',function(d) {
             var value = d3Graphs.barGraphHeight - d3Graphs.barGraphBottomPadding - d3Graphs.cumImportY - yScale(d.amount) ;
@@ -356,7 +356,7 @@ var d3Graphs = {
         var exportRects = this.barGraphSVG.selectAll('rect.export').data(exportArray);
         exportRects.enter().append('rect').attr('class',function(d) {
             return 'export '+ d.type;
-        }).attr('x',midX + 10).attr('width',20);
+        }).attr('x',midX + 10).attr('width',this.barWidth);
         
         exportRects.attr('y',function(d) {
             var value = d3Graphs.barGraphHeight - d3Graphs.barGraphBottomPadding - d3Graphs.cumExportY - yScale(d.amount);

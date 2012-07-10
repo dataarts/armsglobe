@@ -63,6 +63,7 @@ body { color:#000000; font-family:'Roboto'; font-size:14px; min-width:1024px; he
 a { color:#ffffff; text-decoration:none; text-transform:uppercase; }
 a:hover { color:#8eb423; }
 h1 { font-family:'RopaSans'; font-weight:normal; }
+h2 { font-family:'RopaSans'; font-weight:normal; }
 li { list-style-type:none; }
 
 /* Button Styles */
@@ -282,18 +283,18 @@ Elements to control the title and country selector
     top: 					30px;
     color: 					#fff;
     font-family: 			'RopaSans';
-    display:none;
+    display:                none;
 }
 #hudHeader h1 {
-    font-size: 				42px;
+    font-size: 				40px;
     font-family: 			'RopaSans';
     margin: 				0 0 25px 0;
-    display:block;
-    float:left;
+    display:                block;
+    float:                  left;
 }
 #hudHeader .countryTextInput {
     float: right;
-    font-size: 				22px;
+    font-size: 				18px;
     width: 					330px;
     margin-right: 			5px;
    	-webkit-border-radius:  4px;
@@ -307,7 +308,7 @@ Elements to control the title and country selector
     padding: 				3px 10px 4px;
     color: 					white;
     border: 				0;
-    font-size: 				23px;
+    font-size: 				19px;
    	-webkit-border-radius: 	4px;
 	-moz-border-radius: 	4px;
 	border-radius: 			4px;
@@ -320,8 +321,27 @@ Elements to control the title and country selector
 	display:				block;
 	clear:					both;
 	margin-right: 			60px;
-	margin-top: 			-27px;
-	width: 					90px;
+	margin-top: 			-30px;
+	width: 					78px;
+}
+
+.ui-autocomplete .ui-menu-item {
+    border-top:             1px solid #656565;
+    margin-left:            -39px;
+    padding-left:           4px;
+    font-family:            'RopaSans';
+    font-size:              18px;
+    color:                  white;
+    background:             #333;
+    width:                  331px;
+}
+.ui-autocomplete #ui-active-menuitem {
+    background:             white;
+    color:                  black;
+    width:                  331px;
+    display:                block;
+    margin-left:            -4px;
+    padding-left:           4px;
 }
 
 /*
@@ -358,58 +378,59 @@ Bar graph on left
 #barGraph .totalLabel {
     fill: 					white;
     font-family:			Roboto;
-    font-size: 				24px;
+    font-size: 				23px;
 }
 #barGraph .exportLabel {
     font-family: 			Roboto;
-    font-size: 				15px;
+    font-size: 				14px;
     fill: 					#f99318;
 }
 #barGraph .importLabel {
     font-family: 			Roboto;
-    font-size: 				15px;
+    font-size: 				14px;
     fill: 					#2e81bb;
 }
+
+/* histogram and timeline at bottom */
 #history {
     position: 				absolute;
     bottom: 				0;
     left: 					386px;
     background-color: 		rgba(43,43,43,0.6);
     display: 				none;
-   	-webkit-border-top-left-radius:	5px;
-	-moz-border-radius-topleft: 	5px;
-	border-top-left-radius: 		5px;
-	-webkit-border-top-right-radius:	5px;
-	-moz-border-radius-topright: 	5px;
-	border-top-right-radius: 		5px;
-	
+   	-webkit-border-top-left-radius:	   5px;
+	-moz-border-radius-topleft: 	   5px;
+	border-top-left-radius: 		   5px;
+	-webkit-border-top-right-radius:   5px;
+	-moz-border-radius-topright: 	   5px;
+	border-top-right-radius: 		   5px;
 }
 #history ul {
-    list-style-type:none;
-    margin:10px;
-    padding:0;
-    padding-bottom: 15px;
-    padding-top:22px;
-    color: white;
-    font-size: 16px;
-    font-family: Roboto;
-    background: url('timelineBG.png') 8px 0 no-repeat;
+    list-style-type:        none;
+    margin:                 10px;
+    padding:                0;
+    padding-bottom:         15px;
+    padding-top:            22px;
+    color:                  white;
+    font-size:              12px;
+    font-family:            'Roboto';
+    background:             url('timelineBG.png') 8px 0 no-repeat; /*to be resized!*/
 }
 #history ul li {
-    width: 44px;
-    float: left;
-    text-align: center;
-    margin-top: -30px;
-    padding-top: 30px;
-    cursor: pointer;
+    width:                  44px;
+    float:                  left;
+    text-align:             center;
+    margin-top:             -30px;
+    padding-top:            30px;
+    cursor:                 pointer;
 }
 #history .timeline #handle {
-    width: 36px;
-    height: 36px;
-    background: url('yearHandle.png') 2px 0 no-repeat;
-    position: absolute;
-    bottom: 20px;
-    left: 15px;
+    width:                  36px;
+    height:                 36px;
+    background:             url('yearHandle.png') 2px 0 no-repeat;
+    position:               absolute;
+    bottom:                 20px;
+    left:                   15px;
 }
 #history .graph {
     display: none;
@@ -429,7 +450,7 @@ Bar graph on left
 }
 #history .labels .change {
     font-family: RopaSans;
-    font-size: 28px;
+    font-size: 23px;
     color: white;
     margin-left: 31px;
     float: left;
@@ -438,21 +459,21 @@ Bar graph on left
 #history .labels .imports {
     float: right;
     font-family: Roboto;
-    font-size: 15px;
+    font-size: 14px;
     color:#2e81bb;
     margin-top: 25px;
 }
 #history .labels .exports {
     float: right;
     font-family: Roboto;
-    font-size: 15px;
+    font-size: 14px;
     color: #f99318;
     margin-top: 25px;
     margin-left: 10px;
 }
 #histogram path {
     fill: none;
-    stroke-width: 3px;
+    stroke-width: 2px;
 }
 #histogram .export {
     stroke: #f99318
@@ -461,16 +482,16 @@ Bar graph on left
     stroke: #2e81bb;
 }
 #histogram .tick {
-    fill:none;
-    stroke: #959595;
+    fill:           none;
+    stroke:         #959595;
 }
 #histogram .tickLbl {
     fill: #fff;
-    font-size: 11px;
+    font-size: 10px;
     font-family: Roboto;
 }
 #histogram .plusMinus {
-    font-size: 18px;
+    font-size: 16px;
     fill: #fff;
 }
 #histogram ellipse.year {
@@ -479,26 +500,29 @@ Bar graph on left
 #histogram text.yearLabel {
     fill: #fff;
 }
+
+/* import export buttons (bottom right)*/
 #importExportBtns {
-    position: absolute;
-    right: 20px;
-    bottom: 10px;
-    color: white;
-    display: none;
+    position:               absolute;
+    right:                  18px;
+    bottom:                 12px;
+    color:                  white;
+    display:                none;
 }
 #importExportBtns>div>div {
-    float: left;
-    width: 84px;
-    text-align: center;
-    height: 34px;
+    float:                  left;
+    width:                  60px;
+    text-align:             center;
+    height:                 28px;
 }
 #importExportBtns .imex>div {
-    background: #262626;
+    background:             #262626;
 }
 #importExportBtns .typeLabels div {
-    font-family: Roboto;
-    font-size: 16px;
-    text-transform: uppercase;
+    font-family:            'Roboto';
+    font-size:              13px;
+    text-transform:         uppercase;
+    margin-bottom:-12px;
 }
 
 #importExportBtns .imex>div {
@@ -507,34 +531,34 @@ Bar graph on left
 	border-radius: 			4px;
 	cursor: pointer;
 	-webkit-touch-callout: none;
-	-webkit-user-select:none;
-	-khtml-user-select:none;
-	-moz-user-select:none;
-	-ms-user-select:none;
-	user-select:none;
+	-webkit-user-select:   none;
+	-khtml-user-select:    none;
+	-moz-user-select:      none;
+	-ms-user-select:       none;
+	user-select:           none;
 }
 #importExportBtns>div>.label {
-    width: 115px;
-    text-transform: uppercase;
-    font-family: Roboto;
-    font-size: 24px;
-    margin-left: 10px;
-    background: #262626;
-    vertical-align: middle;
-    padding-top: 3px;
-    height: 31px;
+    width:              98px;
+    height:             25px;
+    text-transform:     uppercase;
+    font-family:        'Roboto';
+    font-size:          18px;
+    margin-left:        10px;
+    background:         #262626;
+    vertical-align:     middle;
+    padding-top:        3px;
 }
 #importExportBtns .imports .label {
-    color: #2e81bb
+    color:              #2e81bb
 }
 #importExportBtns .exports .label {
-    color: #f99318;
+    color:              #f99318;
 }
 #importExportBtns .imports {
-    margin-bottom: 5px;
+    margin-bottom:      5px;
 }
 #importExportBtns .mil, #importExportBtns .civ {
-    margin-right: 5px;
+    margin-right:       5px;
 }
 #importExportBtns .imex .check {
     width: 20px;
@@ -592,21 +616,3 @@ Bar graph on left
 }
 
 
-.ui-autocomplete .ui-menu-item {
-    border-top:1px solid #656565;
-    margin-left: -39px;
-    padding-left: 4px;
-    font-family: RopaSans;
-    font-size: 28px;
-    color: white;
-    background:#333;
-    width: 331px;
-}
-.ui-autocomplete #ui-active-menuitem {
-    background: white;
-    color: black;
-    width: 331px;
-    display: block;
-    margin-left: -4px;
-    padding-left: 4px;
-}
