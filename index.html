@@ -11,7 +11,7 @@
 	<body onload="start()" id="dataviz" class="">
 
 		<div id="loading">
-			Loading UN Arms Trade Data from 1992 to 2010... please wait.
+			<h2>Loading UN Arms Trade Data from 1992 to 2010... please wait.</h2>
 		</div>
 
 		<div id="marker_template" class="marker" style="left:'0px';top:'0px'">
@@ -36,7 +36,8 @@
 		<script src="js/THREEx.WindowResize.js"></script>
 		<script src="js/Stats.js"></script>
 		<script src="js/jquery-1.7.1.min.js"></script>
-		<script src="js/RequestAnimationFrame.js"></script>	
+    	<script src="js/jquery-ui-1.8.21.custom.min.js"></script>
+    	<script src="js/RequestAnimationFrame.js"></script>	
 		<script src="js/ShaderExtras.js"></script>
 		<script src="js/canvg.js"></script>
 		<script src="js/rgbcolor.js"></script>
@@ -129,8 +130,63 @@
 
 		<!-- All other hud can go here-->
         <div id="hudHeader">
-            <h1>Global Arms Trade Visualization</h1>
+            <h1>Global Arms Trade</h1>
+			<input type="button" value="SEARCH" class="searchBtn armsBtn">
+			<input type="text" name="country" class="countryTextInput" value="UNITED STATES">  
+            <input type="button" value="ABOUT" class="aboutBtn armsBtn">
         </div>
-
+        <div id="history">
+            <div class="graph">
+                <div class="close"></div>
+                <div class="labels">
+                    <div class="change">RELATIVE PERCENT CHANGE</div>
+                    <div class="exports">EXPORTS</div>
+                    <div class="imports">IMPORTS</div><br class="clear" />
+                </div>
+                <div class="container"></div>
+            </div>
+            <ul class="timeline">
+                <li>1992</li>
+                <li>93</li>
+                <li>94</li>
+                <li>95</li>
+                <li>96</li>
+                <li>97</li>
+                <li>98</li>
+                <li>99</li>
+                <li>2000</li>
+                <li>01</li>
+                <li>02</li>
+                <li>03</li>
+                <li>04</li>
+                <li>05</li>
+                <li>06</li>
+                <li>07</li>
+                <li>08</li>
+                <li>09</li>
+                <li>2010</li>
+                <div id="handle"></div>
+            </ul>
+        </div>
+        <div id="graphIcon"></div>
+        <div id="importExportBtns">
+            <div class="typeLabels">
+                <div class="mil">Military</div>
+                <div class="civ">Civilian</div>
+                <div class="ammo">Ammo</div><br class="clear">
+            </div>
+            <div class="imports imex">
+                <div class="mil"><div class="check"></div></div>
+                <div class="civ"><div class="check"></div></div>
+                <div class="ammo"><div class="check"></div></div>
+                <div class="label">Imports</div><br class="clear">
+            </div>
+            <div class="exports imex">
+                <div class="mil"><div class="check"></div></div>
+                <div class="civ"><div class="check"></div></div>
+                <div class="ammo"><div class="check"></div></div>
+                <div class="label">Exports</div><br class="clear">
+            </div>
+        </div>
 	</body>
 </html>	

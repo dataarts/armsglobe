@@ -29,6 +29,8 @@ var d3Graphs = {
     histogramImports: null,
     histogramExports: null,
     histogramAbsMax: 0,
+    previousImportLabelTranslateY: -1,
+    previousExportLabelTranslateY: -1,
     setCountry: function(country) {
         $("#hudHeader .countryTextInput").val(country);
         d3Graphs.updateViz();
@@ -408,18 +410,31 @@ var d3Graphs = {
             d3Graphs.cumExportY += yScale(d.amount);
             return value;
         }).attr('height',function(d) { return yScale(d.amount); });
+        //bar graph labels
         this.cumImportLblY = 0;
         this.cumExportLblY = 0;
         var importLabels = this.barGraphSVG.selectAll("g.importLabel").data(importArray);
         importLabels.enter().append("g").attr('class',function(d) {
             return 'importLabel '+d.type;
         });
-        
+        this.previousImportLabelTranslateY = 0;
+        this.previousExportLabelTranslateY = 0;
+        var paddingFromBottomOfGraph = 10;
+        var heightPerLabel = 25;
         importLabels.attr('transform',function(d) { 
             var translate = 'translate('+(d3Graphs.barGraphWidth / 2 - 25)+",";
             var value = d3Graphs.barGraphHeight - d3Graphs.barGraphBottomPadding - d3Graphs.cumImportLblY - yScale(d.amount)/2;
             d3Graphs.cumImportLblY += yScale(d.amount);
+            if(value > d3Graphs.barGraphHeight - d3Graphs.barGraphBottomPadding - paddingFromBottomOfGraph) {
+                value -= paddingFromBottomOfGraph;
+                d3Graphs.cumImportLblY += paddingFromBottomOfGraph;
+            }/* else if(value >  d3Graphs.barGraphHeight - d3Graphs.barGraphBottomPadding - this.previousImportLabelTranslateY - heightPerLabel) {
+                value -= heightPerLabel;
+                d3Graphs.cumImportLblY += heightPerLabel;
+            }*/
             translate += value+")";
+            
+            this.previousImportLabelTranslateY = value;
             return translate;
         }).attr('display',function(d) {
             if(d.amount == 0) { return 'none';}
@@ -440,7 +455,15 @@ var d3Graphs = {
             var translate = 'translate('+(d3Graphs.barGraphWidth / 2 + 35)+",";
             var value = d3Graphs.barGraphHeight - d3Graphs.barGraphBottomPadding - d3Graphs.cumExportLblY - yScale(d.amount)/2;
             d3Graphs.cumExportLblY += yScale(d.amount);
+            if(value > d3Graphs.barGraphHeight - d3Graphs.barGraphBottomPadding - paddingFromBottomOfGraph) {
+                value -= paddingFromBottomOfGraph;
+                d3Graphs.cumExportLblY += paddingFromBottomOfGraph;
+            }/* else if(value > d3Graphs.barGraphHeight - d3Graphs.barGraphBottomPadding - this.previousExportLabelTranslateY - heightPerLabel) {
+                value -= heightPerLabel;
+                d3Graphs.cumExportLblY += heightPerLabel;
+            }*/
             translate += value+")";
+            this.previousExportLabelTranslateY = value;
             return translate;
         }).attr('display',function(d) {
             if(d.amount == 0) { return 'none';}
