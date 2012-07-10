@@ -31,7 +31,7 @@ function buildDataVizGeometries( linearData ){
 		}
 
 		//	use this break to only visualize one year (1992)
-		break;
+		// break;
 
 		//	how to make this work?
 		// loadLayer.innerHTML = 'loading data for ' + year + '...';
