@@ -476,6 +476,9 @@ Bar graph on left
 #histogram ellipse.year {
     fill: #fff;
 }
+#histogram text.yearLabel {
+    fill: #fff;
+}
 #importExportBtns {
     position: absolute;
     right: 20px;
@@ -530,7 +533,7 @@ Bar graph on left
 #importExportBtns .imports {
     margin-bottom: 5px;
 }
-#importExportBtns .mil, #importExportBtns .civilian {
+#importExportBtns .mil, #importExportBtns .civ {
     margin-right: 5px;
 }
 #importExportBtns .imex .check {
@@ -545,10 +548,10 @@ Bar graph on left
 #importExportBtns .imports .mil .check.inactive {
     background-position: 0px -20px;
 }
-#importExportBtns .imports .civilian .check {
+#importExportBtns .imports .civ .check {
     background-position: -20px 0px;
 }
-#importExportBtns .imports .civilian .check.inactive {
+#importExportBtns .imports .civ .check.inactive {
     background-position: -20px -20px;
 }
 #importExportBtns .imports .ammo .check {
@@ -563,10 +566,10 @@ Bar graph on left
 #importExportBtns .exports .mil .check.inactive {
     background-position: -60px -20px;
 }
-#importExportBtns .exports .civilian .check {
+#importExportBtns .exports .civ .check {
     background-position: -80px 0px;
 }
-#importExportBtns .exports .civilian .check.inactive {
+#importExportBtns .exports .civ .check.inactive {
     background-position: -80px -20px;
 }
 #importExportBtns .exports .ammo .check {

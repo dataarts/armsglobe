@@ -106,7 +106,29 @@ var d3Graphs = {
         if(typeof countryData[country] == 'undefined') {
             return;
         }
-        selectVisualization(timeBins, year,[country],"both",["Military Weapons", "Civilian Weapons", "Ammunition"] );
+        //exports first
+        var exportArray = []
+        var exportBtns = $("#importExportBtns .exports>div").not(".label");
+        for(var i = 0; i < exportBtns.length; i++) {
+            var btn = $(exportBtns[i]);
+            var weaponTypeKey = btn.attr('class');
+            if(btn.find('.inactive').length == 0) {
+                exportArray.push(reverseWeaponLookup[weaponTypeKey]);
+            }
+        }
+        //imports esecond
+        var importArray = []
+        var importBtns = $("#importExportBtns .imports>div").not(".label");
+        for(var i = 0; i < importBtns.length; i++) {
+            var btn = $(importBtns[i]);
+            var weaponTypeKey = btn.attr('class');
+            if(btn.find('.inactive').length == 0) {
+                importArray.push(reverseWeaponLookup[weaponTypeKey]);
+            }
+        }
+        console.log(exportArray);
+        console.log(importArray);
+        selectVisualization(timeBins, year,[country],exportArray, importArray);
     },
     dropHandle:function() {
         d3Graphs.updateViz();
@@ -268,11 +290,43 @@ var d3Graphs = {
         yearOffset = yearOffset.substr(0,yearOffset.length-2);
         yearOffset -= d3Graphs.handleLeftOffset;
         yearOffset /= d3Graphs.handleInterval;
-        var activeYearData = [{x:yearOffset, y: importArray[yearOffset]}, {x: yearOffset, y: exportArray[yearOffset]}];
+        var maxVal = importArray[yearOffset] > exportArray[yearOffset] ? importArray[yearOffset] : exportArray[yearOffset];
+        var activeYearData = [{x:yearOffset, y: importArray[yearOffset], max: maxVal}, {x: yearOffset, y: exportArray[yearOffset], max: maxVal}];
         var yearDots = this.histogramSVG.selectAll("ellipse.year").data(activeYearData);
         yearDots.enter().append('ellipse').attr('class','year').attr('rx',4).attr('ry',4)
-            .attr('cx',function(d) { return d3Graphs.histogramLeftPadding + d3Graphs.histogramXScale(d.x);})
-            .attr('cy',function(d) { return d3Graphs.histogramVertPadding + d3Graphs.histogramYScale(d.y)});
+            .attr('cx',function(d) { return d3Graphs.histogramLeftPadding + d3Graphs.histogramXScale(d.x); })
+            .attr('cy',function(d) { return d3Graphs.histogramVertPadding + d3Graphs.histogramYScale(d.y); });
+        yearDots.attr('cx', function(d) { return d3Graphs.histogramLeftPadding + d3Graphs.histogramXScale(d.x); })
+            .attr('cy',function(d) { return d3Graphs.histogramVertPadding + d3Graphs.histogramYScale(d.y); } );
+        var yearDotLabels = this.histogramSVG.selectAll("text.yearLabel").data(activeYearData);
+        yearDotLabels.enter().append('text').attr('class','yearLabel').attr('text-anchor','middle');
+        yearDotLabels.attr('x',function(d) { return d3Graphs.histogramLeftPadding + d3Graphs.histogramXScale(d.x); })
+        .attr('y',function(d) {
+            var yVal = d3Graphs.histogramYScale(d.y) + d3Graphs.histogramVertPadding;
+            if(d.y == maxVal) {
+                yVal -= 7;  
+            } else {
+                yVal += 19;
+            }
+            if(yVal < d3Graphs.histogramVertPadding) {
+                yVal += 26;
+            }
+            if(yVal > d3Graphs.histogramHeight + d3Graphs.histogramVertPadding) {
+                yVal -= 26;
+            }
+            console.log(yVal + " " + d.y+ " " + d3Graphs.histogramVertPadding);
+            return yVal;
+            
+        }).text(function(d) {
+            var numlbl = Math.round(d.y*10)/10;
+            var lbl = "";
+            if(d.y > 0) {
+                lbl = "+";
+            }
+            lbl += ""+numlbl;
+            return lbl;
+
+        });
     },
     drawBarGraph: function() {
         
