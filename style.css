@@ -316,7 +316,9 @@ Elements to control the title and country selector
 	cursor: 				pointer;
 	margin-right: 			60px;
 }
-
+#hudHeader .armsBtn:hover {
+    opacity: 0.8;
+}
 #hudHeader .aboutBtn {
 	display:				block;
 	clear:					both;
@@ -354,22 +356,22 @@ Bar graph on left
     opacity: 0.9;
 }
 #barGraph .import.ammo {
-	fill: 					#308a8a;
+	fill: 					#70B4CB;
 }
 #barGraph .import.civ {
-	fill: 					#72b4d7;
+	fill: 					#2068DF;
 }
 #barGraph .import.mil {
-	fill:					#1482bd;
+	fill:					#154492;
 }
 #barGraph .export.ammo {
-	fill: 					#785201;
+	fill: 					#FFA90B;
 }
 #barGraph .export.civ {
-	fill: 					#f6c867;
+	fill: 					#FF7018;
 }
 #barGraph .export.mil {
-	fill:					#f0a401;
+	fill:					#E83E0A;
 }
 #barGraph .importLabel text,#barGraph .exportLabel text {
 	fill: 					white;
@@ -383,12 +385,12 @@ Bar graph on left
 #barGraph .exportLabel {
     font-family: 			Roboto;
     font-size: 				14px;
-    fill: 					#f99318;
+    fill: 					#e83e0a;
 }
 #barGraph .importLabel {
     font-family: 			Roboto;
     font-size: 				14px;
-    fill: 					#2e81bb;
+    fill: 					#154492;
 }
 
 /* histogram and timeline at bottom */
@@ -417,7 +419,7 @@ Bar graph on left
     background:             url('timelineBG.png') 8px 0 no-repeat; /*to be resized!*/
 }
 #history ul li {
-    width:                  44px;
+    width:                  40px;
     float:                  left;
     text-align:             center;
     margin-top:             -30px;
@@ -425,12 +427,13 @@ Bar graph on left
     cursor:                 pointer;
 }
 #history .timeline #handle {
+    cursor:                 pointer;
     width:                  36px;
     height:                 36px;
-    background:             url('yearHandle.png') 2px 0 no-repeat;
+    background:             url('yearHandle.png') 1px 0 no-repeat;
     position:               absolute;
     bottom:                 20px;
-    left:                   15px;
+    left:                   14px;
 }
 #history .graph {
     display: none;
@@ -460,14 +463,14 @@ Bar graph on left
     float: right;
     font-family: Roboto;
     font-size: 14px;
-    color:#2e81bb;
+    color:#154492;
     margin-top: 25px;
 }
 #history .labels .exports {
     float: right;
     font-family: Roboto;
     font-size: 14px;
-    color: #f99318;
+    color: #e83e0a;
     margin-top: 25px;
     margin-left: 10px;
 }
@@ -476,10 +479,10 @@ Bar graph on left
     stroke-width: 2px;
 }
 #histogram .export {
-    stroke: #f99318
+    stroke: #e83e0a
 }
 #histogram .import {
-    stroke: #2e81bb;
+    stroke: #154492;
 }
 #histogram .tick {
     fill:           none;
@@ -537,6 +540,9 @@ Bar graph on left
 	-ms-user-select:       none;
 	user-select:           none;
 }
+#importExportBtns .imex>div:hover {
+    opacity: 0.8;
+}
 #importExportBtns>div>.label {
     width:              98px;
     height:             25px;
@@ -549,10 +555,10 @@ Bar graph on left
     padding-top:        3px;
 }
 #importExportBtns .imports .label {
-    color:              #2e81bb
+    color:              #154492
 }
 #importExportBtns .exports .label {
-    color:              #f99318;
+    color:              #e83e0a;
 }
 #importExportBtns .imports {
     margin-bottom:      5px;
@@ -561,8 +567,8 @@ Bar graph on left
     margin-right:       5px;
 }
 #importExportBtns .imex .check {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     background: #262626 url('importExportIcons.png') 0 0 no-repeat;
     margin: 6px auto;
 }
@@ -570,37 +576,37 @@ Bar graph on left
     background-position: 0px 0px;
 }
 #importExportBtns .imports .mil .check.inactive {
-    background-position: 0px -20px;
+    background-position: 0px -16px;
 }
 #importExportBtns .imports .civ .check {
-    background-position: -20px 0px;
+    background-position: -16px 0px;
 }
 #importExportBtns .imports .civ .check.inactive {
-    background-position: -20px -20px;
+    background-position: -16px -16px;
 }
 #importExportBtns .imports .ammo .check {
-    background-position: -40px 0px;
+    background-position: -32px 0px;
 }
 #importExportBtns .imports .ammo .check.inactive {
-    background-position: -40px -20px;
+    background-position: -32px -16px;
 }
 #importExportBtns .exports .mil .check {
-    background-position: -60px 0px;
+    background-position: -48px 0px;
 }
 #importExportBtns .exports .mil .check.inactive {
-    background-position: -60px -20px;
+    background-position: -48px -16px;
 }
 #importExportBtns .exports .civ .check {
-    background-position: -80px 0px;
+    background-position: -64px 0px;
 }
 #importExportBtns .exports .civ .check.inactive {
-    background-position: -80px -20px;
+    background-position: -64px -16px;
 }
 #importExportBtns .exports .ammo .check {
-    background-position: -100px 0px;
+    background-position: -80px 0px;
 }
 #importExportBtns .exports .ammo .check.inactive {
-    background-position: -100px -20px;
+    background-position: -80px -16px;
 }
 
 
@@ -613,6 +619,9 @@ Bar graph on left
     cursor: pointer;
     background: url('graphIcon.png') 0 0 no-repeat;
     display: none;
+}
+#graphIcon:hover {
+    opacity: 0.8;
 }
 
 

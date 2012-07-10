@@ -10,7 +10,7 @@ var d3Graphs = {
     barWidth: 14,
 	barGraphTopPadding: 20,
 	barGraphBottomPadding: 50,
-	histogramWidth: 856,
+	histogramWidth: 780,
 	histogramHeight: 140,
 	histogramLeftPadding:31,
 	histogramRightPadding: 31,
@@ -23,9 +23,12 @@ var d3Graphs = {
     cumImportLblY: 0,cumExportLblY: 0,
     inited: false,
     histogramOpen: false,
-    handleLeftOffset: 15,
-    handleInterval: 44,
+    handleLeftOffset: 14,
+    handleInterval: 40,
     windowResizeTimeout: -1,
+    histogramImports: null,
+    histogramExports: null,
+    histogramAbsMax: 0,
     setCountry: function(country) {
         $("#hudHeader .countryTextInput").val(country);
         d3Graphs.updateViz();
@@ -46,7 +49,7 @@ var d3Graphs = {
         $("#graphIcon").click(d3Graphs.graphIconClick);
         $("#history .close").click(d3Graphs.closeHistogram);
         $("#history ul li").click(d3Graphs.clickTimeline);
-        $("#handle").draggable({axis: 'x',containment: "parent",grid:[this.handleInterval, this.handleInterval], stop: d3Graphs.dropHandle });
+        $("#handle").draggable({axis: 'x',containment: "parent",grid:[this.handleInterval, this.handleInterval], stop: d3Graphs.dropHandle, drag: d3Graphs.dragHandle });
         $("#hudHeader .searchBtn").click(d3Graphs.updateViz);
         $("#importExportBtns .imex>div").not(".label").click(d3Graphs.importExportBtnClick);
         $("#importExportBtns .imex .label").click(d3Graphs.importExportLabelClick);
@@ -56,6 +59,13 @@ var d3Graphs = {
         $(document).on("click",".ui-autocomplete li",d3Graphs.menuItemClick);
         $(window).resize(d3Graphs.windowResizeCB);
         
+    },
+    dragHandle:function() {
+        if(!d3Graphs.histogramOpen) {
+            return;
+        }
+        d3Graphs.setHistogramData();
+        d3Graphs.updateActiveYearDots();
     },
     clickTimeline:function() {
         var year = $(this).html();
@@ -127,8 +137,6 @@ var d3Graphs = {
                 importArray.push(reverseWeaponLookup[weaponTypeKey]);
             }
         }
-        console.log(exportArray);
-        console.log(importArray);
         selectVisualization(timeBins, year,[country],exportArray, importArray);
     },
     dropHandle:function() {
@@ -180,11 +188,7 @@ var d3Graphs = {
     .y(function(d) { 
         return d3Graphs.histogramYScale(d) + d3Graphs.histogramVertPadding; 
     }),
-    drawHistogram:function() {
-        if(this.histogramSVG == null) {
-            this.histogramSVG = d3.select('#history .container').append('svg');
-            this.histogramSVG.attr('id','histogram').attr('width',this.histogramWidth).attr('height',this.histogramHeight);
-        }
+    setHistogramData:function() {
         var importArray = [0];
         var exportArray = [0];
         var historical = selectedCountry.summary.historical;
@@ -207,9 +211,19 @@ var d3Graphs = {
             }
             
         }
-        console.log("abs Max "+absMax);
-        this.histogramYScale = d3.scale.linear().domain([absMax,-absMax]).range([0, this.histogramHeight - this.histogramVertPadding*2]);
-        this.histogramXScale = d3.scale.linear().domain([0,exportArray.length-1]).range([0, this.histogramWidth - this.histogramLeftPadding - this.histogramRightPadding]);
+        this.histogramImportArray = importArray;
+        this.histogramExportArray = exportArray;
+        this.histogramAbsMax = absMax;
+    },
+    drawHistogram:function() {
+        if(this.histogramSVG == null) {
+            this.histogramSVG = d3.select('#history .container').append('svg');
+            this.histogramSVG.attr('id','histogram').attr('width',this.histogramWidth).attr('height',this.histogramHeight);
+        }
+        this.setHistogramData();
+        
+        this.histogramYScale = d3.scale.linear().domain([this.histogramAbsMax,-this.histogramAbsMax]).range([0, this.histogramHeight - this.histogramVertPadding*2]);
+        this.histogramXScale = d3.scale.linear().domain([0,this.histogramExportArray.length-1]).range([0, this.histogramWidth - this.histogramLeftPadding - this.histogramRightPadding]);
         
         var tickData = this.histogramYScale.ticks(4);
         var containsZero = false;
@@ -227,7 +241,6 @@ var d3Graphs = {
         var ticks = this.histogramSVG.selectAll('line.tick').data(tickData);
         ticks.enter().append('svg:line').attr('class','tick');
         ticks.attr('y1',function(d) {
-        console.log(d);
             return d3Graphs.histogramYScale(d) + d3Graphs.histogramVertPadding;
         }).attr('y2', function(d) {
             return d3Graphs.histogramYScale(d) + d3Graphs.histogramVertPadding;
@@ -277,29 +290,56 @@ var d3Graphs = {
             return d3Graphs.histogramYScale(0) + d3Graphs.histogramVertPadding +  6 + (d == '+' ? -yOffset : yOffset); 
         }).text(String);
         //lines
+        var importsVisible = $("#importExportBtns .imports .check").not(".inactive").length != 0;
+        var exportsVisible = $("#importExportBtns .exports .check").not(".inactive").length != 0;
+        $("#history .labels .exports").css('display', exportsVisible ? 'block' : 'none');
+        $("#history .labels .imports").css('display', importsVisible ? 'block' : 'none');
+        
+    
         var importLine = this.histogramSVG.selectAll("path.import").data([1]);
         importLine.enter().append('svg:path').attr('class','import');
-        importLine.attr('d',this.line(importArray));
+        importLine.attr('d',this.line(this.histogramImportArray)).attr('visibility',importsVisible ? 'visible' : 'hidden');
         var exportLine = this.histogramSVG.selectAll("path.export").data([1]);
         exportLine.enter().append('svg:path').attr('class','export');
-        exportLine.attr('d',this.line(exportArray));
+        exportLine.attr('d',this.line(this.histogramExportArray)).attr('visibility', exportsVisible ? 'visible' : 'hidden');
         
         //active year labels
-        
         var yearOffset = $("#handle").css('left');
         yearOffset = yearOffset.substr(0,yearOffset.length-2);
         yearOffset -= d3Graphs.handleLeftOffset;
         yearOffset /= d3Graphs.handleInterval;
-        var maxVal = importArray[yearOffset] > exportArray[yearOffset] ? importArray[yearOffset] : exportArray[yearOffset];
-        var activeYearData = [{x:yearOffset, y: importArray[yearOffset], max: maxVal}, {x: yearOffset, y: exportArray[yearOffset], max: maxVal}];
+        var maxVal = this.histogramImportArray[yearOffset] > this.histogramExportArray[yearOffset] ? this.histogramImportArray[yearOffset] : this.histogramExportArray[yearOffset];
+        
+        var activeYearData = [{x:yearOffset, y: this.histogramImportArray[yearOffset], max: maxVal}, {x: yearOffset, y: this.histogramExportArray[yearOffset], max: maxVal}];
         var yearDots = this.histogramSVG.selectAll("ellipse.year").data(activeYearData);
+        var yearDotLabels = this.histogramSVG.selectAll("text.yearLabel").data(activeYearData);
         yearDots.enter().append('ellipse').attr('class','year').attr('rx',4).attr('ry',4)
             .attr('cx',function(d) { return d3Graphs.histogramLeftPadding + d3Graphs.histogramXScale(d.x); })
             .attr('cy',function(d) { return d3Graphs.histogramVertPadding + d3Graphs.histogramYScale(d.y); });
-        yearDots.attr('cx', function(d) { return d3Graphs.histogramLeftPadding + d3Graphs.histogramXScale(d.x); })
-            .attr('cy',function(d) { return d3Graphs.histogramVertPadding + d3Graphs.histogramYScale(d.y); } );
-        var yearDotLabels = this.histogramSVG.selectAll("text.yearLabel").data(activeYearData);
         yearDotLabels.enter().append('text').attr('class','yearLabel').attr('text-anchor','middle');
+        this.updateActiveYearDots();
+    },
+    updateActiveYearDots: function() {
+        var yearOffset = $("#handle").css('left');
+        yearOffset = yearOffset.substr(0,yearOffset.length-2);
+        yearOffset -= d3Graphs.handleLeftOffset;
+        yearOffset /= d3Graphs.handleInterval;
+        var maxVal = this.histogramImportArray[yearOffset] > this.histogramExportArray[yearOffset] ? this.histogramImportArray[yearOffset] : this.histogramExportArray[yearOffset];
+        var activeYearData = [{x:yearOffset, y: this.histogramImportArray[yearOffset], max: maxVal, type:"imports"}, {x: yearOffset, y: this.histogramExportArray[yearOffset], max: maxVal, type:"exports"}];
+        var yearDots = this.histogramSVG.selectAll("ellipse.year").data(activeYearData);
+        var yearDotLabels = this.histogramSVG.selectAll("text.yearLabel").data(activeYearData);
+        var importsVisible = $("#importExportBtns .imports .check").not(".inactive").length != 0;
+        var exportsVisible = $("#importExportBtns .exports .check").not(".inactive").length != 0;
+        
+        yearDots.attr('cx', function(d) { return d3Graphs.histogramLeftPadding + d3Graphs.histogramXScale(d.x); })
+            .attr('cy',function(d) { return d3Graphs.histogramVertPadding + d3Graphs.histogramYScale(d.y); } )
+            .attr('visibility', function(d) {
+                if(d.type == "imports") {
+                    return importsVisible ? 'visible' : 'hidden';
+                } else if(d.type == "exports") {
+                    return exportsVisible ? 'visible' : 'hidden';
+                }
+            });
         yearDotLabels.attr('x',function(d) { return d3Graphs.histogramLeftPadding + d3Graphs.histogramXScale(d.x); })
         .attr('y',function(d) {
             var yVal = d3Graphs.histogramYScale(d.y) + d3Graphs.histogramVertPadding;
@@ -314,7 +354,6 @@ var d3Graphs = {
             if(yVal > d3Graphs.histogramHeight + d3Graphs.histogramVertPadding) {
                 yVal -= 26;
             }
-            console.log(yVal + " " + d.y+ " " + d3Graphs.histogramVertPadding);
             return yVal;
             
         }).text(function(d) {
@@ -326,6 +365,12 @@ var d3Graphs = {
             lbl += ""+numlbl;
             return lbl;
 
+        }).attr('visibility', function(d) {
+            if(d.type == "imports") {
+                return importsVisible ? 'visible' : 'hidden';
+            } else if(d.type == "exports") {
+                return exportsVisible ? 'visible' : 'hidden';
+            }
         });
     },
     drawBarGraph: function() {
