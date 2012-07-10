@@ -273,9 +273,31 @@ a.button.pause:hover {
 .clear {
     clear:both;
 }
+
+/*Remove all text selection (except for Text Input)*/
+* {
+	-webkit-touch-callout: none;
+	-webkit-user-select:   none;
+	-khtml-user-select:    none;
+	-moz-user-select:      none;
+	-ms-user-select:       none;
+	user-select:           none;
+}
+input[type='text'] {
+	-webkit-touch-callout: default;
+	-webkit-user-select:   auto;
+	-khtml-user-select:    auto;
+	-moz-user-select:      text;
+	-ms-user-select:       text;
+	user-select:           text;
+
+}
 /*
 Elements to control the title and country selector
 */
+.overlayCountries {
+    z-index: 10001; /* selected country has z-index:10000*/
+}
 #hudHeader {
     position: 				absolute;
     width: 					100%;
@@ -292,15 +314,21 @@ Elements to control the title and country selector
     display:                block;
     float:                  left;
 }
+#hudHeader h1 .subtitle {
+    font-size: 14px;
+    color: #ddd;
+    
+}
 #hudHeader .countryTextInput {
     float: right;
     font-size: 				18px;
     width: 					330px;
-    margin-right: 			5px;
+    margin-right: 			5px;/*
    	-webkit-border-radius:  4px;
 	-moz-border-radius: 	4px;
-	border-radius: 			4px;
+	border-radius: 			4px;*/
 	font-family: 			'RopaSans';
+	text-transform:          uppercase;
 }
 #hudHeader .armsBtn {
     float: right;
@@ -308,22 +336,23 @@ Elements to control the title and country selector
     padding: 				3px 10px 4px;
     color: 					white;
     border: 				0;
-    font-size: 				19px;
+    font-size: 				19px;/*
    	-webkit-border-radius: 	4px;
 	-moz-border-radius: 	4px;
-	border-radius: 			4px;
+	border-radius: 			4px;*/
 	font-family: 			'RopaSans';
 	cursor: 				pointer;
 	margin-right: 			60px;
+	opacity: 0.9;
 }
 #hudHeader .armsBtn:hover {
-    opacity: 0.8;
+    opacity: 1;
 }
 #hudHeader .aboutBtn {
 	display:				block;
 	clear:					both;
 	margin-right: 			60px;
-	margin-top: 			-30px;
+	margin-top: 			-44px;
 	width: 					78px;
 }
 
@@ -392,20 +421,22 @@ Bar graph on left
     font-size: 				14px;
     fill: 					#70B4CB;
 }
-
+#barGraph .barGraphLabelBG {
+    fill: rgba(0,0,0,0.5);
+}
 /* histogram and timeline at bottom */
 #history {
     position: 				absolute;
     bottom: 				0;
     left: 					386px;
-    background-color: 		rgba(43,43,43,0.6);
-    display: 				none;
+    background-color: 		rgba(43,43,43,0.9);
+    display: 				none;/*
    	-webkit-border-top-left-radius:	   5px;
 	-moz-border-radius-topleft: 	   5px;
 	border-top-left-radius: 		   5px;
 	-webkit-border-top-right-radius:   5px;
 	-moz-border-radius-topright: 	   5px;
-	border-top-right-radius: 		   5px;
+	border-top-right-radius: 		   5px;*/
 }
 #history ul {
     list-style-type:        none;
@@ -464,14 +495,14 @@ Bar graph on left
     font-family: Roboto;
     font-size: 14px;
     color:#70B4CB;
-    margin-top: 25px;
+    margin-top: 10px;
 }
 #history .labels .exports {
     float: right;
     font-family: Roboto;
     font-size: 14px;
     color: #FFA90B;
-    margin-top: 25px;
+    margin-top: 10px;
     margin-left: 10px;
 }
 #histogram path {
@@ -529,19 +560,15 @@ Bar graph on left
 }
 
 #importExportBtns .imex>div {
+/*
     -webkit-border-radius:  4px;
 	-moz-border-radius: 	4px;
-	border-radius: 			4px;
+	border-radius: 			4px;*/
 	cursor: pointer;
-	-webkit-touch-callout: none;
-	-webkit-user-select:   none;
-	-khtml-user-select:    none;
-	-moz-user-select:      none;
-	-ms-user-select:       none;
-	user-select:           none;
+	opacity: 0.9;
 }
 #importExportBtns .imex>div:hover {
-    opacity: 0.8;
+    opacity: 1;
 }
 #importExportBtns>div>.label {
     width:              98px;
@@ -619,9 +646,10 @@ Bar graph on left
     cursor: pointer;
     background: url('graphIcon.png') 0 0 no-repeat;
     display: none;
+    opacity: 0.9;
 }
 #graphIcon:hover {
-    opacity: 0.8;
+    opacity: 1;
 }
 
 

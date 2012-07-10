@@ -51,7 +51,7 @@ var d3Graphs = {
         $("#graphIcon").click(d3Graphs.graphIconClick);
         $("#history .close").click(d3Graphs.closeHistogram);
         $("#history ul li").click(d3Graphs.clickTimeline);
-        $("#handle").draggable({axis: 'x',containment: "parent",grid:[this.handleInterval, this.handleInterval], stop: d3Graphs.dropHandle, drag: d3Graphs.dragHandle });
+        $("#handle").draggable({axis: 'x',containment: "parent",grid:[this.handleInterval, this.handleInterval], /* stop: d3Graphs.dropHandle,*/ drag: d3Graphs.dropHandle });
         $("#hudHeader .searchBtn").click(d3Graphs.updateViz);
         $("#importExportBtns .imex>div").not(".label").click(d3Graphs.importExportBtnClick);
         $("#importExportBtns .imex .label").click(d3Graphs.importExportLabelClick);
@@ -195,6 +195,7 @@ var d3Graphs = {
         var exportArray = [0];
         var historical = selectedCountry.summary.historical;
         var numHistory = historical.length;
+        console.log(historical);
         var absMax = 0;
         for(var i = 1; i < numHistory; i++) {
             var importPrev = historical[0].imports;
@@ -213,6 +214,8 @@ var d3Graphs = {
             }
             
         }
+        console.log(importArray);
+        console.log(exportArray);
         this.histogramImportArray = importArray;
         this.histogramExportArray = exportArray;
         this.histogramAbsMax = absMax;
@@ -364,7 +367,7 @@ var d3Graphs = {
             if(d.y > 0) {
                 lbl = "+";
             }
-            lbl += ""+numlbl;
+            lbl += ""+numlbl+"%";
             return lbl;
 
         }).attr('visibility', function(d) {
@@ -377,7 +380,7 @@ var d3Graphs = {
     },
     drawBarGraph: function() {
         
-        this.barGraphSVG.attr('id','barGraph').attr('width',d3Graphs.barGraphWidth).attr('height',d3Graphs.barGraphHeight);
+        this.barGraphSVG.attr('id','barGraph').attr('width',d3Graphs.barGraphWidth).attr('height',d3Graphs.barGraphHeight).attr('class','overlayCountries');
         var importArray = [];
         var exportArray = [];
         var importTotal = selectedCountry.summary.imported.total;
@@ -441,12 +444,22 @@ var d3Graphs = {
             return null;
         });
         importLabels.selectAll("*").remove();
-        importLabels.append('text').text(function(d) {
+        var importLabelBGs = importLabels.append('rect');
+        var importTextLabel = importLabels.append('text').text(function(d) {
             return reverseWeaponLookup[d.type].split(' ')[0].toUpperCase();
         }).attr('text-anchor','end').attr('y',15).attr('class',function(d){ return 'import '+d.type});
-        importLabels.append('text').text(function(d) {
+        var importNumLabel = importLabels.append('text').text(function(d) {
             return abbreviateNumber(d.amount);
         }).attr('text-anchor','end');
+        var importGroups = importLabels[0];
+        importTextLabel = importTextLabel[0];
+        importNumLabel = importNumLabel[0];
+        importLabelBGs = importLabelBGs[0];
+        var boxHeight = 30;
+        for(var i = 0; i < importTextLabel.length; i++) {
+            var maxWidth = importTextLabel[i].getComputedTextLength() > importNumLabel[i].getComputedTextLength() ? importTextLabel[i].getComputedTextLength() : importNumLabel[i].getComputedTextLength();
+            d3.select(importLabelBGs[i]).attr('class','barGraphLabelBG').attr('height',boxHeight).attr('width',maxWidth).attr('x',-maxWidth).attr('y',-boxHeight/2);            
+        }
         var exportLabels = this.barGraphSVG.selectAll("g.exportLabel").data(exportArray);
         exportLabels.enter().append("g").attr('class',function(d) {
             return 'exportLabel '+d.type;
@@ -470,19 +483,26 @@ var d3Graphs = {
             return null;
         });
         exportLabels.selectAll("*").remove();
-        exportLabels.append('text').text(function(d) {
+        var exportLabelBGs = exportLabels.append('rect');
+        var exportTextLabel = exportLabels.append('text').text(function(d) {
             return reverseWeaponLookup[d.type].split(' ')[0].toUpperCase();
         }).attr('y',15).attr('class',function(d) { return 'export '+ d.type});
-        exportLabels.append('text').text(function(d) {
+        var exportNumLabel = exportLabels.append('text').text(function(d) {
             return abbreviateNumber(d.amount);
         });
         
         var importTotalLabel = this.barGraphSVG.selectAll('text.totalLabel').data([1]);
         importTotalLabel.enter().append('text').attr('x',midX).attr('text-anchor','end')
             .attr('class','totalLabel').attr('y',this.barGraphHeight- this.barGraphBottomPadding + 25);
-        
         importTotalLabel.text(abbreviateNumber(importTotal));
-        
+        var exportGroups = exportLabels[0];
+        exportTextLabel = exportTextLabel[0];
+        exportNumLabel = exportNumLabel[0];
+        exportLabelBGs = exportLabelBGs[0];
+        for(var i = 0; i < exportTextLabel.length; i++) {
+            var maxWidth = exportTextLabel[i].getComputedTextLength() > exportNumLabel[i].getComputedTextLength() ? exportTextLabel[i].getComputedTextLength() : exportNumLabel[i].getComputedTextLength();
+            d3.select(exportLabelBGs[i]).attr('class','barGraphLabelBG').attr('height',boxHeight).attr('width',maxWidth).attr('x',0).attr('y',-boxHeight/2);            
+        }
         var exportTotalLabel = this.barGraphSVG.selectAll('text.totalLabel.totalLabel2').data([1]);
         exportTotalLabel.enter().append('text').attr('x',midX+10).attr('class','totalLabel totalLabel2').attr('y', this.barGraphHeight - this.barGraphBottomPadding+25);
         exportTotalLabel.text(abbreviateNumber(exportTotal));
