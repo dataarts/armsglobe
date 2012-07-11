@@ -29,7 +29,7 @@ function attachMarkerToCountry( countryName, importance ){
 	marker.importance = importance;
 	marker.selected = false;
 	marker.hover = false;
-
+    marker.prevSize = -1;
 	if( countryName === selectedCountry.countryName.toUpperCase() )
 		marker.selected = true;
 
@@ -50,8 +50,16 @@ function attachMarkerToCountry( countryName, importance ){
     marker.countryLayer = countryLayer;
 	var detailLayer = marker.querySelector( '#detailText' );
 	marker.detailLayer = detailLayer;
-
-	marker.setSize = function( s ){	
+    marker.jquery = $(marker);
+	marker.setSize = function( s ){
+	    if(s == this.prevSize && !this.hover) {
+	    //   return;
+	    }
+	    if(this.countryName == 'THAILAND') {
+	       console.log('setting');
+	    }
+	    //this.style.width = 'auto';
+	    this.prevSize = s;
         var detailSize = Math.floor(2 + s * 0.5);	
 		this.detailLayer.style.fontSize = detailSize + 'pt';
         var totalHeight = detailSize * 2;
@@ -61,6 +69,17 @@ function attachMarkerToCountry( countryName, importance ){
 		} else {
 		    this.countryLayer.style.marginTop = "-1px";
 		}
+        if(marker.countryName = "UNITED STATES") {
+        //    console.log(this.jquery.width());
+        }
+        //this.jquery.width();
+        //this.style.width = (this.jquery.width()) + 'px';
+		//console.log(this.offsetWidth + "  " + this.style.paddingLeft + " " + this.style.paddingRight);
+//		this.style.width = (this.countryLayer.offsetWidth + this.detailLayer.offsetWidth + 10)+"px";
+		/*
+		if(this.countryName == "UNITED STATES") {
+		  console.log(this.offsetWidth);
+		}*/
 	}
 
 	marker.update = function(){
@@ -105,18 +124,21 @@ function attachMarkerToCountry( countryName, importance ){
 	// if( tiny )
 	// 	nameLayer.innerHTML = country.countryCode;	
 	// else
-		nameLayer.innerHTML = countryName;	
+		nameLayer.innerHTML = countryName.replace(' ','&nbsp;');	
 
 	// marker.nameLayer = nameLayer;
 	// marker.nameLayerText = countryName;
 	// marker.nameLayerShorten = country.countryCode;;	
 	
 	var importExportText = "";
-	if( country.exportedAmount > 0 )
-		importExportText += "exported: $" + numberWithCommas(country.exportedAmount) + "<br>";
-
-	if( country.importedAmount > 0 )
-		importExportText += "imported: $" + numberWithCommas(country.importedAmount);		
+	if(country.exportedAmount > 0 && country.importedAmount > 0) {
+	   importExportText += "imported:&nbsp;$" + numberWithCommas(country.importedAmount) + "<br />" +
+	       "exported:&nbsp;$"+numberWithCommas(country.exportedAmount);
+	} else if(country.exportedAmount > 0 && country.importedAmount == 0) {
+	   importExportText += "exported:&nbsp;$"+numberWithCommas(country.exportedAmount)+"<br />&nbsp;";
+	} else if(country.exportedAmount == 0 && country.importedAmount > 0) {
+	   importExportText += "imported:&nbsp;$"+numberWithCommas(country.importedAmount)+"<br />&nbsp;";
+	}
 
 	marker.importExportText = importExportText;
 
