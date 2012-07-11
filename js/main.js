@@ -79,6 +79,7 @@ var importColor = 0x154492;
 
 //	the currently selected country
 var selectedCountry = null;
+var previouslySelectedCountry = null;
 
 //	contains info about what year, what countries, categories, etc that's being visualized
 var selectionData;
@@ -230,12 +231,11 @@ function initScene() {
 	);				
 	// backMat.ambient = new THREE.Color(255,255,255);							
 	sphere = new THREE.Mesh( new THREE.SphereGeometry( 100, 40, 40 ), shaderMaterial );				
-	sphere.rotation.x = - 90 * Math.PI / 180;
 	// sphere.receiveShadow = true;
 	// sphere.castShadow = true;
 	sphere.doubleSided = false;
 	sphere.rotation.x = Math.PI;				
-	sphere.rotation.y = Math.PI;
+	sphere.rotation.y = -Math.PI/2;
 	sphere.rotation.z = Math.PI;
 	sphere.id = "base";	
 	rotating.add( sphere );	
@@ -302,7 +302,7 @@ function initScene() {
 
 	masterContainer.addEventListener( 'mousedown', onDocumentMouseDown, true );	
 	masterContainer.addEventListener( 'mouseup', onDocumentMouseUp, false );	
-	masterContainer.addEventListener( 'click', onClick, false );	
+	masterContainer.addEventListener( 'click', onClick, true );	
 	masterContainer.addEventListener( 'mousewheel', onMouseWheel, false );
 
 	document.addEventListener( 'keydown', onKeyDown, false);												    			    	
@@ -319,19 +319,46 @@ function initScene() {
 }
 	
 
-function animate() {		    	
+function animate() {	
+
+	//	Disallow roll for now, this is interfering with keyboard input during search
+/*	    	
 	if(keyboard.pressed('o') && keyboard.pressed('shift') == false)
 		camera.rotation.z -= 0.08;		    	
 	if(keyboard.pressed('p') && keyboard.pressed('shift') == false)
 		camera.rotation.z += 0.08;		   
+*/
 
+	if( rotateTargetX !== undefined && rotateTargetY !== undefined ){
+
+		rotateVX += (rotateTargetX - rotateX) * 0.012;
+		rotateVY += (rotateTargetY - rotateY) * 0.012;
+
+		// var move = new THREE.Vector3( rotateVX, rotateVY, 0 );
+		// var distance = move.length();
+		// if( distance > .01 )
+		// 	distance = .01;
+		// move.normalize();
+		// move.multiplyScalar( distance );
+
+		// rotateVX = move.x;
+		// rotateVy = move.y;		
+
+		if( Math.abs(rotateTargetX - rotateX) < 0.1 && Math.abs(rotateTargetY - rotateY) < 0.1 ){
+			rotateTargetX = undefined;
+			rotateTargetY = undefined;
+		}
+	}
+	
 	rotateX += rotateVX;
 	rotateY += rotateVY;
+
+	rotateY = wrap( rotateY, -Math.PI, Math.PI );
 
 	rotateVX *= 0.98;
 	rotateVY *= 0.98;
 
-	if(dragging){
+	if(dragging || rotateTargetX !== undefined ){
 		rotateVX *= 0.6;
 		rotateVY *= 0.6;
 	}	     
@@ -350,6 +377,7 @@ function animate() {
 	}		    			    		   
 
 	TWEEN.update();		
+
 	rotating.rotation.x = rotateX;
 	rotating.rotation.y = rotateY;	
 

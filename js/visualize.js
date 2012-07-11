@@ -277,6 +277,7 @@ function selectVisualization( linearData, year, countries, exportCategories, imp
 	var cName = countries[0].toUpperCase();
 	
 	$("#hudHeader .countryTextInput").val(cName);
+	previouslySelectedCountry = selectedCountry;
 	selectedCountry = countryData[countries[0].toUpperCase()];
     
 	selectedCountry.summary = {
@@ -333,6 +334,17 @@ function selectVisualization( linearData, year, countries, exportCategories, imp
 
 	// console.log( mesh.affectedCountries );
 	highlightCountry( mesh.affectedCountries );
+
+	if( previouslySelectedCountry !== selectedCountry ){
+		if( selectedCountry ){
+			rotateTargetX = selectedCountry.lat * Math.PI/180;
+			rotateTargetY = wrap( -(selectedCountry.lon-9) * Math.PI/180, -Math.PI, Math.PI );
+			if( Math.abs(rotateTargetY - rotating.rotation.y) > Math.PI )
+				rotateTargetY += Math.PI;		
+			rotateVX *= 0.6;
+			rotateVY *= 0.6;		
+		}	
+	}
     
     d3Graphs.initGraphs();
 }

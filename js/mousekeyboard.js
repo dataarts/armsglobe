@@ -7,6 +7,9 @@ var rotateX = 0, rotateY = 0;
 var rotateVX = 0, rotateVY = 0;
 var rotateXMax = 90 * Math.PI/180;	
 
+var rotateTargetX = undefined;
+var rotateTargetY = undefined;
+
 var keyboard = new THREEx.KeyboardState();	
 
 function onDocumentMouseMove( event ) {
@@ -33,6 +36,8 @@ function onDocumentMouseDown( event ) {
     dragging = true;			   
     pressX = mouseX;
     pressY = mouseY;   	
+    rotateTargetX = undefined;
+    rotateTargetX = undefined;
 }	
 
 function onDocumentMouseUp( event ){
@@ -44,7 +49,6 @@ function onClick( event ){
 	//	make the rest not work if the event was actually a drag style click
 	if( Math.abs(pressX - mouseX) > 3 || Math.abs(pressY - mouseY) > 3 )
 		return;				
-
 
 	var pickColorIndex = getPickColor();	
 	//	find it

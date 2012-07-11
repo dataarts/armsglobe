@@ -20,7 +20,7 @@ function loadGeoData( latlonData ){
 		country.countryName = countryLookup[i];			
 
 		//	take the lat lon from the data and convert this to 3d globe space
-        var lon = country.lon;
+        var lon = country.lon - 90;
         var lat = country.lat;
         
         var phi = Math.PI/2 - lat * Math.PI / 180 - Math.PI * 0.01;
