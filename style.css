@@ -253,6 +253,7 @@ a.button.pause:hover {
 	margin-right:			10px;
 }
 
+
 .detail {
 	color:					#aaaaaa;
 	float:					right;
@@ -652,4 +653,41 @@ Bar graph on left
     opacity: 1;
 }
 
-
+#aboutContainer {
+    display: none;
+    position: absolute;
+    top: 95px;
+    width: 350px;
+    right: 28px;
+    color: white;
+}
+#aboutBox {
+    width: 288px;
+    padding: 20px 30px;
+    background: #323232;
+}
+#aboutBox .title {
+    margin-bottom: 20px;
+    font-weight: bold;
+    font-family: RopaSans;
+    font-size: 20px;
+}
+#aboutContainer .arrowUp {
+    width: 0;
+    height: 0;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-bottom: 15px solid #323232;
+    margin-left: 293px;
+}
+#aboutBox .text {
+    font-family: Roboto;
+    font-size: 15px;
+    margin-bottom: 20px;
+}
+#aboutBox .links a {
+    text-transform: none;
+    font-size: 15px;
+    font-family: Roboto;
+    font-weight: bold;
+}

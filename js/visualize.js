@@ -274,8 +274,11 @@ function getVisualizedMesh( linearData, year, countries, exportCategories, impor
 
 function selectVisualization( linearData, year, countries, exportCategories, importCategories ){
 	//	we're only doing one country for now so...
+	var cName = countries[0].toUpperCase();
+	
+	$("#hudHeader .countryTextInput").val(cName);
 	selectedCountry = countryData[countries[0].toUpperCase()];
-
+    
 	selectedCountry.summary = {
 		imported: {
 			mil: 0,

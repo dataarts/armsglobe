@@ -46,13 +46,21 @@ function attachMarkerToCountry( countryName, importance ){
 			this.style.display = 'inline';
 		}
 	}
-
+    var countryLayer = marker.querySelector( '#countryText');
+    marker.countryLayer = countryLayer;
 	var detailLayer = marker.querySelector( '#detailText' );
 	marker.detailLayer = detailLayer;
 
-	marker.setSize = function( s ){		
-		this.style.fontSize = s + 'pt';		
-		this.detailLayer.style.fontSize = Math.floor( 2 + s * 0.5 ) + 'pt';
+	marker.setSize = function( s ){	
+        var detailSize = Math.floor(2 + s * 0.5);	
+		this.detailLayer.style.fontSize = detailSize + 'pt';
+        var totalHeight = detailSize * 2;
+		this.style.fontSize = totalHeight * 1.125 + 'pt';
+		if(detailSize <= 8) {
+            this.countryLayer.style.marginTop = "0px";  
+		} else {
+		    this.countryLayer.style.marginTop = "-1px";
+		}
 	}
 
 	marker.update = function(){

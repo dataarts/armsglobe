@@ -58,9 +58,13 @@ var d3Graphs = {
         $("#hudHeader .countryTextInput").autocomplete({ source:selectableCountries });
         $("#hudHeader .countryTextInput").keyup(d3Graphs.countryKeyUp);
         $("#hudHeader .countryTextInput").focus(d3Graphs.countryFocus);
+        $("#hudHeader .aboutBtn").click(d3Graphs.toggleAboutBox);
         $(document).on("click",".ui-autocomplete li",d3Graphs.menuItemClick);
         $(window).resize(d3Graphs.windowResizeCB);
         
+    },
+    toggleAboutBox:function() {
+        $("#aboutContainer").toggle();
     },
     dragHandle:function() {
         if(!d3Graphs.histogramOpen) {
@@ -119,14 +123,20 @@ var d3Graphs = {
         if(typeof countryData[country] == 'undefined') {
             return;
         }
+        
         //exports first
         var exportArray = []
         var exportBtns = $("#importExportBtns .exports>div").not(".label");
         for(var i = 0; i < exportBtns.length; i++) {
             var btn = $(exportBtns[i]);
             var weaponTypeKey = btn.attr('class');
+            var weaponName = reverseWeaponLookup[weaponTypeKey];
+
             if(btn.find('.inactive').length == 0) {
-                exportArray.push(reverseWeaponLookup[weaponTypeKey]);
+                exportArray.push(weaponName);
+                selectionData.exportCategories[weaponName] = true;
+            } else {
+                selectionData.exportCategories[weaponName] = false;
             }
         }
         //imports esecond
@@ -135,10 +145,16 @@ var d3Graphs = {
         for(var i = 0; i < importBtns.length; i++) {
             var btn = $(importBtns[i]);
             var weaponTypeKey = btn.attr('class');
+            var weaponName = reverseWeaponLookup[weaponTypeKey];
             if(btn.find('.inactive').length == 0) {
-                importArray.push(reverseWeaponLookup[weaponTypeKey]);
+                importArray.push(weaponName);
+                selectionData.importCategories[weaponName] = true;
+            } else {
+                selectionData.importCategories[weaponName] = false;
             }
         }
+        selectionData.selectedYear = year;
+        selectionData.selectedCountry = country;
         selectVisualization(timeBins, year,[country],exportArray, importArray);
     },
     dropHandle:function() {
