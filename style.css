@@ -249,14 +249,14 @@ a.button.pause:hover {
 }	
 
 .country {
-	float:					left;
+	/*float:					left;*/
 	margin-right:			10px;
 }
 
 
 .detail {
 	color:					#aaaaaa;
-	float:					right;
+	/*float:					right;*/
 }
 
 #loading{

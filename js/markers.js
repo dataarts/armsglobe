@@ -29,8 +29,7 @@ function attachMarkerToCountry( countryName, importance ){
 	marker.importance = importance;
 	marker.selected = false;
 	marker.hover = false;
-
-	if( countryName === selectedCountry.countryName.toUpperCase() )
+    if( countryName === selectedCountry.countryName.toUpperCase() )
 		marker.selected = true;
 
 	marker.setPosition = function(x,y,z){
@@ -50,9 +49,9 @@ function attachMarkerToCountry( countryName, importance ){
     marker.countryLayer = countryLayer;
 	var detailLayer = marker.querySelector( '#detailText' );
 	marker.detailLayer = detailLayer;
-
-	marker.setSize = function( s ){	
-        var detailSize = Math.floor(2 + s * 0.5);	
+    marker.jquery = $(marker);
+	marker.setSize = function( s ){
+	    var detailSize = Math.floor(2 + s * 0.5);	
 		this.detailLayer.style.fontSize = detailSize + 'pt';
         var totalHeight = detailSize * 2;
 		this.style.fontSize = totalHeight * 1.125 + 'pt';
@@ -105,18 +104,21 @@ function attachMarkerToCountry( countryName, importance ){
 	// if( tiny )
 	// 	nameLayer.innerHTML = country.countryCode;	
 	// else
-		nameLayer.innerHTML = countryName;	
+		nameLayer.innerHTML = countryName.replace(' ','&nbsp;');	
 
 	// marker.nameLayer = nameLayer;
 	// marker.nameLayerText = countryName;
 	// marker.nameLayerShorten = country.countryCode;;	
 	
 	var importExportText = "";
-	if( country.exportedAmount > 0 )
-		importExportText += "exported: $" + numberWithCommas(country.exportedAmount) + "<br>";
-
-	if( country.importedAmount > 0 )
-		importExportText += "imported: $" + numberWithCommas(country.importedAmount);		
+	if(country.exportedAmount > 0 && country.importedAmount > 0) {
+	   importExportText += "imported:&nbsp;$" + numberWithCommas(country.importedAmount) + "<br />" +
+	       "exported:&nbsp;$"+numberWithCommas(country.exportedAmount);
+	} else if(country.exportedAmount > 0 && country.importedAmount == 0) {
+	   importExportText += "exported:&nbsp;$"+numberWithCommas(country.exportedAmount)+"<br />&nbsp;";
+	} else if(country.exportedAmount == 0 && country.importedAmount > 0) {
+	   importExportText += "imported:&nbsp;$"+numberWithCommas(country.importedAmount)+"<br />&nbsp;";
+	}
 
 	marker.importExportText = importExportText;
 

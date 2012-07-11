@@ -51,7 +51,7 @@ var d3Graphs = {
         $("#graphIcon").click(d3Graphs.graphIconClick);
         $("#history .close").click(d3Graphs.closeHistogram);
         $("#history ul li").click(d3Graphs.clickTimeline);
-        $("#handle").draggable({axis: 'x',containment: "parent",grid:[this.handleInterval, this.handleInterval], /* stop: d3Graphs.dropHandle,*/ drag: d3Graphs.dropHandle });
+        $("#handle").draggable({axis: 'x',containment: "parent",grid:[this.handleInterval, this.handleInterval],  stop: d3Graphs.dropHandle, drag: d3Graphs.dropHandle });
         $("#hudHeader .searchBtn").click(d3Graphs.updateViz);
         $("#importExportBtns .imex>div").not(".label").click(d3Graphs.importExportBtnClick);
         $("#importExportBtns .imex .label").click(d3Graphs.importExportLabelClick);
@@ -401,9 +401,25 @@ var d3Graphs = {
         var exportArray = [];
         var importTotal = selectedCountry.summary.imported.total;
         var exportTotal = selectedCountry.summary.exported.total;
+        var minImExAmount = Number.MAX_VALUE;
+        var maxImExAmount = Number.MIN_VALUE;
         for(var type in reverseWeaponLookup) {
-            importArray.push({"type":type, "amount":selectedCountry.summary.imported[type]});
-            exportArray.push({"type":type, "amount":selectedCountry.summary.exported[type]});
+            var imAmnt = selectedCountry.summary.imported[type];
+            var exAmnt = selectedCountry.summary.exported[type];
+            if(imAmnt < minImExAmount) {
+                minImExAmount = imAmnt;
+            }
+            if(imAmnt > maxImExAmount) {
+                maxImExAmount = imAmnt;
+            }
+            if(exAmnt < minImExAmount) {
+                minImExAmount = exAmnt;
+            }
+            if(exAmnt > maxImExAmount) {
+                maxImExAmount = exAmnt;
+            }
+            importArray.push({"type":type, "amount": imAmnt});
+            exportArray.push({"type":type, "amount": exAmnt});
         }
         var max = importTotal > exportTotal ? importTotal : exportTotal;
         var yScale = d3.scale.linear().domain([0,max]).range([0,this.barGraphHeight - this.barGraphBottomPadding - this.barGraphTopPadding]);
@@ -440,6 +456,7 @@ var d3Graphs = {
         this.previousExportLabelTranslateY = 0;
         var paddingFromBottomOfGraph = 10;
         var heightPerLabel = 25;
+        var fontSizeInterpolater = d3.interpolateRound(10,28);
         importLabels.attr('transform',function(d) { 
             var translate = 'translate('+(d3Graphs.barGraphWidth / 2 - 25)+",";
             var value = d3Graphs.barGraphHeight - d3Graphs.barGraphBottomPadding - d3Graphs.cumImportLblY - yScale(d.amount)/2;
@@ -466,12 +483,16 @@ var d3Graphs = {
         }).attr('text-anchor','end').attr('y',15).attr('class',function(d){ return 'import '+d.type});
         var importNumLabel = importLabels.append('text').text(function(d) {
             return abbreviateNumber(d.amount);
-        }).attr('text-anchor','end');
+        }).attr('text-anchor','end')
+        .attr('font-size',function(d) {
+            return fontSizeInterpolater((d.amount - minImExAmount)/(maxImExAmount - minImExAmount));
+        });
         var importGroups = importLabels[0];
         importTextLabel = importTextLabel[0];
         importNumLabel = importNumLabel[0];
         importLabelBGs = importLabelBGs[0];
         var boxHeight = 30;
+        
         for(var i = 0; i < importTextLabel.length; i++) {
             var maxWidth = importTextLabel[i].getComputedTextLength() > importNumLabel[i].getComputedTextLength() ? importTextLabel[i].getComputedTextLength() : importNumLabel[i].getComputedTextLength();
             d3.select(importLabelBGs[i]).attr('class','barGraphLabelBG').attr('height',boxHeight).attr('width',maxWidth).attr('x',-maxWidth).attr('y',-boxHeight/2);            
@@ -505,6 +526,8 @@ var d3Graphs = {
         }).attr('y',15).attr('class',function(d) { return 'export '+ d.type});
         var exportNumLabel = exportLabels.append('text').text(function(d) {
             return abbreviateNumber(d.amount);
+        }).attr('font-size',function(d) {
+            return fontSizeInterpolater((d.amount - minImExAmount)/(maxImExAmount - minImExAmount));
         });
         
         var importTotalLabel = this.barGraphSVG.selectAll('text.totalLabel').data([1]);
@@ -521,7 +544,8 @@ var d3Graphs = {
         }
         var exportTotalLabel = this.barGraphSVG.selectAll('text.totalLabel.totalLabel2').data([1]);
         exportTotalLabel.enter().append('text').attr('x',midX+10).attr('class','totalLabel totalLabel2').attr('y', this.barGraphHeight - this.barGraphBottomPadding+25);
-        exportTotalLabel.text(abbreviateNumber(exportTotal));
+        exportTotalLabel.text(abbreviateNumber(exportTotal))
+        ;
         
         //Import label at bottom
         var importLabel = this.barGraphSVG.selectAll('text.importLabel').data([1]).enter().append('text').attr('x',midX).attr('text-anchor','end').text('IMPORTS')
