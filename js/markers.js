@@ -29,8 +29,7 @@ function attachMarkerToCountry( countryName, importance ){
 	marker.importance = importance;
 	marker.selected = false;
 	marker.hover = false;
-    marker.prevSize = -1;
-	if( countryName === selectedCountry.countryName.toUpperCase() )
+    if( countryName === selectedCountry.countryName.toUpperCase() )
 		marker.selected = true;
 
 	marker.setPosition = function(x,y,z){
@@ -52,15 +51,7 @@ function attachMarkerToCountry( countryName, importance ){
 	marker.detailLayer = detailLayer;
     marker.jquery = $(marker);
 	marker.setSize = function( s ){
-	    if(s == this.prevSize && !this.hover) {
-	    //   return;
-	    }
-	    if(this.countryName == 'THAILAND') {
-	       console.log('setting');
-	    }
-	    //this.style.width = 'auto';
-	    this.prevSize = s;
-        var detailSize = Math.floor(2 + s * 0.5);	
+	    var detailSize = Math.floor(2 + s * 0.5);	
 		this.detailLayer.style.fontSize = detailSize + 'pt';
         var totalHeight = detailSize * 2;
 		this.style.fontSize = totalHeight * 1.125 + 'pt';
@@ -69,17 +60,6 @@ function attachMarkerToCountry( countryName, importance ){
 		} else {
 		    this.countryLayer.style.marginTop = "-1px";
 		}
-        if(marker.countryName = "UNITED STATES") {
-        //    console.log(this.jquery.width());
-        }
-        //this.jquery.width();
-        //this.style.width = (this.jquery.width()) + 'px';
-		//console.log(this.offsetWidth + "  " + this.style.paddingLeft + " " + this.style.paddingRight);
-//		this.style.width = (this.countryLayer.offsetWidth + this.detailLayer.offsetWidth + 10)+"px";
-		/*
-		if(this.countryName == "UNITED STATES") {
-		  console.log(this.offsetWidth);
-		}*/
 	}
 
 	marker.update = function(){
