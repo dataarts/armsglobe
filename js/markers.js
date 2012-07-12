@@ -67,7 +67,7 @@ function attachMarkerToCountry( countryName, importance ){
 		var abspos = matrix.multiplyVector3( country.center.clone() );
 		var screenPos = screenXY(abspos);			
 
-		var s = 0.2 + camera.scale.z * 3;
+		var s = 0.2 + camera.scale.z * 1;
 		var importanceScale = this.importance / 5000000;
 		importanceScale = constrain( importanceScale, 0, 18 );
 		s += importanceScale;
@@ -86,7 +86,7 @@ function attachMarkerToCountry( countryName, importance ){
 		// if( this.selected )
 			// this.setVisible( true )
 		// else
-			this.setVisible( ( abspos.z > 60 ) && s > 5 );	
+			this.setVisible( ( abspos.z > 60 ) && s > 3 );	
 
 		var zIndex = Math.floor( 1000 - abspos.z + s );
 		if( this.selected || this.hover )

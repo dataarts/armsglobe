@@ -72,6 +72,7 @@ function makeConnectionLineGeometry( exporter, importer, value, type ){
 	var val = value * 0.0003;
 	
 	var size = (10 + Math.sqrt(val));
+	size = constrain(size,0.1, 60);
 
 	//	create a line geometry out of these
 	var curveGeometry = THREE.Curve.Utils.createLineGeometry( points );
