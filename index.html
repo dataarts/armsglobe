@@ -129,15 +129,18 @@
 
 
 		<!-- All other hud can go here-->
-        <div id="hudHeader" class="overlayCountries">
-            <h1>Global Arms Trade
+        <div id="hudHeader" class="overlayCountries noPointer">
+            <h1 class="noPointer">Global Arms Trade
                 <div class="subtitle">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut id vehicula dolor.</div>
 			</h1>
-            <input type="button" value="SEARCH" class="searchBtn armsBtn">
-			<input type="text" name="country" class="countryTextInput" value="UNITED STATES">  
-            <input type="button" value="ABOUT" class="aboutBtn armsBtn">
+			
+            <input type="button" value="SEARCH" class="searchBtn armsBtn pointer">
+			<input type="text" name="country" class="countryTextInput pointer" value="UNITED STATES">  
+			<input type="button" value="—" class="zoomBtn zoomOutBtn armsBtn pointer">
+			<input type="button" value="+" class="zoomBtn zoomInBtn armsBtn pointer">
+            <input type="button" value="ABOUT" class="aboutBtn armsBtn pointer">
         </div>
-        <div id="history" class="overlayCountries">
+        <div id="history" class="overlayCountries noPointer">
             <div class="graph">
                 <div class="close"></div>
                 <div class="labels">
@@ -145,9 +148,9 @@
                     <div class="exports">EXPORTS</div>
                     <div class="imports">IMPORTS</div><br class="clear" />
                 </div>
-                <div class="container"></div>
+                <div class="container noPointer"></div>
             </div>
-            <ul class="timeline">
+            <ul class="timeline pointer">
                 <li>1992</li>
                 <li>93</li>
                 <li>94</li>

@@ -4,6 +4,12 @@ Created by Pitch Interactive
 Created on 6/26/2012
 This code will control the primary functions of the UI in the ArmsGlobe app
 **/
+d3.selection.prototype.moveToFront = function() { 
+    return this.each(function() { 
+        this.parentNode.appendChild(this); 
+    }); 
+}; 
+
 var d3Graphs = {
     barGraphWidth: 300,
 	barGraphHeight: 800,
@@ -11,10 +17,10 @@ var d3Graphs = {
 	barGraphTopPadding: 20,
 	barGraphBottomPadding: 50,
 	histogramWidth: 780,
-	histogramHeight: 140,
+	histogramHeight: 160,
 	histogramLeftPadding:31,
 	histogramRightPadding: 31,
-	histogramVertPadding:10,
+	histogramVertPadding:20,
 	barGraphSVG: d3.select("body").append("svg"),
 	histogramSVG: null,
 	histogramYScale: null,
@@ -31,6 +37,7 @@ var d3Graphs = {
     histogramAbsMax: 0,
     previousImportLabelTranslateY: -1,
     previousExportLabelTranslateY: -1,
+    zoomBtnInterval: -1,
     setCountry: function(country) {
         $("#hudHeader .countryTextInput").val(country);
         d3Graphs.updateViz();
@@ -61,17 +68,29 @@ var d3Graphs = {
         $("#hudHeader .aboutBtn").click(d3Graphs.toggleAboutBox);
         $(document).on("click",".ui-autocomplete li",d3Graphs.menuItemClick);
         $(window).resize(d3Graphs.windowResizeCB);
+        $(".zoomBtn").mousedown(d3Graphs.zoomBtnClick);
+        $(".zoomBtn").mouseup(d3Graphs.zoomBtnMouseup);
         
+    },
+    zoomBtnMouseup: function() {
+        clearInterval(d3Graphs.zoomBtnInterval);
+    },
+    zoomBtnClick:function() {
+        var delta;
+        if($(this).hasClass('zoomOutBtn')) {
+            delta = -0.5;
+        } else {
+            delta = 0.5;
+        }
+        d3Graphs.doZoom(delta);
+        d3Graphs.zoomBtnInterval = setInterval(d3Graphs.doZoom,50,delta);
+    },
+    doZoom:function(delta) {
+        camera.scale.z += delta * 0.1;
+        camera.scale.z = constrain( camera.scale.z, 0.8, 5.0 );
     },
     toggleAboutBox:function() {
         $("#aboutContainer").toggle();
-    },
-    dragHandle:function() {
-        if(!d3Graphs.histogramOpen) {
-            return;
-        }
-        d3Graphs.setHistogramData();
-        d3Graphs.updateActiveYearDots();
     },
     clickTimeline:function() {
         var year = $(this).html();
@@ -201,36 +220,68 @@ var d3Graphs = {
     line: d3.svg.line()
         // assign the X function to plot our line as we wish
     .x(function(d,i) { 
-        return d3Graphs.histogramXScale(i) + d3Graphs.histogramLeftPadding; 
+        if(d == null) {
+            return null;
+        }
+        return d3Graphs.histogramXScale(d.x) + d3Graphs.histogramLeftPadding; 
      })
     .y(function(d) { 
-        return d3Graphs.histogramYScale(d) + d3Graphs.histogramVertPadding; 
+        if(d == null) {
+            return null;
+        }
+        return d3Graphs.histogramYScale(d.y) + d3Graphs.histogramVertPadding; 
     }),
     setHistogramData:function() {
-        var importArray = [0];
-        var exportArray = [0];
+        var importArray = [];
+        var exportArray = [];
         var historical = selectedCountry.summary.historical;
         var numHistory = historical.length;
         console.log(historical);
         var absMax = 0;
-        for(var i = 1; i < numHistory; i++) {
-            var importPrev = historical[0].imports;
+        var startingImportIndex = 0;
+        var startingExportIndex = 0;
+        
+        while(startingImportIndex < historical.length && historical[startingImportIndex].imports == 0) {
+            startingImportIndex++;
+        }
+        while(startingExportIndex < historical.length && historical[startingExportIndex].exports == 0) {
+            startingExportIndex++;
+        }
+        for(var i = 0; i < startingImportIndex; i++) {
+//            importArray.push({x:i, y:null});
+        }
+        if(startingImportIndex != numHistory) {
+            importArray.push({x: startingImportIndex, y:0});
+        }
+        for(var i = startingImportIndex + 1; i < numHistory; i++) {
+            var importPrev = historical[startingImportIndex].imports;
             var importCur = historical[i].imports;
             var importDiff = (importCur - importPrev) / importPrev * 100;
-            var exportPrev = historical[0].exports;
-            var exportCur = historical[i].exports;
-            var exportDiff = (exportCur - exportPrev) / exportPrev * 100;
-            importArray.push(importDiff);
-            exportArray.push(exportDiff); 
+            importArray.push({x:i, y:importDiff});
             if(Math.abs(importDiff) > absMax) {
                 absMax = Math.abs(importDiff);
             }
+            
+        }
+        for(var i = 0; i < startingExportIndex; i++) {
+        //    exportArray.push(null);
+        }
+        if(startingExportIndex != numHistory) {
+            exportArray.push({x: startingExportIndex, y: 0});
+        }
+        for(var i = startingExportIndex + 1; i < numHistory; i++) {    
+            var exportPrev = historical[startingExportIndex].exports;
+            var exportCur = historical[i].exports;
+            var exportDiff = (exportCur - exportPrev) / exportPrev * 100;
+            exportArray.push({x: i, y: exportDiff}); 
             if(Math.abs(exportDiff) > absMax) {
                 absMax = Math.abs(exportDiff);
             }
             
         }
+        console.log('imports');
         console.log(importArray);
+        console.log('exports');
         console.log(exportArray);
         this.histogramImportArray = importArray;
         this.histogramExportArray = exportArray;
@@ -244,7 +295,8 @@ var d3Graphs = {
         this.setHistogramData();
         
         this.histogramYScale = d3.scale.linear().domain([this.histogramAbsMax,-this.histogramAbsMax]).range([0, this.histogramHeight - this.histogramVertPadding*2]);
-        this.histogramXScale = d3.scale.linear().domain([0,this.histogramExportArray.length-1]).range([0, this.histogramWidth - this.histogramLeftPadding - this.histogramRightPadding]);
+        var maxX = selectedCountry.summary.historical.length - 1;
+        this.histogramXScale = d3.scale.linear().domain([0,maxX]).range([0, this.histogramWidth - this.histogramLeftPadding - this.histogramRightPadding]);
         
         var tickData = this.histogramYScale.ticks(4);
         var containsZero = false;
@@ -255,7 +307,7 @@ var d3Graphs = {
                 break;
             }
         }
-        if(!containsZero) {
+        if(!containsZero && numTicks != 0) {
             tickData.push(0);
         }
         //tick lines
@@ -319,42 +371,77 @@ var d3Graphs = {
     
         var importLine = this.histogramSVG.selectAll("path.import").data([1]);
         importLine.enter().append('svg:path').attr('class','import');
-        importLine.attr('d',this.line(this.histogramImportArray)).attr('visibility',importsVisible ? 'visible' : 'hidden');
+        importLine.attr('d',
+        function(){
+            if(d3Graphs.histogramImportArray.length == 0) {
+                return 'M 0 0';
+            } else {
+                return d3Graphs.line(d3Graphs.histogramImportArray);
+            }
+        }).attr('visibility',importsVisible ? 'visible' : 'hidden');
         var exportLine = this.histogramSVG.selectAll("path.export").data([1]);
         exportLine.enter().append('svg:path').attr('class','export');
-        exportLine.attr('d',this.line(this.histogramExportArray)).attr('visibility', exportsVisible ? 'visible' : 'hidden');
-        
+        exportLine.attr('d',function() {
+            if(d3Graphs.histogramExportArray.length == 0) {
+                return 'M 0 0';
+            } else {
+                return d3Graphs.line(d3Graphs.histogramExportArray);
+            }
+        }).attr('visibility', exportsVisible ? 'visible' : 'hidden');
+        importLine.moveToFront();
+        exportLine.moveToFront();
         //active year labels
         var yearOffset = $("#handle").css('left');
         yearOffset = yearOffset.substr(0,yearOffset.length-2);
         yearOffset -= d3Graphs.handleLeftOffset;
         yearOffset /= d3Graphs.handleInterval;
-        var maxVal = this.histogramImportArray[yearOffset] > this.histogramExportArray[yearOffset] ? this.histogramImportArray[yearOffset] : this.histogramExportArray[yearOffset];
-        
-        var activeYearData = [{x:yearOffset, y: this.histogramImportArray[yearOffset], max: maxVal}, {x: yearOffset, y: this.histogramExportArray[yearOffset], max: maxVal}];
+        var activeYearImports = null;
+        for(var i = 0; i < this.histogramImportArray.length; i++) {
+            var curYearData = this.histogramImportArray[i];
+            if(curYearData.x == yearOffset) {
+                activeYearImports = curYearData;
+                break;
+            }
+        }
+        var activeYearExports = null;
+        for(var i = 0; i < this.histogramExportArray.length; i++) {
+            var curYearData = this.histogramExportArray[i];
+            if(curYearData.x == yearOffset) {
+                activeYearExports = curYearData;
+                break;
+            }
+        }
+        var maxVal;
+        if(activeYearImports != null && activeYearExports!= null) {
+            maxVal = activeYearImports.y > activeYearExports.y ? activeYearImports.y : activeYearExports.y;
+        } else if(activeYearImports != null) {
+            maxVal = activeYearImports.y;
+        } else if(activeYearExports != null) {
+            maxVal = activeYearExports.y;
+        } else {
+            maxVal = -1;
+        }
+        /*console.log('active year');
+        console.log(activeYearImports);
+        console.log(activeYearExports);*/
+        var activeYearData = [{x:yearOffset, y: activeYearImports != null ? activeYearImports.y : -1, max: maxVal, show: activeYearImports!=null, type:"imports"},
+            {x: yearOffset, y: activeYearExports != null ? activeYearExports.y : -1, max: maxVal, show:activeYearExports!=null, type:'exports'}];
+        console.log(activeYearData);
         var yearDots = this.histogramSVG.selectAll("ellipse.year").data(activeYearData);
         var yearDotLabels = this.histogramSVG.selectAll("text.yearLabel").data(activeYearData);
         yearDots.enter().append('ellipse').attr('class','year').attr('rx',4).attr('ry',4)
             .attr('cx',function(d) { return d3Graphs.histogramLeftPadding + d3Graphs.histogramXScale(d.x); })
             .attr('cy',function(d) { return d3Graphs.histogramVertPadding + d3Graphs.histogramYScale(d.y); });
         yearDotLabels.enter().append('text').attr('class','yearLabel').attr('text-anchor','middle');
-        this.updateActiveYearDots();
-    },
-    updateActiveYearDots: function() {
-        var yearOffset = $("#handle").css('left');
-        yearOffset = yearOffset.substr(0,yearOffset.length-2);
-        yearOffset -= d3Graphs.handleLeftOffset;
-        yearOffset /= d3Graphs.handleInterval;
-        var maxVal = this.histogramImportArray[yearOffset] > this.histogramExportArray[yearOffset] ? this.histogramImportArray[yearOffset] : this.histogramExportArray[yearOffset];
-        var activeYearData = [{x:yearOffset, y: this.histogramImportArray[yearOffset], max: maxVal, type:"imports"}, {x: yearOffset, y: this.histogramExportArray[yearOffset], max: maxVal, type:"exports"}];
-        var yearDots = this.histogramSVG.selectAll("ellipse.year").data(activeYearData);
-        var yearDotLabels = this.histogramSVG.selectAll("text.yearLabel").data(activeYearData);
         var importsVisible = $("#importExportBtns .imports .check").not(".inactive").length != 0;
         var exportsVisible = $("#importExportBtns .exports .check").not(".inactive").length != 0;
         
         yearDots.attr('cx', function(d) { return d3Graphs.histogramLeftPadding + d3Graphs.histogramXScale(d.x); })
             .attr('cy',function(d) { return d3Graphs.histogramVertPadding + d3Graphs.histogramYScale(d.y); } )
             .attr('visibility', function(d) {
+                if(d.show == false) {
+                    return 'hidden';
+                }
                 if(d.type == "imports") {
                     return importsVisible ? 'visible' : 'hidden';
                 } else if(d.type == "exports") {
@@ -387,16 +474,19 @@ var d3Graphs = {
             return lbl;
 
         }).attr('visibility', function(d) {
+            if(d.show == false) {
+                return 'hidden';
+            }
             if(d.type == "imports") {
                 return importsVisible ? 'visible' : 'hidden';
             } else if(d.type == "exports") {
                 return exportsVisible ? 'visible' : 'hidden';
             }
         });
+
     },
     drawBarGraph: function() {
-        
-        this.barGraphSVG.attr('id','barGraph').attr('width',d3Graphs.barGraphWidth).attr('height',d3Graphs.barGraphHeight).attr('class','overlayCountries');
+        this.barGraphSVG.attr('id','barGraph').attr('width',d3Graphs.barGraphWidth).attr('height',d3Graphs.barGraphHeight).attr('class','overlayCountries noPointer');
         var importArray = [];
         var exportArray = [];
         var importTotal = selectedCountry.summary.imported.total;
@@ -457,6 +547,7 @@ var d3Graphs = {
         var paddingFromBottomOfGraph = 10;
         var heightPerLabel = 25;
         var fontSizeInterpolater = d3.interpolateRound(10,28);
+ 
         importLabels.attr('transform',function(d) { 
             var translate = 'translate('+(d3Graphs.barGraphWidth / 2 - 25)+",";
             var value = d3Graphs.barGraphHeight - d3Graphs.barGraphBottomPadding - d3Graphs.cumImportLblY - yScale(d.amount)/2;
@@ -468,6 +559,9 @@ var d3Graphs = {
                 value -= heightPerLabel;
                 d3Graphs.cumImportLblY += heightPerLabel;
             }*/
+            if(yScale(d.amount) > 40) {
+                value -= 10;
+            }
             translate += value+")";
             
             this.previousImportLabelTranslateY = value;
@@ -480,22 +574,46 @@ var d3Graphs = {
         var importLabelBGs = importLabels.append('rect');
         var importTextLabel = importLabels.append('text').text(function(d) {
             return reverseWeaponLookup[d.type].split(' ')[0].toUpperCase();
-        }).attr('text-anchor','end').attr('y',15).attr('class',function(d){ return 'import '+d.type});
+        }).attr('text-anchor','end').attr('y',15).attr('class',function(d){ return 'import '+d.type})
+        .attr('visibility',function(d) {
+            if(yScale(d.amount) < 20) {
+                return 'hidden';
+            }
+            return 'visible';
+        });
+        var importWeaponLabel = importLabels.append('text').text(function(d) {
+            return 'WEAPONS';
+        }).attr('text-anchor','end').attr('y',30).attr('class',function(d) { return 'import weapon '+d.type;})
+          .attr('visibility',function(d) {
+            if(d.type == 'ammo') return 'hidden';
+            if(yScale(d.amount) < 40) {
+                return 'hidden';
+            }
+            return 'visible';
+          });
+        
         var importNumLabel = importLabels.append('text').text(function(d) {
             return abbreviateNumber(d.amount);
         }).attr('text-anchor','end')
         .attr('font-size',function(d) {
             return fontSizeInterpolater((d.amount - minImExAmount)/(maxImExAmount - minImExAmount));
+        }).attr('y',function(d) {
+            if(yScale(d.amount) < 20) {
+                return 3;
+            }
+            return 0;
         });
         var importGroups = importLabels[0];
         importTextLabel = importTextLabel[0];
         importNumLabel = importNumLabel[0];
         importLabelBGs = importLabelBGs[0];
-        var boxHeight = 30;
+        var boxHeight = 17;
         
         for(var i = 0; i < importTextLabel.length; i++) {
             var maxWidth = importTextLabel[i].getComputedTextLength() > importNumLabel[i].getComputedTextLength() ? importTextLabel[i].getComputedTextLength() : importNumLabel[i].getComputedTextLength();
-            d3.select(importLabelBGs[i]).attr('class','barGraphLabelBG').attr('height',boxHeight).attr('width',maxWidth).attr('x',-maxWidth).attr('y',-boxHeight/2);            
+            var numberHeight = fontSizeInterpolater((importArray[i].amount - minImExAmount) / (maxImExAmount - minImExAmount));
+            var curBoxHeight = boxHeight + numberHeight;
+            d3.select(importLabelBGs[i]).attr('class','barGraphLabelBG').attr('height',curBoxHeight).attr('width',maxWidth).attr('x',-maxWidth).attr('y', - numberHeight);            
         }
         var exportLabels = this.barGraphSVG.selectAll("g.exportLabel").data(exportArray);
         exportLabels.enter().append("g").attr('class',function(d) {
@@ -529,31 +647,38 @@ var d3Graphs = {
         }).attr('font-size',function(d) {
             return fontSizeInterpolater((d.amount - minImExAmount)/(maxImExAmount - minImExAmount));
         });
-        
+        var importsVisible = $("#importExportBtns .imports .check").not(".inactive").length != 0;
+        var exportsVisible = $("#importExportBtns .exports .check").not(".inactive").length != 0;
+
         var importTotalLabel = this.barGraphSVG.selectAll('text.totalLabel').data([1]);
         importTotalLabel.enter().append('text').attr('x',midX).attr('text-anchor','end')
             .attr('class','totalLabel').attr('y',this.barGraphHeight- this.barGraphBottomPadding + 25);
-        importTotalLabel.text(abbreviateNumber(importTotal));
+        importTotalLabel.text(abbreviateNumber(importTotal)).attr('visibility',importsVisible ? "visible":"hidden");
         var exportGroups = exportLabels[0];
         exportTextLabel = exportTextLabel[0];
         exportNumLabel = exportNumLabel[0];
         exportLabelBGs = exportLabelBGs[0];
         for(var i = 0; i < exportTextLabel.length; i++) {
             var maxWidth = exportTextLabel[i].getComputedTextLength() > exportNumLabel[i].getComputedTextLength() ? exportTextLabel[i].getComputedTextLength() : exportNumLabel[i].getComputedTextLength();
-            d3.select(exportLabelBGs[i]).attr('class','barGraphLabelBG').attr('height',boxHeight).attr('width',maxWidth).attr('x',0).attr('y',-boxHeight/2);            
+            var numberHeight = fontSizeInterpolater((exportArray[i].amount - minImExAmount) / (maxImExAmount - minImExAmount));
+            var curBoxHeight = boxHeight + numberHeight;
+            d3.select(exportLabelBGs[i]).attr('class','barGraphLabelBG').attr('height',curBoxHeight).attr('width',maxWidth).attr('x',0).attr('y',-numberHeight);            
         }
         var exportTotalLabel = this.barGraphSVG.selectAll('text.totalLabel.totalLabel2').data([1]);
         exportTotalLabel.enter().append('text').attr('x',midX+10).attr('class','totalLabel totalLabel2').attr('y', this.barGraphHeight - this.barGraphBottomPadding+25);
-        exportTotalLabel.text(abbreviateNumber(exportTotal))
+        exportTotalLabel.text(abbreviateNumber(exportTotal)).attr('visibility',exportsVisible ? "visible":"hidden")
         ;
         
         //Import label at bottom
-        var importLabel = this.barGraphSVG.selectAll('text.importLabel').data([1]).enter().append('text').attr('x',midX).attr('text-anchor','end').text('IMPORTS')
+        var importLabel = this.barGraphSVG.selectAll('text.importLabel').data([1]);
+        importLabel.enter().append('text').attr('x',midX).attr('text-anchor','end').text('IMPORTS')
             .attr('class','importLabel').attr('y', this.barGraphHeight - this.barGraphBottomPadding + 45);
+        importLabel.attr('visibility',importsVisible ? "visible":"hidden");
         //Export label at bottom
-        var exportLabel = this.barGraphSVG.selectAll('text.exportLabel').data([1]).enter().append('text').attr('x',midX+10).text('EXPORTS')
+        var exportLabel = this.barGraphSVG.selectAll('text.exportLabel').data([1]);
+        exportLabel.enter().append('text').attr('x',midX+10).text('EXPORTS')
             .attr('class','exportLabel').attr('y', this.barGraphHeight - this.barGraphBottomPadding + 45);
-        
+        exportLabel.attr('visibility',exportsVisible ? "visible":"hidden")        
     },
     dragHandleStart: function(event) {
         console.log('start');

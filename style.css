@@ -299,6 +299,12 @@ Elements to control the title and country selector
 .overlayCountries {
     z-index: 10001; /* selected country has z-index:10000*/
 }
+.pointer {
+    pointer-events: auto;
+}
+.noPointer {
+    pointer-events: none;
+}
 #hudHeader {
     position: 				absolute;
     width: 					100%;
@@ -334,7 +340,7 @@ Elements to control the title and country selector
 #hudHeader .armsBtn {
     float: right;
     background: 			#333333;
-    padding: 				3px 10px 4px;
+    padding: 				3px 10px 2px;
     color: 					white;
     border: 				0;
     font-size: 				19px;/*
@@ -356,7 +362,9 @@ Elements to control the title and country selector
 	margin-top: 			-44px;
 	width: 					78px;
 }
-
+#hudHeader .zoomBtn {
+    margin-right:           5px;
+}
 .ui-autocomplete .ui-menu-item {
     border-top:             1px solid #656565;
     margin-left:            -39px;
@@ -423,7 +431,7 @@ Bar graph on left
     fill: 					#70B4CB;
 }
 #barGraph .barGraphLabelBG {
-    fill: rgba(0,0,0,0.5);
+    fill: rgba(0,0,0,0.8);
 }
 /* histogram and timeline at bottom */
 #history {
