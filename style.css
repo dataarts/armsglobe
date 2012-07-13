@@ -533,12 +533,14 @@ Bar graph on left
 #aboutBox .text {
     font-family: Roboto;
     font-size: 15px;
-    margin-bottom: 20px;
 }
-#aboutBox .links a {
+#aboutBox a {
     text-transform: none;
     font-size: 15px;
     font-family: Roboto;
     font-weight: bold;
-    color: #FFA90B;
+    color: white;
+}
+#aboutBox a:hover {
+    text-decoration: underline;
 }

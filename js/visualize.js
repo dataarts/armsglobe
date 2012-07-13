@@ -340,8 +340,12 @@ function selectVisualization( linearData, year, countries, exportCategories, imp
 		if( selectedCountry ){
 			rotateTargetX = selectedCountry.lat * Math.PI/180;
 			rotateTargetY = wrap( -(selectedCountry.lon-9) * Math.PI/180, -Math.PI, Math.PI );
+            //lines commented below source of rotation error
+			//is there a more reliable way to ensure we don't rotate around the globe too much? 
+			/*
 			if( Math.abs(rotateTargetY - rotating.rotation.y) > Math.PI )
 				rotateTargetY += Math.PI;		
+			*/
 			rotateVX *= 0.6;
 			rotateVY *= 0.6;		
 		}	
