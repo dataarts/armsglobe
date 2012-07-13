@@ -119,7 +119,7 @@ var d3Graphs = {
         $("#graphIcon").css('left',historyLeftPos + historyWidth + graphIconPadding+'px');
     },
     countryFocus:function(event) {
-        console.log("focus");
+        //console.log("focus");
         setTimeout(function() { $('#hudHeader .countryTextInput').select() },50);
     },
     menuItemClick:function(event) {
@@ -457,9 +457,10 @@ var d3Graphs = {
             } else {
                 yVal += 19;
             }
+            /*
             if(yVal < d3Graphs.histogramVertPadding) {
                 yVal += 26;
-            }
+            }*/
             if(yVal > d3Graphs.histogramHeight + d3Graphs.histogramVertPadding) {
                 yVal -= 26;
             }
@@ -484,6 +485,8 @@ var d3Graphs = {
                 return exportsVisible ? 'visible' : 'hidden';
             }
         });
+        yearDots.moveToFront();
+        yearDotLabels.moveToFront();
 
     },
     drawBarGraph: function() {

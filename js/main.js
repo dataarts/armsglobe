@@ -353,7 +353,7 @@ function animate() {
 	rotateX += rotateVX;
 	rotateY += rotateVY;
 
-	rotateY = wrap( rotateY, -Math.PI, Math.PI );
+	//rotateY = wrap( rotateY, -Math.PI, Math.PI );
 
 	rotateVX *= 0.98;
 	rotateVY *= 0.98;

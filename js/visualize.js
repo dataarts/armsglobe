@@ -339,7 +339,22 @@ function selectVisualization( linearData, year, countries, exportCategories, imp
 	if( previouslySelectedCountry !== selectedCountry ){
 		if( selectedCountry ){
 			rotateTargetX = selectedCountry.lat * Math.PI/180;
-			rotateTargetY = wrap( -(selectedCountry.lon-9) * Math.PI/180, -Math.PI, Math.PI );
+			var targetY0 = -(selectedCountry.lon - 9) * Math.PI / 180;
+            var piCounter = 0;
+			while(true) {
+                var targetY0Neg = targetY0 - Math.PI * 2 * piCounter;
+                var targetY0Pos = targetY0 + Math.PI * 2 * piCounter;
+                if(Math.abs(targetY0Neg - rotating.rotation.y) < Math.PI) {
+                    rotateTargetY = targetY0Neg;
+                    break;
+                } else if(Math.abs(targetY0Pos - rotating.rotation.y) < Math.PI) {
+                    rotateTargetY = targetY0Pos;
+                    break;
+                }
+                piCounter++;
+                rotateTargetY = wrap(targetY0, -Math.PI, Math.PI);
+			}
+            console.log(rotateTargetY);
             //lines commented below source of rotation error
 			//is there a more reliable way to ensure we don't rotate around the globe too much? 
 			/*
