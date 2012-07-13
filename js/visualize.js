@@ -177,7 +177,7 @@ function getVisualizedMesh( linearData, year, countries, exportCategories, impor
 		}		
 	}
 
-	console.log(selectedCountry);
+	// console.log(selectedCountry);
 
 	linesGeo.colors = lineColors;	
 
@@ -327,6 +327,12 @@ function selectVisualization( linearData, year, countries, exportCategories, imp
 	//	add it to scene graph
 	visualizationMesh.add( mesh );	
 
+
+	//	alright we got no data but at least highlight the country we've selected
+	if( mesh.affectedCountries.length == 0 ){
+		mesh.affectedCountries.push( cName );
+	}	
+
 	for( var i in mesh.affectedCountries ){
 		var countryName = mesh.affectedCountries[i];
 		var country = countryData[countryName];
@@ -354,7 +360,7 @@ function selectVisualization( linearData, year, countries, exportCategories, imp
                 piCounter++;
                 rotateTargetY = wrap(targetY0, -Math.PI, Math.PI);
 			}
-            console.log(rotateTargetY);
+            // console.log(rotateTargetY);
             //lines commented below source of rotation error
 			//is there a more reliable way to ensure we don't rotate around the globe too much? 
 			/*

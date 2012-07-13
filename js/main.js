@@ -88,7 +88,8 @@ var selectionData;
 var idle = false;
 
 //	for svg loading
-var assetList = [	"images/crosshair.svg", 'images/worldmap_equirectangular_simplified.svg'	];
+//	deprecated, not using svg loading anymore
+var assetList = [];
 
 //	TODO
 //	use underscore and ".after" to load these in order
@@ -96,20 +97,16 @@ var assetList = [	"images/crosshair.svg", 'images/worldmap_equirectangular_simpl
 
 
 function start( e ){
-	loadSVGAssets( assetList,
+	loadCountryCodes(
 		function(){
-			loadCountryCodes(
-				function(){
-					loadWorldPins(
-						function(){										
-							loadContentData(								
-								function(){																	
-									initScene();
-									animate();		
-								}
-							);														
+			loadWorldPins(
+				function(){										
+					loadContentData(								
+						function(){																	
+							initScene();
+							animate();		
 						}
-					);
+					);														
 				}
 			);
 		}
@@ -445,7 +442,14 @@ function highlightCountry( countries ){
 	ctx.clearRect(0,0,256,1);
 
 	//	color index 0 is the ocean, leave it something neutral
-	ctx.fillStyle = 'rgb(10,10,10)';
+	
+	//	this fixes a bug where the fill for ocean was being applied during pick
+	//	all non-countries were being pointed to 10 - bolivia
+	//	the fact that it didn't select was because bolivia shows up as an invalid country due to country name mismatch
+	//	...
+	var pickMask = (1-mapUniforms['outlineLevel'].value);
+	var oceanFill = 10 * pickMask;
+	ctx.fillStyle = 'rgb(' + oceanFill + ',' + oceanFill + ',' + oceanFill +')';
 	ctx.fillRect( 0, 0, 1, 1 );
 
 	// for( var i = 0; i<255; i++ ){

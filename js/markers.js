@@ -6,8 +6,8 @@ function onMarkerHover( event ){
 	var dx = mouseX - hx;
 	var dy = mouseY - hy;
 	var d = Math.sqrt( dx * dx + dy * dy );
-	if( event.target.style.visibility == 'visible' )
-		console.log('clicked on something!!');				
+	// if( event.target.style.visibility == 'visible' )
+	// 	console.log('clicked on something!!');				
 }
 
 function attachMarkerToCountry( countryName, importance ){
@@ -67,7 +67,7 @@ function attachMarkerToCountry( countryName, importance ){
 		var abspos = matrix.multiplyVector3( country.center.clone() );
 		var screenPos = screenXY(abspos);			
 
-		var s = 0.2 + camera.scale.z * 1;
+		var s = 0.3 + camera.scale.z * 1;
 		var importanceScale = this.importance / 5000000;
 		importanceScale = constrain( importanceScale, 0, 18 );
 		s += importanceScale;
