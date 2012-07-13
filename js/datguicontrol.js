@@ -10,7 +10,7 @@ var controllers = {
 function buildGUI(){	
 	var selection = new Selection();
 	selectionData = selection;
-
+    /*
 	var updateVisualization = function(){
 		selectVisualization( timeBins, selection.selectedYear, [selection.selectedCountry], selection.getExportCategories(), selection.getImportCategories() );	
 	}		    	
@@ -50,5 +50,5 @@ function buildGUI(){
 		c.onFinishChange( categoryFunction );
 	}	
 	gui.close();
-	
+	*/
 }
