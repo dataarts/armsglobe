@@ -236,7 +236,7 @@ var d3Graphs = {
         var exportArray = [];
         var historical = selectedCountry.summary.historical;
         var numHistory = historical.length;
-        console.log(historical);
+//        console.log(historical);
         var absMax = 0;
         var startingImportIndex = 0;
         var startingExportIndex = 0;
@@ -279,10 +279,11 @@ var d3Graphs = {
             }
             
         }
+        /*
         console.log('imports');
         console.log(importArray);
         console.log('exports');
-        console.log(exportArray);
+        console.log(exportArray);*/
         this.histogramImportArray = importArray;
         this.histogramExportArray = exportArray;
         this.histogramAbsMax = absMax;
@@ -426,7 +427,7 @@ var d3Graphs = {
         console.log(activeYearExports);*/
         var activeYearData = [{x:yearOffset, y: activeYearImports != null ? activeYearImports.y : -1, max: maxVal, show: activeYearImports!=null, type:"imports"},
             {x: yearOffset, y: activeYearExports != null ? activeYearExports.y : -1, max: maxVal, show:activeYearExports!=null, type:'exports'}];
-        console.log(activeYearData);
+//        console.log(activeYearData);
         var yearDots = this.histogramSVG.selectAll("ellipse.year").data(activeYearData);
         var yearDotLabels = this.histogramSVG.selectAll("text.yearLabel").data(activeYearData);
         yearDots.enter().append('ellipse').attr('class','year').attr('rx',4).attr('ry',4)
@@ -538,32 +539,26 @@ var d3Graphs = {
         //bar graph labels
         this.cumImportLblY = 0;
         this.cumExportLblY = 0;
+        this.previousImportLabelTranslateY = 0;
+        this.previousExportLabelTranslateY = 0;
+        var paddingFromBottomOfGraph = 00;
+        var heightPerLabel = 25;
+        var fontSizeInterpolater = d3.interpolateRound(10,28);
+        var smallLabelSize = 22;
+        var mediumLabelSize = 40;
+        //import labels
+        var importLabelBGs = this.barGraphSVG.selectAll("rect.barGraphLabelBG").data(importArray);
+        importLabelBGs.enter().append('rect').attr('class',function(d) {
+            return 'barGraphLabelBG ' + d.type; });
         var importLabels = this.barGraphSVG.selectAll("g.importLabel").data(importArray);
         importLabels.enter().append("g").attr('class',function(d) {
             return 'importLabel '+d.type;
         });
-        this.previousImportLabelTranslateY = 0;
-        this.previousExportLabelTranslateY = 0;
-        var paddingFromBottomOfGraph = 10;
-        var heightPerLabel = 25;
-        var fontSizeInterpolater = d3.interpolateRound(10,28);
- 
         importLabels.attr('transform',function(d) { 
             var translate = 'translate('+(d3Graphs.barGraphWidth / 2 - 25)+",";
             var value = d3Graphs.barGraphHeight - d3Graphs.barGraphBottomPadding - d3Graphs.cumImportLblY - yScale(d.amount)/2;
             d3Graphs.cumImportLblY += yScale(d.amount);
-            if(value > d3Graphs.barGraphHeight - d3Graphs.barGraphBottomPadding - paddingFromBottomOfGraph) {
-                value -= paddingFromBottomOfGraph;
-                d3Graphs.cumImportLblY += paddingFromBottomOfGraph;
-            }/* else if(value >  d3Graphs.barGraphHeight - d3Graphs.barGraphBottomPadding - this.previousImportLabelTranslateY - heightPerLabel) {
-                value -= heightPerLabel;
-                d3Graphs.cumImportLblY += heightPerLabel;
-            }*/
-            if(yScale(d.amount) > 40) {
-                value -= 10;
-            }
             translate += value+")";
-            
             this.previousImportLabelTranslateY = value;
             return translate;
         }).attr('display',function(d) {
@@ -571,65 +566,89 @@ var d3Graphs = {
             return null;
         });
         importLabels.selectAll("*").remove();
-        var importLabelBGs = importLabels.append('rect');
-        var importTextLabel = importLabels.append('text').text(function(d) {
-            return reverseWeaponLookup[d.type].split(' ')[0].toUpperCase();
-        }).attr('text-anchor','end').attr('y',15).attr('class',function(d){ return 'import '+d.type})
-        .attr('visibility',function(d) {
-            if(yScale(d.amount) < 20) {
-                return 'hidden';
+        var importLabelArray = importLabels[0];
+        var importLabelBGArray = importLabelBGs[0];
+        for(var i = 0; i < importLabelArray.length; i++) {
+            var importLabelE = importLabelArray[i];
+            var importLabel = d3.select(importLabelE);
+            var data = importArray[i];
+            importLabel.data(data);
+            var pieceHeight = yScale(data.amount);
+            var labelHeight = -1;
+            var labelBGYPos = -1;
+            var labelWidth = -1;
+            var importLabelBG = d3.select(importLabelBGArray[i]);
+            if(pieceHeight < smallLabelSize) {
+                //just add number
+                //console.log("small label");
+                var numericLabel = importLabel.append('text').text(function(d) {
+                    return abbreviateNumber(d.amount);
+                }).attr('text-anchor','end').attr('alignment-baseline','central')
+                .attr('font-size',function(d) {
+                    return fontSizeInterpolater((d.amount-minImExAmount)/(maxImExAmount - minImExAmount));
+                });
+                labelHeight = fontSizeInterpolater((data.amount-minImExAmount)/(maxImExAmount-minImExAmount));
+                labelBGYPos = - labelHeight / 2;
+                var numericLabelEle = numericLabel[0][0];
+                labelWidth = numericLabelEle.getComputedTextLength();
+            } else if(pieceHeight < mediumLabelSize || data.type == 'ammo') {
+                //number and type
+                //console.log('medium label');
+                var numericLabel = importLabel.append('text').text(function(d) {
+                    return abbreviateNumber(d.amount);
+                }).attr('text-anchor','end').attr('font-size',function(d) {
+                    return fontSizeInterpolater((d.amount-minImExAmount)/(maxImExAmount - minImExAmount));
+                });
+                var textLabel = importLabel.append('text').text(function(d) {
+                    return reverseWeaponLookup[d.type].split(' ')[0].toUpperCase();
+                }).attr('text-anchor','end').attr('y',15).attr('class',function(d) { return 'import '+d.type});
+                labelHeight = fontSizeInterpolater((data.amount-minImExAmount)/(maxImExAmount-minImExAmount));
+                labelBGYPos = -labelHeight;
+                labelHeight += 16;
+                var numericLabelEle = numericLabel[0][0];
+                var textLabelEle = textLabel[0][0];
+                labelWidth = numericLabelEle.getComputedTextLength() > textLabelEle.getComputedTextLength() ? numericLabelEle.getComputedTextLength() : textLabelEle.getComputedTextLength();
+            } else {
+                //number type and 'weapons'
+                //console.log('large label');
+                var numericLabel = importLabel.append('text').text(function(d) {
+                    return abbreviateNumber(d.amount);
+                }).attr('text-anchor','end').attr('font-size',function(d) {
+                    return fontSizeInterpolater((d.amount-minImExAmount)/(maxImExAmount - minImExAmount));
+                }).attr('y',-7);
+                var textLabel = importLabel.append('text').text(function(d) {
+                    return reverseWeaponLookup[d.type].split(' ')[0].toUpperCase();
+                }).attr('text-anchor','end').attr('y',8).attr('class',function(d) { return 'import '+d.type});
+                var weaponLabel  =importLabel.append('text').text('WEAPONS').attr('text-anchor','end').attr('y',21)
+                    .attr('class',function(d) { return'import '+d.type} );
+                labelHeight = fontSizeInterpolater((data.amount-minImExAmount)/(maxImExAmount-minImExAmount));
+                labelBGYPos = -labelHeight - 7;
+                labelHeight += 16 +14;
+                var numericLabelEle = numericLabel[0][0];
+                var textLabelEle = textLabel[0][0];
+                var weaponLabelEle = weaponLabel[0][0];
+                labelWidth = numericLabelEle.getComputedTextLength() > textLabelEle.getComputedTextLength() ? numericLabelEle.getComputedTextLength() : textLabelEle.getComputedTextLength();
+                if(weaponLabelEle.getComputedTextLength() > labelWidth) {
+                    labelWidth = weaponLabelEle.getComputedTextLength();
+                }
             }
-            return 'visible';
-        });
-        var importWeaponLabel = importLabels.append('text').text(function(d) {
-            return 'WEAPONS';
-        }).attr('text-anchor','end').attr('y',30).attr('class',function(d) { return 'import weapon '+d.type;})
-          .attr('visibility',function(d) {
-            if(d.type == 'ammo') return 'hidden';
-            if(yScale(d.amount) < 40) {
-                return 'hidden';
+            if(labelHeight != -1 && labelBGYPos != -1 && labelWidth != -1) {
+                importLabelBG.attr('x',-labelWidth).attr('y',labelBGYPos).attr('width',labelWidth).attr('height',labelHeight)
+                    .attr('transform',importLabel.attr('transform'));
             }
-            return 'visible';
-          });
-        
-        var importNumLabel = importLabels.append('text').text(function(d) {
-            return abbreviateNumber(d.amount);
-        }).attr('text-anchor','end')
-        .attr('font-size',function(d) {
-            return fontSizeInterpolater((d.amount - minImExAmount)/(maxImExAmount - minImExAmount));
-        }).attr('y',function(d) {
-            if(yScale(d.amount) < 20) {
-                return 3;
-            }
-            return 0;
-        });
-        var importGroups = importLabels[0];
-        importTextLabel = importTextLabel[0];
-        importNumLabel = importNumLabel[0];
-        importLabelBGs = importLabelBGs[0];
-        var boxHeight = 17;
-        
-        for(var i = 0; i < importTextLabel.length; i++) {
-            var maxWidth = importTextLabel[i].getComputedTextLength() > importNumLabel[i].getComputedTextLength() ? importTextLabel[i].getComputedTextLength() : importNumLabel[i].getComputedTextLength();
-            var numberHeight = fontSizeInterpolater((importArray[i].amount - minImExAmount) / (maxImExAmount - minImExAmount));
-            var curBoxHeight = boxHeight + numberHeight;
-            d3.select(importLabelBGs[i]).attr('class','barGraphLabelBG').attr('height',curBoxHeight).attr('width',maxWidth).attr('x',-maxWidth).attr('y', - numberHeight);            
         }
+        //export labels
+        var exportLabelBGs = this.barGraphSVG.selectAll("rect.barGraphLabelBG.exportBG").data(exportArray);
+        exportLabelBGs.enter().append('rect').attr('class',function(d) {
+            return 'barGraphLabelBG exportBG ' + d.type; });
         var exportLabels = this.barGraphSVG.selectAll("g.exportLabel").data(exportArray);
         exportLabels.enter().append("g").attr('class',function(d) {
             return 'exportLabel '+d.type;
-        })
+        });
         exportLabels.attr('transform',function(d) { 
             var translate = 'translate('+(d3Graphs.barGraphWidth / 2 + 35)+",";
             var value = d3Graphs.barGraphHeight - d3Graphs.barGraphBottomPadding - d3Graphs.cumExportLblY - yScale(d.amount)/2;
             d3Graphs.cumExportLblY += yScale(d.amount);
-            if(value > d3Graphs.barGraphHeight - d3Graphs.barGraphBottomPadding - paddingFromBottomOfGraph) {
-                value -= paddingFromBottomOfGraph;
-                d3Graphs.cumExportLblY += paddingFromBottomOfGraph;
-            }/* else if(value > d3Graphs.barGraphHeight - d3Graphs.barGraphBottomPadding - this.previousExportLabelTranslateY - heightPerLabel) {
-                value -= heightPerLabel;
-                d3Graphs.cumExportLblY += heightPerLabel;
-            }*/
             translate += value+")";
             this.previousExportLabelTranslateY = value;
             return translate;
@@ -638,37 +657,87 @@ var d3Graphs = {
             return null;
         });
         exportLabels.selectAll("*").remove();
-        var exportLabelBGs = exportLabels.append('rect');
-        var exportTextLabel = exportLabels.append('text').text(function(d) {
-            return reverseWeaponLookup[d.type].split(' ')[0].toUpperCase();
-        }).attr('y',15).attr('class',function(d) { return 'export '+ d.type});
-        var exportNumLabel = exportLabels.append('text').text(function(d) {
-            return abbreviateNumber(d.amount);
-        }).attr('font-size',function(d) {
-            return fontSizeInterpolater((d.amount - minImExAmount)/(maxImExAmount - minImExAmount));
-        });
+        var exportLabelArray = exportLabels[0];
+        var exportLabelBGArray = exportLabelBGs[0];
+        for(var i = 0; i < exportLabelArray.length; i++) {
+            var exportLabelE = exportLabelArray[i];
+            var exportLabel = d3.select(exportLabelE);
+            var data = exportArray[i];
+            exportLabel.data(data);
+            var pieceHeight = yScale(data.amount);
+            var labelHeight = -1;
+            var labelBGYPos = -1;
+            var labelWidth = -1;
+            var exportLabelBG = d3.select(exportLabelBGArray[i]);
+            if(pieceHeight < smallLabelSize) {
+                //just add number
+                //console.log("small label");
+                var numericLabel = exportLabel.append('text').text(function(d) {
+                    return abbreviateNumber(d.amount);
+                }).attr('text-anchor','start').attr('alignment-baseline','central')
+                .attr('font-size',function(d) {
+                    return fontSizeInterpolater((d.amount-minImExAmount)/(maxImExAmount - minImExAmount));
+                });
+                labelHeight = fontSizeInterpolater((data.amount-minImExAmount)/(maxImExAmount-minImExAmount));
+                labelBGYPos = - labelHeight / 2;
+                var numericLabelEle = numericLabel[0][0];
+                labelWidth = numericLabelEle.getComputedTextLength();
+            } else if(pieceHeight < mediumLabelSize || data.type == 'ammo') {
+                //number and type
+                //console.log('medium label');
+                var numericLabel = exportLabel.append('text').text(function(d) {
+                    return abbreviateNumber(d.amount);
+                }).attr('text-anchor','start').attr('font-size',function(d) {
+                    return fontSizeInterpolater((d.amount-minImExAmount)/(maxImExAmount - minImExAmount));
+                });
+                var textLabel = exportLabel.append('text').text(function(d) {
+                    return reverseWeaponLookup[d.type].split(' ')[0].toUpperCase();
+                }).attr('text-anchor','start').attr('y',15).attr('class',function(d) { return 'export '+d.type});
+                labelHeight = fontSizeInterpolater((data.amount-minImExAmount)/(maxImExAmount-minImExAmount));
+                labelBGYPos = -labelHeight;
+                labelHeight += 16;
+                var numericLabelEle = numericLabel[0][0];
+                var textLabelEle = textLabel[0][0];
+                labelWidth = numericLabelEle.getComputedTextLength() > textLabelEle.getComputedTextLength() ? numericLabelEle.getComputedTextLength() : textLabelEle.getComputedTextLength();
+            } else {
+                //number type and 'weapons'
+                // console.log('large label');
+                var numericLabel = exportLabel.append('text').text(function(d) {
+                    return abbreviateNumber(d.amount);
+                }).attr('text-anchor','start').attr('font-size',function(d) {
+                    return fontSizeInterpolater((d.amount-minImExAmount)/(maxImExAmount - minImExAmount));
+                }).attr('y',-7);
+                var textLabel = exportLabel.append('text').text(function(d) {
+                    return reverseWeaponLookup[d.type].split(' ')[0].toUpperCase();
+                }).attr('text-anchor','start').attr('y',8).attr('class',function(d) { return 'export '+d.type});
+                var weaponLabel  =exportLabel.append('text').text('WEAPONS').attr('text-anchor','start').attr('y',21)
+                    .attr('class',function(d) { return'export '+d.type} );
+                labelHeight = fontSizeInterpolater((data.amount-minImExAmount)/(maxImExAmount-minImExAmount));
+                labelBGYPos = -labelHeight - 7;
+                labelHeight += 16 +14;
+                var numericLabelEle = numericLabel[0][0];
+                var textLabelEle = textLabel[0][0];
+                var weaponLabelEle = weaponLabel[0][0];
+                labelWidth = numericLabelEle.getComputedTextLength() > textLabelEle.getComputedTextLength() ? numericLabelEle.getComputedTextLength() : textLabelEle.getComputedTextLength();
+                if(weaponLabelEle.getComputedTextLength() > labelWidth) {
+                    labelWidth = weaponLabelEle.getComputedTextLength();
+                }
+            }
+            if(labelHeight != -1 && labelBGYPos != -1 && labelWidth != -1) {
+                exportLabelBG.attr('x',0).attr('y',labelBGYPos).attr('width',labelWidth).attr('height',labelHeight)
+                    .attr('transform',exportLabel.attr('transform'));
+            }
+        }
+        //over all numeric Total Import/Export labels
         var importsVisible = $("#importExportBtns .imports .check").not(".inactive").length != 0;
         var exportsVisible = $("#importExportBtns .exports .check").not(".inactive").length != 0;
-
         var importTotalLabel = this.barGraphSVG.selectAll('text.totalLabel').data([1]);
         importTotalLabel.enter().append('text').attr('x',midX).attr('text-anchor','end')
             .attr('class','totalLabel').attr('y',this.barGraphHeight- this.barGraphBottomPadding + 25);
         importTotalLabel.text(abbreviateNumber(importTotal)).attr('visibility',importsVisible ? "visible":"hidden");
-        var exportGroups = exportLabels[0];
-        exportTextLabel = exportTextLabel[0];
-        exportNumLabel = exportNumLabel[0];
-        exportLabelBGs = exportLabelBGs[0];
-        for(var i = 0; i < exportTextLabel.length; i++) {
-            var maxWidth = exportTextLabel[i].getComputedTextLength() > exportNumLabel[i].getComputedTextLength() ? exportTextLabel[i].getComputedTextLength() : exportNumLabel[i].getComputedTextLength();
-            var numberHeight = fontSizeInterpolater((exportArray[i].amount - minImExAmount) / (maxImExAmount - minImExAmount));
-            var curBoxHeight = boxHeight + numberHeight;
-            d3.select(exportLabelBGs[i]).attr('class','barGraphLabelBG').attr('height',curBoxHeight).attr('width',maxWidth).attr('x',0).attr('y',-numberHeight);            
-        }
         var exportTotalLabel = this.barGraphSVG.selectAll('text.totalLabel.totalLabel2').data([1]);
         exportTotalLabel.enter().append('text').attr('x',midX+10).attr('class','totalLabel totalLabel2').attr('y', this.barGraphHeight - this.barGraphBottomPadding+25);
-        exportTotalLabel.text(abbreviateNumber(exportTotal)).attr('visibility',exportsVisible ? "visible":"hidden")
-        ;
-        
+        exportTotalLabel.text(abbreviateNumber(exportTotal)).attr('visibility',exportsVisible ? "visible":"hidden");
         //Import label at bottom
         var importLabel = this.barGraphSVG.selectAll('text.importLabel').data([1]);
         importLabel.enter().append('text').attr('x',midX).attr('text-anchor','end').text('IMPORTS')

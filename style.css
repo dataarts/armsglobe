@@ -331,6 +331,7 @@ Bar graph on left
     margin-top: 5px;
     float: right;
     cursor: pointer;
+    pointer-events:auto;
 }
 
 #history .labels {
