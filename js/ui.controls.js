@@ -38,6 +38,8 @@ var d3Graphs = {
     previousImportLabelTranslateY: -1,
     previousExportLabelTranslateY: -1,
     zoomBtnInterval: -1,
+
+
     setCountry: function(country) {
         $("#hudHeader .countryTextInput").val(country);
         d3Graphs.updateViz();
@@ -62,7 +64,7 @@ var d3Graphs = {
         $("#hudHeader .searchBtn").click(d3Graphs.updateViz);
         $("#importExportBtns .imex>div").not(".label").click(d3Graphs.importExportBtnClick);
         $("#importExportBtns .imex .label").click(d3Graphs.importExportLabelClick);
-        $("#hudHeader .countryTextInput").autocomplete({ source:selectableCountries });
+        $("#hudHeader .countryTextInput").autocomplete({ source:selectableCountries, autoFocus: true });
         $("#hudHeader .countryTextInput").keyup(d3Graphs.countryKeyUp);
         $("#hudHeader .countryTextInput").focus(d3Graphs.countryFocus);
         $("#hudHeader .aboutBtn").click(d3Graphs.toggleAboutBox);
@@ -236,7 +238,6 @@ var d3Graphs = {
         var exportArray = [];
         var historical = selectedCountry.summary.historical;
         var numHistory = historical.length;
-//        console.log(historical);
         var absMax = 0;
         var startingImportIndex = 0;
         var startingExportIndex = 0;
@@ -279,11 +280,6 @@ var d3Graphs = {
             }
             
         }
-        /*
-        console.log('imports');
-        console.log(importArray);
-        console.log('exports');
-        console.log(exportArray);*/
         this.histogramImportArray = importArray;
         this.histogramExportArray = exportArray;
         this.histogramAbsMax = absMax;
@@ -422,12 +418,9 @@ var d3Graphs = {
         } else {
             maxVal = -1;
         }
-        /*console.log('active year');
-        console.log(activeYearImports);
-        console.log(activeYearExports);*/
+
         var activeYearData = [{x:yearOffset, y: activeYearImports != null ? activeYearImports.y : -1, max: maxVal, show: activeYearImports!=null, type:"imports"},
             {x: yearOffset, y: activeYearExports != null ? activeYearExports.y : -1, max: maxVal, show:activeYearExports!=null, type:'exports'}];
-//        console.log(activeYearData);
         var yearDots = this.histogramSVG.selectAll("ellipse.year").data(activeYearData);
         var yearDotLabels = this.histogramSVG.selectAll("text.yearLabel").data(activeYearData);
         yearDots.enter().append('ellipse').attr('class','year').attr('rx',4).attr('ry',4)
@@ -457,10 +450,6 @@ var d3Graphs = {
             } else {
                 yVal += 19;
             }
-            /*
-            if(yVal < d3Graphs.histogramVertPadding) {
-                yVal += 26;
-            }*/
             if(yVal > d3Graphs.histogramHeight + d3Graphs.histogramVertPadding) {
                 yVal -= 26;
             }
@@ -687,7 +676,6 @@ var d3Graphs = {
                 labelWidth = numericLabelEle.getComputedTextLength();
             } else if(pieceHeight < mediumLabelSize || data.type == 'ammo') {
                 //number and type
-                //console.log('medium label');
                 var numericLabel = exportLabel.append('text').text(function(d) {
                     return abbreviateNumber(d.amount);
                 }).attr('text-anchor','start').attr('font-size',function(d) {
@@ -704,7 +692,6 @@ var d3Graphs = {
                 labelWidth = numericLabelEle.getComputedTextLength() > textLabelEle.getComputedTextLength() ? numericLabelEle.getComputedTextLength() : textLabelEle.getComputedTextLength();
             } else {
                 //number type and 'weapons'
-                // console.log('large label');
                 var numericLabel = exportLabel.append('text').text(function(d) {
                     return abbreviateNumber(d.amount);
                 }).attr('text-anchor','start').attr('font-size',function(d) {
