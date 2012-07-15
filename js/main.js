@@ -447,7 +447,7 @@ function highlightCountry( countries ){
 	//	all non-countries were being pointed to 10 - bolivia
 	//	the fact that it didn't select was because bolivia shows up as an invalid country due to country name mismatch
 	//	...
-	var pickMask = (1-mapUniforms['outlineLevel'].value);
+	var pickMask = countries.length == 0 ? 0 : 1;
 	var oceanFill = 10 * pickMask;
 	ctx.fillStyle = 'rgb(' + oceanFill + ',' + oceanFill + ',' + oceanFill +')';
 	ctx.fillRect( 0, 0, 1, 1 );
