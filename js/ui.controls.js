@@ -21,7 +21,7 @@ var d3Graphs = {
 	histogramLeftPadding:31,
 	histogramRightPadding: 31,
 	histogramVertPadding:20,
-	barGraphSVG: d3.select("#wrapper").append("svg"),
+	barGraphSVG: d3.select("#wrapper").append("svg").attr('id','barGraph'),
 	histogramSVG: null,
 	histogramYScale: null,
 	histogramXScale: null,
@@ -116,11 +116,19 @@ var d3Graphs = {
         var windowHeight = $(window).height();
         d3Graphs.positionHistory(windowWidth);
         var minWidth = 1280;
+        var minHeight = 860;
         var w = windowWidth < minWidth ? minWidth : windowWidth;
         var hudButtonWidth = 489;
         $('#hudButtons').css('left',w - hudButtonWidth-20);        
         var importExportButtonWidth = $("#importExportBtns").width();
         $("#importExportBtns").css('left',w-importExportButtonWidth - 20);
+        var barGraphHeight = 800;
+        var barGraphBottomPadding = 10;
+        console.log(windowHeight+ " " + barGraphHeight + " " + barGraphBottomPadding);
+        var barGraphTopPos = (windowHeight < minHeight ? minHeight : windowHeight) - barGraphHeight - barGraphBottomPadding;
+        console.log(barGraphTopPos);
+        
+        $("#barGraph").css('top',barGraphTopPos+'px');
         /*
         var hudHeaderLeft = $("#hudHeader").css('left');
         hudHeaderLeft = hudHeaderLeft.substr(0,hudHeaderLeft.length-2)

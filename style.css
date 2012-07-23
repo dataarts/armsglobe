@@ -59,7 +59,7 @@
 }
 
 /* Main Styles */
-body { color:#000000; font-family:'Roboto'; font-size:14px; height:768px; min-width: 1280px;}
+body { color:#000000; font-family:'Roboto'; font-size:14px; height:768px; min-width: 1280px; min-height: 860px;}
 a { color:#ffffff; text-decoration:none; text-transform:uppercase; }
 a:hover { color:#8eb423; }
 h1 { font-family:'RopaSans'; font-weight:normal; }
@@ -267,7 +267,7 @@ Bar graph on left
 */
 #barGraph {
     position: absolute;
-    bottom:10px;
+    /*bottom:10px;*/
     left:-7px;
     opacity: 0.9;
 }
