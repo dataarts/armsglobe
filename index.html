@@ -128,15 +128,17 @@
 
 		<!-- All other hud can go here-->
         <div id="hudHeader" class="overlayCountries noPointer">
-            <h1 class="noPointer">Small Arms and Ammunition - Imports & Exports
+            <h1 class="noPointer">Small Arms and Ammunition — Imports & Exports
                 <div class="subtitle">An interactive visualization of government-authorized small arms and ammunition transfers from 1992 to 2010. </div>
 			</h1>
-			
+        </div>
+        
+		<div class="overlayCountries noPointer" id="hudButtons">
             <input type="button" value="SEARCH" class="searchBtn armsBtn pointer">
-			<input type="text" name="country" class="countryTextInput pointer" value="UNITED STATES">  
-			<input type="button" value="—" class="zoomBtn zoomOutBtn armsBtn pointer">
-			<input type="button" value="+" class="zoomBtn zoomInBtn armsBtn pointer">
-            <input type="button" value="ABOUT" class="aboutBtn armsBtn pointer">
+            <input type="text" name="country" class="countryTextInput pointer" value="UNITED STATES">  
+            <input type="button" value="—" class="zoomBtn zoomOutBtn armsBtn pointer">
+            <input type="button" value="+" class="zoomBtn zoomInBtn armsBtn pointer">
+            <input type="button" value="ABOUT" class="aboutBtn armsBtn pointer"><br class="clear" />
         </div>
         <div id="history" class="overlayCountries noPointer">
             <div class="graph">
@@ -190,6 +192,7 @@
                 <div class="ammo"><div class="check"></div></div>
                 <div class="label">Exports</div><br class="clear">
             </div>
+            <br class="clear" />
         </div>
 
         <div id="aboutContainer" class='overlayCountries'>

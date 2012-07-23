@@ -16,12 +16,12 @@ var d3Graphs = {
     barWidth: 14,
 	barGraphTopPadding: 20,
 	barGraphBottomPadding: 50,
-	histogramWidth: 780,
+	histogramWidth: 686,
 	histogramHeight: 160,
 	histogramLeftPadding:31,
 	histogramRightPadding: 31,
 	histogramVertPadding:20,
-	barGraphSVG: d3.select("body").append("svg"),
+	barGraphSVG: d3.select("#wrapper").append("svg"),
 	histogramSVG: null,
 	histogramYScale: null,
 	histogramXScale: null,
@@ -29,8 +29,8 @@ var d3Graphs = {
     cumImportLblY: 0,cumExportLblY: 0,
     inited: false,
     histogramOpen: false,
-    handleLeftOffset: 14,
-    handleInterval: 40,
+    handleLeftOffset: 12,
+    handleInterval: 35,
     windowResizeTimeout: -1,
     histogramImports: null,
     histogramExports: null,
@@ -41,7 +41,7 @@ var d3Graphs = {
 
 
     setCountry: function(country) {
-        $("#hudHeader .countryTextInput").val(country);
+        $("#hudButtons .countryTextInput").val(country);
         d3Graphs.updateViz();
     },
     initGraphs: function() {
@@ -52,8 +52,8 @@ var d3Graphs = {
     showHud: function() {
         if(this.inited) return;
         this.inited = true;
-        $("#hudHeader").show();
-        d3Graphs.positionHistory();
+        d3Graphs.windowResize();
+        $("#hudHeader, #hudButtons").show();
         $("#history").show();
         $("#graphIcon").show();
         $("#importExportBtns").show();
@@ -61,13 +61,13 @@ var d3Graphs = {
         $("#history .close").click(d3Graphs.closeHistogram);
         $("#history ul li").click(d3Graphs.clickTimeline);
         $("#handle").draggable({axis: 'x',containment: "parent",grid:[this.handleInterval, this.handleInterval],  stop: d3Graphs.dropHandle, drag: d3Graphs.dropHandle });
-        $("#hudHeader .searchBtn").click(d3Graphs.updateViz);
+        $("#hudButtons .searchBtn").click(d3Graphs.updateViz);
         $("#importExportBtns .imex>div").not(".label").click(d3Graphs.importExportBtnClick);
         $("#importExportBtns .imex .label").click(d3Graphs.importExportLabelClick);
-        $("#hudHeader .countryTextInput").autocomplete({ source:selectableCountries, autoFocus: true });
-        $("#hudHeader .countryTextInput").keyup(d3Graphs.countryKeyUp);
-        $("#hudHeader .countryTextInput").focus(d3Graphs.countryFocus);
-        $("#hudHeader .aboutBtn").click(d3Graphs.toggleAboutBox);
+        $("#hudButtons .countryTextInput").autocomplete({ source:selectableCountries, autoFocus: true });
+        $("#hudButtons .countryTextInput").keyup(d3Graphs.countryKeyUp);
+        $("#hudButtons .countryTextInput").focus(d3Graphs.countryFocus);
+        $("#hudButtons .aboutBtn").click(d3Graphs.toggleAboutBox);
         $(document).on("click",".ui-autocomplete li",d3Graphs.menuItemClick);
         $(window).resize(d3Graphs.windowResizeCB);
         $(".zoomBtn").mousedown(d3Graphs.zoomBtnClick);
@@ -109,20 +109,42 @@ var d3Graphs = {
     },
     windowResizeCB:function() {
         clearTimeout(d3Graphs.windowResizeTimeout);
-        d3Graphs.windowResizeTimeout = setTimeout(d3Graphs.positionHistory, 250);
+        d3Graphs.windowResizeTimeout = setTimeout(d3Graphs.windowResize, 50);
     },
-    positionHistory: function() {
+    windowResize: function() {
+        var windowWidth = $(window).width();
+        var windowHeight = $(window).height();
+        d3Graphs.positionHistory(windowWidth);
+        var minWidth = 1280;
+        var w = windowWidth < minWidth ? minWidth : windowWidth;
+        var hudButtonWidth = 489;
+        $('#hudButtons').css('left',w - hudButtonWidth-20);        
+        var importExportButtonWidth = $("#importExportBtns").width();
+        $("#importExportBtns").css('left',w-importExportButtonWidth - 20);
+        /*
+        var hudHeaderLeft = $("#hudHeader").css('left');
+        hudHeaderLeft = hudHeaderLeft.substr(0,hudHeaderLeft.length-2)
+        console.log(hudHeaderLeft);
+        var hudPaddingRight = 30;
+        $("#hudHeader").width(w-hudHeaderLeft - hudPaddingRight);
+        */
+    },
+    positionHistory: function(windowWidth) {
         var graphIconPadding = 20;
         var historyWidth = $("#history").width();
         var totalWidth = historyWidth + $("#graphIcon").width() + graphIconPadding;
-        var windowWidth = $(window).width();
+//        var windowWidth = $(window).width();
         var historyLeftPos = (windowWidth - totalWidth) / 2.0;
+        var minLeftPos = 280;
+        if(historyLeftPos < minLeftPos) {
+            historyLeftPos = minLeftPos;
+        }
         $("#history").css('left',historyLeftPos+"px");
         $("#graphIcon").css('left',historyLeftPos + historyWidth + graphIconPadding+'px');
     },
     countryFocus:function(event) {
         //console.log("focus");
-        setTimeout(function() { $('#hudHeader .countryTextInput').select() },50);
+        setTimeout(function() { $('#hudButtons .countryTextInput').select() },50);
     },
     menuItemClick:function(event) {
         d3Graphs.updateViz();
@@ -140,7 +162,7 @@ var d3Graphs = {
         yearOffset /= d3Graphs.handleInterval;
         var year = yearOffset + 1992;
         
-        var country = $("#hudHeader .countryTextInput").val().toUpperCase();
+        var country = $("#hudButtons .countryTextInput").val().toUpperCase();
         if(typeof countryData[country] == 'undefined') {
             return;
         }

@@ -59,7 +59,7 @@
 }
 
 /* Main Styles */
-body { color:#000000; font-family:'Roboto'; font-size:14px; min-width:1280px; height:768px; }
+body { color:#000000; font-family:'Roboto'; font-size:14px; height:768px; min-width: 1280px;}
 a { color:#ffffff; text-decoration:none; text-transform:uppercase; }
 a:hover { color:#8eb423; }
 h1 { font-family:'RopaSans'; font-weight:normal; }
@@ -69,13 +69,14 @@ li { list-style-type:none; }
 #wrapper {
     display:block;
     float:left;
-    width:1280px;
+ /*   min-width:1280px;*/
 }
 
 #dataviz { 				
 	background-color: 	#000000;
 	margin: 			0px;
-	overflow: 			hidden;
+	overflow-y: 		hidden;
+	overflow-x:         auto;
 }
 #overlay_2d{
 	-webkit-perspective:		800;
@@ -159,19 +160,30 @@ Elements to control the title and country selector
 .noPointer {
     pointer-events: none;
 }
+
+#glContainer {
+    z-index:1;
+    pointer-events:none;
+}
+#glContainer canvas {
+    z-index:1;
+    pointer-events:none;
+}
+
 #hudHeader {
     position: 				absolute;
-    width: 					100%;
+/*    width: 					95%; */
     left: 					30px;
-    top: 					30px;
+    top: 					20px;
     color: 					#fff;
     font-family: 			'RopaSans';
     display:                none;
+    background: rgba(0,0,0,0.4);
 }
 #hudHeader h1 {
     font-size: 				32px;
     font-family: 			'RopaSans';
-    margin: 				0 0 25px 0;
+    margin: 				0 0 0px 0;
     display:                block;
     float:                  left;
 }
@@ -180,49 +192,57 @@ Elements to control the title and country selector
     color: #ddd;
     
 }
-#hudHeader .countryTextInput {
-    float: right;
-    font-size: 				18px;
-    width: 					330px;
+#hudButtons {
+    display: none;
+    position: absolute;
+    top: 20px;    
+
+    width: 489px;
+}
+#hudButtons .countryTextInput {
+    float:                  right;
+    font-size: 				17px;
+    width: 					300px;
     margin-right: 			5px;
 	font-family: 			'RopaSans';
 	text-transform:          uppercase;
 }
-#hudHeader .armsBtn {
+#hudButtons .armsBtn {
     float: right;
     background: 			#333333;
     padding: 				3px 10px 2px;
     color: 					white;
     border: 				0;
-    font-size: 				19px;
+    font-size: 				18px;
 	font-family: 			'RopaSans';
 	cursor: 				pointer;
-	margin-right: 			60px;
+	margin-right: 			0px;
 	opacity:                0.9;
 }
-#hudHeader .armsBtn:hover {
+#hudButtons .armsBtn:hover {
     opacity: 1;
 }
-#hudHeader .aboutBtn {
+#hudButtons .aboutBtn {
 	display:				block;
 	clear:					both;
-	margin-right: 			60px;
-	margin-top: 			-44px;
-	width: 					78px;
+	margin-right: 			0px;
+	width: 					76px;
 
 }
-#hudHeader .zoomBtn {
+#hudButtons .zoomBtn {
     margin-right:           5px;
     width:                  30px;
     font-weight:            bold;
-    height:                 25px;
+    height:                 24px;
     margin-top:             2px;
 }
 
-#hudHeader .zoomOutBtn {
+#hudButtons .zoomOutBtn {
     font-size:              17px;
 }
-
+.ui-autocomplete {
+    position: absolute;
+}
 .ui-autocomplete .ui-menu-item {
     border-top:             1px solid #656565;
     margin-left:            -39px;
@@ -231,12 +251,12 @@ Elements to control the title and country selector
     font-size:              18px;
     color:                  white;
     background:             #333;
-    width:                  331px;
+    width:                  301px;
 }
 .ui-autocomplete #ui-active-menuitem {
     background:             white;
     color:                  black;
-    width:                  331px;
+    width:                  301px;
     display:                block;
     margin-left:            -4px;
     padding-left:           4px;
@@ -248,7 +268,7 @@ Bar graph on left
 #barGraph {
     position: absolute;
     bottom:10px;
-    left:0;
+    left:-7px;
     opacity: 0.9;
 }
 #barGraph .import.ammo {
@@ -308,10 +328,11 @@ Bar graph on left
     color:                  white;
     font-size:              12px;
     font-family:            'Roboto';
+    width:                  668px;
     background:             url('timelineBG.png') 8px 0 no-repeat; /*to be resized!*/
 }
 #history ul li {
-    width:                  40px;
+    width:                  35px;
     float:                  left;
     text-align:             center;
     margin-top:             -30px;
@@ -322,10 +343,10 @@ Bar graph on left
     cursor:                 pointer;
     width:                  36px;
     height:                 36px;
-    background:             url('yearHandle.png') 1px 0 no-repeat;
+    background:             url('yearHandle.png') 0px 0 no-repeat;
     position:               absolute;
     bottom:                 20px;
-    left:                   14px;
+    left:                   12px;
 }
 #history .graph {
     display: none;
@@ -399,9 +420,9 @@ Bar graph on left
 
 /* import export buttons (bottom right)*/
 #importExportBtns {
+    width:                  298px;
     position:               absolute;
-    right:                  18px;
-    bottom:                 12px;
+    bottom:                 0px;
     color:                  white;
     display:                none;
 }
@@ -550,4 +571,39 @@ Bar graph on left
 }
 #aboutBox a:hover {
     text-decoration: underline;
+}
+
+
+/* Small size */
+@media all and (max-width: 1395px) {
+    #importExportBtns {
+        width: 187px;
+    }
+    #importExportBtns>div>div {
+        width: 23px;
+    }
+    #importExportBtns .imex>div {
+        background: transparent;
+    }
+    #importExportBtns .imex .label {
+        background: #262626;
+    }
+    #importExportBtns .typeLabels div {
+        font-size: 12px;
+        -webkit-transform:rotate(323deg);
+        -moz-transform:rotate(323deg);
+        -o-transform:rotate(323deg);
+        -ms-transform:rotate(323deg);
+        margin-top: -2px;
+    }
+    
+    #importExportBtns .typeLabels .mil {
+        margin-left: 8px;
+    }
+    #importExportBtns .typeLabels .civ {
+        margin-left: 2px;
+    }
+    #importExportBtns .typeLabels .ammo {
+        margin-left: -1px;
+    }
 }
