@@ -59,13 +59,18 @@
 }
 
 /* Main Styles */
-body { color:#000000; font-family:'Roboto'; font-size:14px; min-width:1024px; height:768px; }
+body { color:#000000; font-family:'Roboto'; font-size:14px; min-width:1280px; height:768px; }
 a { color:#ffffff; text-decoration:none; text-transform:uppercase; }
 a:hover { color:#8eb423; }
 h1 { font-family:'RopaSans'; font-weight:normal; }
 h2 { font-family:'RopaSans'; font-weight:normal; }
 li { list-style-type:none; }
 
+#wrapper {
+    display:block;
+    float:left;
+    width:1280px;
+}
 
 #dataviz { 				
 	background-color: 	#000000;
@@ -108,11 +113,12 @@ li { list-style-type:none; }
 }
 
 #loading{
-	position:				absolute;
-	display:				inline-block;
-	background-color: 		#111111;
-	top:					50%;
-	left:					12%;
+    background-color: 		#111111;
+	position: fixed;
+    top:50%;
+    left:50%;
+    margin-top: -20px;
+    margin-left: -260px;
 	color:					#ffffff;
 	padding:				16px;
 }
