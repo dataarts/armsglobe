@@ -11,7 +11,7 @@
 	<body onload="start()" id="dataviz" class="">
 		<div id="wrapper">
 		<div id="loading">
-			<h2>Loading UN Arms Trade Data from 1992 to 2010... please wait.</h2>
+			<h2>Loading Small Arms and Ammunition Trade Data from 1992 to 2010. Please wait...</h2>
 		</div>
 
 		<div >
@@ -21,15 +21,15 @@
 			</span>--></td></tr></table>
 		</div>
 
-		<div id="visualization" >			
+		<div id="visualization" >
 			<!-- 2D overlay elements go in here -->
 
 			<div id="glContainer">
 				<!-- 3D webgl canvas here -->
-			</div>						
+			</div>
 		</div>
 
-		<script src="js/Tween.js"></script>		
+		<script src="js/Tween.js"></script>
 		<script src="js/dat.gui.min.js"></script>
 		<script src="js/Three.js"></script>
 		<script src="js/THREEx.KeyboardState.js"></script>
@@ -37,22 +37,22 @@
 		<script src="js/Stats.js"></script>
 		<script src="js/jquery-1.7.1.min.js"></script>
     	<script src="js/jquery-ui-1.8.21.custom.min.js"></script>
-    	<script src="js/RequestAnimationFrame.js"></script>	
+    	<script src="js/RequestAnimationFrame.js"></script>
 		<script src="js/ShaderExtras.js"></script>
 		<script src="js/canvg.js"></script>
 		<script src="js/rgbcolor.js"></script>
 		<script src="js/innersvg.js"></script>
-		
-		<script src="js/util.js"></script>		
-		<script src="js/mousekeyboard.js"></script>		
+
+		<script src="js/util.js"></script>
+		<script src="js/mousekeyboard.js"></script>
 		<script src="js/datguicontrol.js"></script>
 		<script src="js/dataloading.js"></script>
 		<script src="js/camerastates.js"></script>
 		<script src="js/geopins.js"></script>
 		<script src="js/visualize.js"></script>
 		<script src="js/visualize_lines.js"></script>
-		<script src="js/markers.js"></script>	
-		<script src="js/svgtoy.js" type="text/javascript"></script>	
+		<script src="js/markers.js"></script>
+		<script src="js/svgtoy.js" type="text/javascript"></script>
 		<script src="js/d3.v2.min.js"></script>
 		<script src="js/ui.controls.js"></script>
 
@@ -93,37 +93,37 @@
 		<script id="globeVertexShader" type="x-shader/x-vertex">
 			varying vec3 vNormal;
 			varying vec2 vUv;
-			void main() {								
+			void main() {
 				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0);
 				vNormal = normalize( normalMatrix * normal );
 				vUv = uv;
 			}
 		</script>
 
-		<script id="globeFragmentShader" type="x-shader/x-fragment">	
+		<script id="globeFragmentShader" type="x-shader/x-fragment">
 			uniform sampler2D mapIndex;
 			uniform sampler2D lookup;
 			uniform sampler2D outline;
 			uniform float outlineLevel;
 			varying vec3 vNormal;
-			varying vec2 vUv;	
-			void main() {				
-				
-				vec4 mapColor = texture2D( mapIndex, vUv );	
-				float indexedColor = mapColor.x;	
+			varying vec2 vUv;
+			void main() {
+
+				vec4 mapColor = texture2D( mapIndex, vUv );
+				float indexedColor = mapColor.x;
 				vec2 lookupUV = vec2( indexedColor, 0. );
-				vec4 lookupColor = texture2D( lookup, lookupUV );				
+				vec4 lookupColor = texture2D( lookup, lookupUV );
 				float mask = lookupColor.x + (1.-outlineLevel) * indexedColor;
 				mask = clamp(mask,0.,1.);
 				float outlineColor = texture2D( outline, vUv ).x * outlineLevel;
 				float diffuse = mask + outlineColor;
-				gl_FragColor = vec4( vec3(diffuse), 1.  );						
-				// gl_FragColor = vec4( lookupColor );												
+				gl_FragColor = vec4( vec3(diffuse), 1.  );
+				// gl_FragColor = vec4( lookupColor );
 				// gl_FragColor = vec4(texture2D( lookup, vUv ).xyz,1.);
 			}
-		</script>			
+		</script>
 
-		<script src="js/main.js" type="text/javascript"></script>	
+		<script src="js/main.js" type="text/javascript"></script>
 
 
 		<!-- All other hud can go here-->
@@ -132,10 +132,10 @@
                 <div class="subtitle">An interactive visualization of government-authorized small arms and ammunition transfers from 1992 to 2010. </div>
 			</h1>
         </div>
-        
+
 		<div class="overlayCountries noPointer" id="hudButtons">
             <input type="button" value="SEARCH" class="searchBtn armsBtn pointer">
-            <input type="text" name="country" class="countryTextInput pointer" value="UNITED STATES">  
+            <input type="text" name="country" class="countryTextInput pointer" value="UNITED STATES">
             <input type="button" value="—" class="zoomBtn zoomOutBtn armsBtn pointer">
             <input type="button" value="+" class="zoomBtn zoomInBtn armsBtn pointer">
             <input type="button" value="ABOUT" class="aboutBtn armsBtn pointer"><br class="clear" />
@@ -215,4 +215,4 @@
         </div>
     </div>
 	</body>
-</html>	
+</html>
