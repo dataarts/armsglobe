@@ -277,7 +277,7 @@ function selectVisualization( linearData, year, countries, exportCategories, imp
 	//	we're only doing one country for now so...
 	var cName = countries[0].toUpperCase();
 	
-	$("#hudHeader .countryTextInput").val(cName);
+	$("#hudButtons .countryTextInput").val(cName);
 	previouslySelectedCountry = selectedCountry;
 	selectedCountry = countryData[countries[0].toUpperCase()];
     
