@@ -2,6 +2,9 @@ var masterContainer = document.getElementById('visualization');
 
 var overlay = document.getElementById('visualization');
 
+var mapIndexedImage;
+var mapOutlineImage;
+
 //	where in html to hold all our things
 var glContainer = document.getElementById( 'glContainer' );
 
@@ -93,30 +96,37 @@ var assetList = [];
 
 //	TODO
 //	use underscore and ".after" to load these in order
-//	only load the data file once we've loaded our world pins
-
-
-function start( e ){
+//	don't look at me I'm ugly
+function start( e ){	
 	//	detect for webgl and reject everything else
 	if ( ! Detector.webgl ) {
 		Detector.addGetWebGLMessage();
 	}
 	else{
-		loadCountryCodes(
-			function(){
-				loadWorldPins(
-					function(){										
-						loadContentData(								
-							function(){																	
-								initScene();
-								animate();		
+		//	ensure the map images are loaded first!!
+		mapIndexedImage = new Image();
+		mapIndexedImage.src = 'images/map_indexed.png';
+		mapIndexedImage.onload = function() {
+			mapOutlineImage = new Image();
+			mapOutlineImage.src = 'images/map_outline.png';
+			mapOutlineImage.onload = function(){
+				loadCountryCodes(
+					function(){
+						loadWorldPins(
+							function(){										
+								loadContentData(								
+									function(){																	
+										initScene();
+										animate();		
+									}
+								);														
 							}
-						);														
+						);
 					}
 				);
-			}
-		);
-	}	
+			};			
+		};		
+	};
 }			
 
 
@@ -191,12 +201,14 @@ function initScene() {
 	lookupTexture.minFilter = THREE.NearestFilter;
 	lookupTexture.needsUpdate = true;
 
-	var indexedMapTexture = THREE.ImageUtils.loadTexture( 'images/map_indexed.png' );
+	var indexedMapTexture = new THREE.Texture( mapIndexedImage );
+	//THREE.ImageUtils.loadTexture( 'images/map_indexed.png' );
 	indexedMapTexture.needsUpdate = true;
 	indexedMapTexture.magFilter = THREE.NearestFilter;
 	indexedMapTexture.minFilter = THREE.NearestFilter;
 
-	var outlinedMapTexture = THREE.ImageUtils.loadTexture( 'images/map_outline.png' );
+	var outlinedMapTexture = new THREE.Texture( mapOutlineImage );
+	outlinedMapTexture.needsUpdate = true;
 	// outlinedMapTexture.magFilter = THREE.NearestFilter;
 	// outlinedMapTexture.minFilter = THREE.NearestFilter;
 
