@@ -59,7 +59,7 @@
 }
 
 /* Main Styles */
-body { color:#000000; font-family:'Roboto'; font-size:14px; height:768px; min-width: 1280px; min-height: 860px;}
+body { color:#000000; font-family:'Roboto'; font-size:14px; height:768px; min-width: 1280px; min-height: 860px; overflow: hidden;}
 a { color:#ffffff; text-decoration:none; text-transform:uppercase; }
 a:hover { color:#8eb423; }
 h1 { font-family:'RopaSans'; font-weight:normal; }
@@ -70,6 +70,10 @@ li { list-style-type:none; }
     display:block;
     float:left;
  /*   min-width:1280px;*/
+}
+
+#visualization{
+    position: fixed;
 }
 
 #dataviz { 				

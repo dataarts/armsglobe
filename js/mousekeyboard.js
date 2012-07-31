@@ -33,7 +33,7 @@ function onDocumentMouseMove( event ) {
 }
 
 function onDocumentMouseDown( event ) {	
-    if(event.srcElement.className.indexOf('noMapDrag') !== -1) {
+    if(event.target.className.indexOf('noMapDrag') !== -1) {
         return;
     }
     dragging = true;			   
@@ -91,6 +91,10 @@ function onMouseWheel( event ){
 	if (event.wheelDelta) { /* IE/Opera. */
 	        delta = event.wheelDelta/120;
 	} 
+	//	firefox
+	else if( event.detail ){
+		delta = -event.detail/3;
+	}
 
 	if (delta)
 	        handleMWheel(delta);

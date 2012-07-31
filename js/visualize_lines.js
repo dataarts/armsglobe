@@ -55,7 +55,7 @@ function makeConnectionLineGeometry( exporter, importer, value, type ){
 	// splineCurveB.updateArcLengths();
 
 	//	how many vertices do we want on this guy? this is for *each* side
-	var vertexCountDesired = Math.floor( /*splineCurveA.getLength()*/ distanceBetweenCountryCenter * 0.04 + 6 ) * 2;	
+	var vertexCountDesired = Math.floor( /*splineCurveA.getLength()*/ distanceBetweenCountryCenter * 0.02 + 6 ) * 2;	
 
 	//	collect the vertices
 	var points = splineCurveA.getPoints( vertexCountDesired );
