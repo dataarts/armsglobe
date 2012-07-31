@@ -135,9 +135,9 @@
 
 		<div class="overlayCountries noPointer" id="hudButtons">
             <input type="button" value="SEARCH" class="searchBtn armsBtn pointer">
-            <input type="text" name="country" class="countryTextInput pointer" value="UNITED STATES">
-            <input type="button" value="—" class="zoomBtn zoomOutBtn armsBtn pointer">
-            <input type="button" value="+" class="zoomBtn zoomInBtn armsBtn pointer">
+            <input type="text" name="country" class="countryTextInput pointer noMapDrag" value="UNITED STATES">
+            <input type="button" value="—" class="zoomBtn zoomOutBtn armsBtn pointer noMapDrag">
+            <input type="button" value="+" class="zoomBtn zoomInBtn armsBtn pointer noMapDrag">
             <input type="button" value="ABOUT" class="aboutBtn armsBtn pointer"><br class="clear" />
         </div>
         <div id="history" class="overlayCountries noPointer">
@@ -170,7 +170,7 @@
                 <li>08</li>
                 <li>09</li>
                 <li>2010</li>
-                <div id="handle"></div>
+                <div id="handle" class="noMapDrag"></div>
             </ul>
         </div>
         <div id="graphIcon" class="overlayCountries"></div>

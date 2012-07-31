@@ -33,6 +33,9 @@ function onDocumentMouseMove( event ) {
 }
 
 function onDocumentMouseDown( event ) {	
+    if(event.srcElement.className.indexOf('noMapDrag') !== -1) {
+        return;
+    }
     dragging = true;			   
     pressX = mouseX;
     pressY = mouseY;   	
@@ -41,6 +44,7 @@ function onDocumentMouseDown( event ) {
 }	
 
 function onDocumentMouseUp( event ){
+	d3Graphs.zoomBtnMouseup();
 	dragging = false;
 	histogramPressed = false;
 }

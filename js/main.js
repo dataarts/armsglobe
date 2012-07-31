@@ -297,8 +297,11 @@ function initScene() {
 	document.addEventListener( 'mousemove', onDocumentMouseMove, true );
 	document.addEventListener( 'windowResize', onDocumentResize, false );
 
-	masterContainer.addEventListener( 'mousedown', onDocumentMouseDown, true );	
-	masterContainer.addEventListener( 'mouseup', onDocumentMouseUp, false );	
+	//masterContainer.addEventListener( 'mousedown', onDocumentMouseDown, true );	
+	//masterContainer.addEventListener( 'mouseup', onDocumentMouseUp, false );	
+	document.addEventListener( 'mousedown', onDocumentMouseDown, true );	
+	document.addEventListener( 'mouseup', onDocumentMouseUp, false );	
+	
 	masterContainer.addEventListener( 'click', onClick, true );	
 	masterContainer.addEventListener( 'mousewheel', onMouseWheel, false );
 
