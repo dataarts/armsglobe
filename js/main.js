@@ -97,20 +97,26 @@ var assetList = [];
 
 
 function start( e ){
-	loadCountryCodes(
-		function(){
-			loadWorldPins(
-				function(){										
-					loadContentData(								
-						function(){																	
-							initScene();
-							animate();		
-						}
-					);														
-				}
-			);
-		}
-	);
+	//	detect for webgl and reject everything else
+	if ( ! Detector.webgl ) {
+		Detector.addGetWebGLMessage();
+	}
+	else{
+		loadCountryCodes(
+			function(){
+				loadWorldPins(
+					function(){										
+						loadContentData(								
+							function(){																	
+								initScene();
+								animate();		
+							}
+						);														
+					}
+				);
+			}
+		);
+	}	
 }			
 
 
