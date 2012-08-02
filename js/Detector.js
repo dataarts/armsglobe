@@ -14,24 +14,24 @@ Detector = {
 
 		var element = document.createElement( 'div' );
 		element.id = 'webgl-error-message';
-		element.style.fontFamily = 'monospace';
+		element.style.fontFamily = 'arial';
 		element.style.fontSize = '13px';
 		element.style.fontWeight = 'normal';
 		element.style.textAlign = 'center';
-		element.style.background = '#fff';
-		element.style.color = '#000';
+		element.style.background = '#222222';
+		element.style.color = '#ffffff';
 		element.style.padding = '1.5em';
-		element.style.width = '400px';
+		element.style.width = '100%';
 		element.style.margin = '5em auto 0';
+		element.style.zIndex = '500000';
+		element.style.position = 'absolute';
+		element.style.pointerEvents = 'all';
 
 		if ( ! this.webgl ) {
 
-			element.innerHTML = window.WebGLRenderingContext ? [
-				'Your graphics card does not seem to support <a href="http://khronos.org/webgl/wiki/Getting_a_WebGL_Implementation" style="color:#000">WebGL</a>.<br />',
-				'Find out how to get it <a href="http://get.webgl.org/" style="color:#000">here</a>.'
-			].join( '\n' ) : [
-				'Your browser does not seem to support <a href="http://khronos.org/webgl/wiki/Getting_a_WebGL_Implementation" style="color:#000">WebGL</a>.<br/>',
-				'Find out how to get it <a href="http://get.webgl.org/" style="color:#000">here</a>.'
+			element.innerHTML = [
+				'Your browser does not support WebGL. <a href="http://www.google.com/chrome/" style="color:#ffffff">Download Chrome</a><br>',
+				'or <a href="http://www.khronos.org/webgl/wiki_1_15/index.php/Getting_a_WebGL_Implementation" style="color:#ffffff">click here</a> to learn more.'
 			].join( '\n' );
 
 		}
