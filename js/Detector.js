@@ -30,8 +30,8 @@ Detector = {
 		if ( ! this.webgl ) {
 
 			element.innerHTML = [
-				'Your browser does not support WebGL. <a href="http://www.google.com/chrome/" style="color:#ffffff">Download Chrome</a><br>',
-				'or <a href="http://www.khronos.org/webgl/wiki_1_15/index.php/Getting_a_WebGL_Implementation" style="color:#ffffff">click here</a> to learn more.'
+				'Either your graphics card or your browser do not support WebGL. Try <a href="http://www.google.com/chrome/" style="color:#ffffff">Google Chrome</a><br>',
+				'or <a href="http://www.khronos.org/webgl/wiki_1_15/index.php/Getting_a_WebGL_Implementation" style="color:#ffffff">click here</a> for a list of WebGL compatible browsers.'
 			].join( '\n' );
 
 		}

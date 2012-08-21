@@ -350,7 +350,7 @@ Bar graph on left
     background:             url('yearHandle.png') 0px 0 no-repeat;
     position:               absolute;
     bottom:                 20px;
-    left:                   12px;
+    left:                   642px;    
 }
 #history .graph {
     display: none;

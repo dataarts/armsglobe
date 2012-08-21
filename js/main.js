@@ -132,7 +132,7 @@ function start( e ){
 
 
 var Selection = function(){
-	this.selectedYear = '1992';
+	this.selectedYear = '2010';
 	this.selectedCountry = 'UNITED STATES';
 	// this.showExports = true;
 	// this.showImports = true;
@@ -292,7 +292,7 @@ function initScene() {
 
 	buildGUI();
 
-	selectVisualization( timeBins, '1992', ['UNITED STATES'], ['Military Weapons','Civilian Weapons', 'Ammunition'], ['Military Weapons','Civilian Weapons', 'Ammunition'] );					
+	selectVisualization( timeBins, '2010', ['UNITED STATES'], ['Military Weapons','Civilian Weapons', 'Ammunition'], ['Military Weapons','Civilian Weapons', 'Ammunition'] );					
 
 		// test for highlighting specific countries
 	// highlightCountry( ["United States", "Switzerland", "China"] );
