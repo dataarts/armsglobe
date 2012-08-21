@@ -26,7 +26,6 @@ Detector = {
 		element.style.zIndex = '500000';
 		element.style.position = 'absolute';
 		element.style.pointerEvents = 'all';
-		element.style.textTransform = 'capitalize';
 
 		if ( ! this.webgl ) {
 
