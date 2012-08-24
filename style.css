@@ -118,14 +118,17 @@ li { list-style-type:none; }
 }
 
 #loading{
-    background-color: 		#111111;
-	position: fixed;
-    top:50%;
-    left:50%;
-    margin-top: -20px;
-    margin-left: -260px;
-	color:					#ffffff;
-	padding:				16px;
+    background-color: #111;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-top: -38px;
+    margin-left: -380px;
+    color: white;
+    padding: 16px 30px;
+    width: 700px;
+    height: 45px;
+    line-height: 11px;
 }
 
 
