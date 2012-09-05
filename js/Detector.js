@@ -30,7 +30,7 @@ Detector = {
 		if ( ! this.webgl ) {
 
 			element.innerHTML = [
-				'Either your graphics card or your browser do not support WebGL. Try <a href="http://www.google.com/chrome/" style="color:#ffffff; text-decoration:underline; text-transform:capitalize">Google Chrome</a><br>',
+				'Either your graphics card or your browser does not support WebGL.. Try <a href="http://www.google.com/chrome/" style="color:#ffffff; text-decoration:underline; text-transform:capitalize">Google Chrome</a><br>',
 				'or <a href="http://www.khronos.org/webgl/wiki_1_15/index.php/Getting_a_WebGL_Implementation" style="color:#ffffff; text-decoration:underline; text-transform:none">view a list</a> of WebGL compatible browsers.'
 			].join( '\n' );
 
