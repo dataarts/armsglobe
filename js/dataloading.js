@@ -1,50 +1,106 @@
-function loadWorldPins( callback ){							
-	// We're going to ask a file for the JSON data.
+function loadWorldPins( callback ){					
 	xhr = new XMLHttpRequest();
-
-	// Where do we get the data?
 	xhr.open( 'GET', latlonFile, true );
-
-	// What do we do when we have it?
 	xhr.onreadystatechange = function() {
-	  // If we've received the data
 	  if ( xhr.readyState === 4 && xhr.status === 200 ) {
-	      // Parse the JSON
 	      latlonData = JSON.parse( xhr.responseText );
 	      if( callback )
 	      	callback();				     
 	    }
 	};
-
-	// Begin request
 	xhr.send( null );			    	
-}
+};
 
-function loadContentData(callback){	
-	var filePath = "categories/All.json";
-	filePath = encodeURI( filePath );
-	// console.log(filePath);
-			
-	xhr = new XMLHttpRequest();
-	xhr.open( 'GET', filePath, true );
-	xhr.onreadystatechange = function() {
-		if ( xhr.readyState === 4 && xhr.status === 200 ) {
-	    	timeBins = JSON.parse( xhr.responseText ).timeBins;
-		
-			maxValue = 0;
-			// console.log(timeBins);
+/**
+ * @param data Input in either of the following formats:
+ * // If e and i are identical, globe will display spike at that location; otherwise arc.
+ * arcs: [{data: [{e: {countryCode: <country>, lat: <degrees>, lon: <degrees>},
+ *                 i: {countryCode: <country>, lat: <degrees>, lon: <degrees>},
+ *                 v: <linewidth/height>, log_v: <color/opacity>},
+ *                 {e: {...}, i: {...}, v: ..., log_v: ...},
+ *                 {e: {...}, i: {...}, v: ..., log_v: ...},
+ *                 ...
+ *               ],
+ *         t: 0},
+ *        {data: [...], t: 1},
+ *        {data: [...], t: 2},
+ *        ...
+ *       ];
+ * spikes: [{data: [{loc: {countryCode: <country>, lat: <degrees>, lon: <degrees>},
+ *                   v: <linewidth/height>, log_v: <color/opacity>},
+ *                  {loc: {...}, v: ..., log_v: ...},
+ *                  {loc: {...}, v: ..., log_v: ...},
+ *                  ...
+ *                 ],
+ *           t: 0},
+ *          {data: [...], t: 1},
+ *          {data: [...], t: 2},
+ *          ...
+ *         ];
+ */
+function loadContentData( data ) {
+  timeBins = data;
+  // Iterates through all of the time bins, each of which has a data array and a
+  // time value. One of these time values should be t = 0.
+  for ( var i = 0; i < timeBins.length; i++ ) {
+    var bin = timeBins[i].data;
+    for ( var j = 0; j < bin.length; j++ ) {
+      var set = bin[j];
+      if ( set.i !== undefined && set.e !== undefined ) {  // arc
+        set.i.c = countryLookup[set.i.countryCode];
+        if (set.i.c === undefined) {
+          set.i.c = 'Invalid Country';
+        }
+        set.e.c = countryLookup[set.e.countryCode];
+        if (set.e.c === undefined) {
+          set.e.c = 'Invalid Country';
+        }
+      } else if ( set.loc !== undefined ) {  // spike
+        set.loc.c = countryLookup[set.loc.countryCode];
+        if (set.loc.c === undefined) {
+          set.loc.c = 'Invalid Country';
+        }
+      }
+      set.v = set.lin_v;
+    }
+  }
 
-			startTime = timeBins[0].t;
-	    	endTime = timeBins[timeBins.length-1].t;
-	    	timeLength = endTime - startTime;				    											    	
-
-			if(callback)
-				callback();				
-	    	console.log("finished read data file");	   	
-	    }
-	};
-	xhr.send( null );					    	
-}
+  selectableCountries = [];
+  for ( var i in timeBins ){         
+    var bin = timeBins[i].data;
+    for ( var s in bin ){
+      var set = bin[s];
+      
+      if ( set.e !== undefined && set.i !== undefined ) {  //arcs
+        var exporterName = set.e.c.toUpperCase();
+        var importerName = set.i.c.toUpperCase();
+        //  let's track a list of actual countries listed in this data set
+        //  this is actually really slow... consider re-doing this with a map
+        if ( $.inArray(exporterName, selectableCountries) < 0 )
+          selectableCountries.push( exporterName );
+  
+        if ( $.inArray(importerName, selectableCountries) < 0 )
+          selectableCountries.push( importerName );
+      }
+      else if ( set.loc !== undefined ) {  //spikes
+        var countryName = set.loc.c.toUpperCase();
+        if ( $.inArray(countryName, selectableCountries) < 0 )
+          selectableCountries.push( countryName );
+      }
+    }
+  }
+  console.log('finished loading content data');
+  
+  selectableTimes = {};
+  
+  console.time('buildDataVizGeometries');
+  var vizilines = buildDataVizGeometries( timeBins );
+  console.timeEnd('buildDataVizGeometries');
+  
+  controllers.spin = DEFAULT_SPIN;
+  
+  selectVisualization( selectionData.selectedTime, allCountries );
+};
 
 function loadCountryCodes( callback ){
 	cxhr = new XMLHttpRequest();
@@ -57,4 +113,4 @@ function loadCountryCodes( callback ){
 	    }
 	};
 	cxhr.send( null );
-}
+};
