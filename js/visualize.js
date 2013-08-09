@@ -1,366 +1,204 @@
+var com = com || {};
+com.google = com.google || {};
+
+var COUNTRY_TRANSITION_MILLISECONDS = 300;
+var CHANGE_SCALE_MILLISECONDS = 300;
+
+com.google.scaleEnum = {
+  LINEAR: 'linear',
+  LOG: 'log'
+};
+
+function colorFn( val ) {
+  var lineColor = new THREE.Color();
+  lineColor.setHSL( 0.6 - (val * 0.6), 1.0, 0.5 );
+  return lineColor;
+};
+
 function buildDataVizGeometries( linearData ){	
 
-	var loadLayer = document.getElementById('loading');
-
 	for( var i in linearData ){
-		var yearBin = linearData[i].data;		
+		var timeBin = linearData[i].data;		
 
-		var year = linearData[i].t;
-		selectableYears.push(year);	
+		var time = linearData[i].t;
+		selectableTimes[time] = timeBin;	
 
-		var count = 0;
-		console.log('Building data for ...' + year);
-		for( var s in yearBin ){
-			var set = yearBin[s];
-
-			var exporterName = set.e.toUpperCase();
-			var importerName = set.i.toUpperCase();
-
-			exporter = countryData[exporterName];
-			importer = countryData[importerName];	
+		console.log('Building data for ...' + time);
+		for( var s in timeBin ){
+			var set = timeBin[s];
 			
-			//	we couldn't find the country, it wasn't in our list...
-			if( exporter === undefined || importer === undefined )
-				continue;			
-
-			//	visualize this event
-			set.lineGeometry = makeConnectionLineGeometry( exporter, importer, set.v, set.wc );		
-
-			// if( s % 1000 == 0 )
-			// 	console.log( 'calculating ' + s + ' of ' + yearBin.length + ' in year ' + year);
-		}
-
-		//	use this break to only visualize one year (1992)
-		// break;
-
-		//	how to make this work?
-		// loadLayer.innerHTML = 'loading data for ' + year + '...';
-		// console.log(loadLayer.innerHTML);
+			if ( set.e !== undefined && set.i !== undefined ) {  // arcs
+        var exporterLoc = latLonTo3dSpace( set.e.lat, set.e.lon );
+        var importerLoc = latLonTo3dSpace( set.i.lat, set.i.lon );
+        
+  	    //	  visualize this event
+        if ( !exporterLoc.equals( importerLoc ) ) {
+          var exporter = { center: exporterLoc, countryName: set.e.c.toUpperCase() };
+          var importer = { center: importerLoc, countryName: set.i.c.toUpperCase() };
+          set.arcInfo = makeArcInfo( exporter, importer, set.v, set.lin_v, set.log_v, colorFn( set.log_v ), 20);
+        } else {
+          set.spikeMesh = makeSpikeMesh( set.e.lat, set.e.lon, (set.v * 200) + 0.1, colorFn( set.log_v ) );
+        }
+			} else if ( set.loc !== undefined ) {  // spikes
+			  set.spikeMesh = makeSpikeMesh( set.loc.lat, set.loc.lon, (set.v * 200) + 0.1, colorFn( set.log_v ) );
+			}
+	  }
 	}			
+};
 
-	loadLayer.style.display = 'none';	
-}
-
-function getVisualizedMesh( linearData, year, countries, exportCategories, importCategories ){
+function getVisualizedMeshes( time, countries ){
 	//	for comparison purposes, all caps the country names
 	for( var i in countries ){
 		countries[i] = countries[i].toUpperCase();
 	}
 
-	//	pick out the year first from the data
-	var indexFromYear = parseInt(year) - 1992;
-	if( indexFromYear >= timeBins.length )
-		indexFromYear = timeBins.length-1;
-
 	var affectedCountries = [];
 
-	var bin = linearData[indexFromYear].data;	
+	var bin = selectableTimes[time];	
 
-	var linesGeo = new THREE.Geometry();
-	var lineColors = [];
+	var meshes = [];
+	var linewidthToArcsInfo = {};
+	var spikeGeometries = new THREE.Geometry();
 
-	var particlesGeo = new THREE.Geometry();
-	var particleColors = [];			
-
-	// var careAboutExports = ( action === 'exports' );
-	// var careAboutImports = ( action === 'imports' );
-	// var careAboutBoth = ( action === 'both' );
-
-	//	go through the data from year, and find all relevant geometries
+	//	go through the data from time, and find all relevant geometries
 	for( i in bin ){
 		var set = bin[i];
-
+    
+		var exporterName;
+		var importerName;
 		//	filter out countries we don't care about
-		var exporterName = set.e.toUpperCase();
-		var importerName = set.i.toUpperCase();
-		var relevantExport = $.inArray(exporterName, countries) >= 0;
-		var relevantImport = $.inArray(importerName, countries) >= 0;
+		if ( set.e !== undefined && set.i !== undefined ) {  // arcs
+		  exporterName = set.e.c.toUpperCase();
+	    importerName = set.i.c.toUpperCase();
+    } else if ( set.loc !== undefined ) {  // spikes
+      exporterName = set.loc.c.toUpperCase();
+      importerName = set.loc.c.toUpperCase();
+    }
+		var relevantExport = $.inArray( exporterName, countries ) >= 0;
+		var relevantImport = $.inArray( importerName, countries ) >= 0;
 
 		var useExporter = relevantExport;
 		var useImporter = relevantImport;
 
-		var categoryName = reverseWeaponLookup[set.wc];
-		var relevantExportCategory = relevantExport && $.inArray(categoryName,exportCategories) >= 0;		
-		var relevantImportCategory = relevantImport && $.inArray(categoryName,importCategories) >= 0;		
-
-		if( (useImporter || useExporter) && (relevantExportCategory || relevantImportCategory) ){
+		if( (useImporter || useExporter) ){
 			//	we may not have line geometry... (?)
-			if( set.lineGeometry === undefined )
+			if( set.arcInfo === undefined && set.spikeMesh === undefined ) {
 				continue;
-
-			var thisLineIsExport = false;
-
-			if(exporterName == selectedCountry.countryName ){
-				thisLineIsExport = true;
+			}
+			
+			if ( set.arcInfo !== undefined ) {
+			  var arcWidth = set.arcInfo.width;
+			  if ( linewidthToArcsInfo[arcWidth] === undefined ) {
+			    linewidthToArcsInfo[arcWidth] = [];
+			  }
+			  linewidthToArcsInfo[arcWidth].push( set.arcInfo );
+			} else if ( set.spikeMesh !== undefined ) {
+			  THREE.GeometryUtils.merge( spikeGeometries, set.spikeMesh );
 			}
 
-			var lineColor = thisLineIsExport ? new THREE.Color(exportColor) : new THREE.Color(importColor);
-
-			var lastColor;
-			//	grab the colors from the vertices
-			for( s in set.lineGeometry.vertices ){
-				var v = set.lineGeometry.vertices[s];		
-				lineColors.push(lineColor);
-				lastColor = lineColor;
-			}
-
-			//	merge it all together
-			THREE.GeometryUtils.merge( linesGeo, set.lineGeometry );
-
-			var particleColor = lastColor.clone();		
-			var points = set.lineGeometry.vertices;
-			var particleCount = Math.floor(set.v / 8000 / set.lineGeometry.vertices.length) + 1;
-			particleCount = constrain(particleCount,1,100);
-			var particleSize = set.lineGeometry.size;			
-			for( var s=0; s<particleCount; s++ ){
-				// var rIndex = Math.floor( Math.random() * points.length );
-				// var rIndex = Math.min(s,points.length-1);
-
-				var desiredIndex = s / particleCount * points.length;
-				var rIndex = constrain(Math.floor(desiredIndex),0,points.length-1);
-
-				var point = points[rIndex];						
-				var particle = point.clone();
-				particle.moveIndex = rIndex;
-				particle.nextIndex = rIndex+1;
-				if(particle.nextIndex >= points.length )
-					particle.nextIndex = 0;
-				particle.lerpN = 0;
-				particle.path = points;
-				particlesGeo.vertices.push( particle );	
-				particle.size = particleSize;
-				particleColors.push( particleColor );						
-			}			
-
-			if( $.inArray( exporterName, affectedCountries ) < 0 ){
-				affectedCountries.push(exporterName);
+			if ( $.inArray( exporterName, affectedCountries ) < 0 ) {
+				affectedCountries.push( exporterName );
 			}							
 
-			if( $.inArray( importerName, affectedCountries ) < 0 ){
-				affectedCountries.push(importerName);
+			if ( $.inArray( importerName, affectedCountries ) < 0 ) {
+				affectedCountries.push( importerName );
 			}
 
 			var vb = set.v;
 			var exporterCountry = countryData[exporterName];
-			if( exporterCountry.mapColor === undefined ){
-				exporterCountry.mapColor = vb;
+			if ( exporterCountry !== undefined ) {
+  			if ( exporterCountry.mapColor === undefined ){
+  				exporterCountry.mapColor = vb;
+  			}
+  			else {				
+  				exporterCountry.mapColor += vb;
+  			}
 			}
-			else{				
-				exporterCountry.mapColor += vb;
-			}			
 
 			var importerCountry = countryData[importerName];
-			if( importerCountry.mapColor === undefined ){
-				importerCountry.mapColor = vb;
+			if ( importerCountry !== undefined ) {
+  			if ( importerCountry.mapColor === undefined ){
+  				importerCountry.mapColor = vb;
+  			}
+  			else {				
+  				importerCountry.mapColor += vb;
+  			}
 			}
-			else{				
-				importerCountry.mapColor += vb;
-			}	
-
-			exporterCountry.exportedAmount += vb;
-			importerCountry.importedAmount += vb;
-
-			if( exporterCountry == selectedCountry ){				
-				selectedCountry.summary.exported[set.wc] += set.v;
-				selectedCountry.summary.exported.total += set.v;				
-			}		
-			if( importerCountry == selectedCountry ){
-				selectedCountry.summary.imported[set.wc] += set.v;
-				selectedCountry.summary.imported.total += set.v;
-			}
-
-			if( importerCountry == selectedCountry || exporterCountry == selectedCountry ){
-				selectedCountry.summary.total += set.v;	
-			}
-
-
 		}		
 	}
+	
+  for ( var width in linewidthToArcsInfo ) {
+    var relevantArcsInfo = linewidthToArcsInfo[width];
+    var arcsGeometry = createLineGeometry( relevantArcsInfo );
+    var arcsMesh = makeArcMesh( arcsGeometry, width );
+    meshes.push( arcsMesh );
+  }
+	var spikesMesh = new THREE.Mesh( spikeGeometries,
+	    new THREE.MeshBasicMaterial( {vertexColors: THREE.FaceColors,
+	      blending: THREE.AdditiveBlending, transparent: true}));
+  spikesMesh.material.fullOpacity = 1;
+  spikesMesh.material.side = THREE.FrontSide;
+  meshes.push( spikesMesh );
+	
+	currMeshes = meshes;
+	var meshesAndAffectedCountries = {};
+  meshesAndAffectedCountries.meshes = meshes;
+  meshesAndAffectedCountries.affectedCountries = affectedCountries;
 
-	// console.log(selectedCountry);
+	return meshesAndAffectedCountries;	
+};
 
-	linesGeo.colors = lineColors;	
-
-	//	make a final mesh out of this composite
-	var splineOutline = new THREE.Line( linesGeo, new THREE.LineBasicMaterial( 
-		{ 	color: 0xffffff, opacity: 1.0, blending: 
-			THREE.AdditiveBlending, transparent:true, 
-			depthWrite: false, vertexColors: true, 
-			linewidth: 1 } ) 
-	);
-
-	splineOutline.renderDepth = false;
-
-
-	attributes = {
-		size: {	type: 'f', value: [] },
-		customColor: { type: 'c', value: [] }
-	};
-
-	uniforms = {
-		amplitude: { type: "f", value: 1.0 },
-		color:     { type: "c", value: new THREE.Color( 0xffffff ) },
-		texture:   { type: "t", value: 0, texture: THREE.ImageUtils.loadTexture( "images/particleA.png" ) },
-	};
-
-	var shaderMaterial = new THREE.ShaderMaterial( {
-
-		uniforms: 		uniforms,
-		attributes:     attributes,
-		vertexShader:   document.getElementById( 'vertexshader' ).textContent,
-		fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
-
-		blending: 		THREE.AdditiveBlending,
-		depthTest: 		true,
-		depthWrite: 	false,
-		transparent:	true,
-		// sizeAttenuation: true,
-	});
-
-
-
-	var particleGraphic = THREE.ImageUtils.loadTexture("images/map_mask.png");
-	var particleMat = new THREE.ParticleBasicMaterial( { map: particleGraphic, color: 0xffffff, size: 60, 
-														blending: THREE.NormalBlending, transparent:true, 
-														depthWrite: false, vertexColors: true,
-														sizeAttenuation: true } );
-	particlesGeo.colors = particleColors;
-	var pSystem = new THREE.ParticleSystem( particlesGeo, shaderMaterial );
-	pSystem.dynamic = true;
-	splineOutline.add( pSystem );
-
-	var vertices = pSystem.geometry.vertices;
-	var values_size = attributes.size.value;
-	var values_color = attributes.customColor.value;
-
-	for( var v = 0; v < vertices.length; v++ ) {		
-		values_size[ v ] = pSystem.geometry.vertices[v].size;
-		values_color[ v ] = particleColors[v];
-	}
-
-	pSystem.update = function(){	
-		// var time = Date.now()									
-		for( var i in this.geometry.vertices ){						
-			var particle = this.geometry.vertices[i];
-			var path = particle.path;
-			var moveLength = path.length;
-			
-			particle.lerpN += 0.05;
-			if(particle.lerpN > 1){
-				particle.lerpN = 0;
-				particle.moveIndex = particle.nextIndex;
-				particle.nextIndex++;
-				if( particle.nextIndex >= path.length ){
-					particle.moveIndex = 0;
-					particle.nextIndex = 1;
-				}
-			}
-
-			var currentPoint = path[particle.moveIndex];
-			var nextPoint = path[particle.nextIndex];
-			
-
-			particle.copy( currentPoint );
-			particle.lerpSelf( nextPoint, particle.lerpN );			
-		}
-		this.geometry.verticesNeedUpdate = true;
-	};		
-
-	//	return this info as part of the mesh package, we'll use this in selectvisualization
-	splineOutline.affectedCountries = affectedCountries;
-
-
-	return splineOutline;	
-}
-
-function selectVisualization( linearData, year, countries, exportCategories, importCategories ){
+function selectVisualization( time, countries ){
+  
 	//	we're only doing one country for now so...
 	var cName = countries[0].toUpperCase();
 	
-	$("#hudButtons .countryTextInput").val(cName);
 	previouslySelectedCountry = selectedCountry;
-	selectedCountry = countryData[countries[0].toUpperCase()];
-    
-	selectedCountry.summary = {
-		imported: {
-			mil: 0,
-			civ: 0,
-			ammo: 0,
-			total: 0,
-		},
-		exported: {
-			mil: 0,
-			civ: 0,
-			ammo: 0,
-			total: 0,
-		},
-		total: 0,
-		historical: getHistoricalData(selectedCountry),
-	};
-
-	// console.log(selectedCountry);
+	if ( countries == allCountries ) {
+	  selectedCountry = countryData['UNITED STATES'];
+	  selectionData.selectedCountry = 'ALL';
+	} else {
+	  selectedCountry = countryData[cName];
+	  if ( selectedCountry === undefined ) {
+	    return;
+	  }
+	  selectionData.selectedCountry = selectedCountry.countryName;
+	}
+	$('#selectedCountryName').text( selectionData.selectedCountry );
 
 	//	clear off the country's internally held color data we used from last highlight
 	for( var i in countryData ){
 		var country = countryData[i];
-		country.exportedAmount = 0;
-		country.importedAmount = 0;
 		country.mapColor = 0;
 	}
 
-	//	clear markers
-	for( var i in selectableCountries ){
-		removeMarkerFromCountry( selectableCountries[i] );
-	}
-
-	//	clear children
-	while( visualizationMesh.children.length > 0 ){
-		var c = visualizationMesh.children[0];
-		visualizationMesh.remove(c);
-	}
-
+	var prevMeshes = currMeshes;
+	
 	//	build the mesh
 	console.time('getVisualizedMesh');
-	var mesh = getVisualizedMesh( timeBins, year, countries, exportCategories, importCategories );				
+	var meshes = getVisualizedMeshes( time, countries );				
 	console.timeEnd('getVisualizedMesh');
-
-	//	add it to scene graph
-	visualizationMesh.add( mesh );	
-
-
-	//	alright we got no data but at least highlight the country we've selected
-	if( mesh.affectedCountries.length == 0 ){
-		mesh.affectedCountries.push( cName );
-	}	
-
-	for( var i in mesh.affectedCountries ){
-		var countryName = mesh.affectedCountries[i];
-		var country = countryData[countryName];
-		attachMarkerToCountry( countryName, country.mapColor );
-	}
-
-	// console.log( mesh.affectedCountries );
-	highlightCountry( mesh.affectedCountries );
+	
+	animateBetweenMeshes( prevMeshes, meshes.meshes, COUNTRY_TRANSITION_MILLISECONDS );
 
 	if( previouslySelectedCountry !== selectedCountry ){
 		if( selectedCountry ){
 			rotateTargetX = selectedCountry.lat * Math.PI/180;
 			var targetY0 = -(selectedCountry.lon - 9) * Math.PI / 180;
-            var piCounter = 0;
-			while(true) {
-                var targetY0Neg = targetY0 - Math.PI * 2 * piCounter;
-                var targetY0Pos = targetY0 + Math.PI * 2 * piCounter;
-                if(Math.abs(targetY0Neg - rotating.rotation.y) < Math.PI) {
-                    rotateTargetY = targetY0Neg;
-                    break;
-                } else if(Math.abs(targetY0Pos - rotating.rotation.y) < Math.PI) {
-                    rotateTargetY = targetY0Pos;
-                    break;
-                }
-                piCounter++;
-                rotateTargetY = wrap(targetY0, -Math.PI, Math.PI);
+      var piCounter = 0;
+			while ( true ) {
+        var targetY0Neg = targetY0 - Math.PI * 2 * piCounter;
+        var targetY0Pos = targetY0 + Math.PI * 2 * piCounter;
+        if( Math.abs(targetY0Neg - rotating.rotation.y) < Math.PI ) {
+          rotateTargetY = targetY0Neg;
+          break;
+        } else if ( Math.abs(targetY0Pos - rotating.rotation.y) < Math.PI ) {
+          rotateTargetY = targetY0Pos;
+          break;
+        }
+        piCounter++;
+        rotateTargetY = wrap( targetY0, -Math.PI, Math.PI );
 			}
-            // console.log(rotateTargetY);
             //lines commented below source of rotation error
 			//is there a more reliable way to ensure we don't rotate around the globe too much? 
 			/*
@@ -371,6 +209,116 @@ function selectVisualization( linearData, year, countries, exportCategories, imp
 			rotateVY *= 0.6;		
 		}	
 	}
-    
-    d3Graphs.initGraphs();
-}
+};
+
+function selectAllCountries() {
+  selectVisualization( selectionData.selectedTime, allCountries );
+};
+
+function changeDisplayScale( scale, power ) {
+  if ( timeBins === undefined ) {
+    return;
+  }
+  for ( var i = 0; i < timeBins.length; i++ ) {
+    var bin = timeBins[i].data;
+    for ( var j = 0; j < bin.length; j++ ) {
+      var set = bin[j];
+      if ( scale == com.google.scaleEnum.LINEAR ) {
+        set.v = Math.pow( set.lin_v, power );
+      } else if ( scale == com.google.scaleEnum.LOG ) {
+        set.v = Math.pow( set.log_v, power );
+      }
+      if ( set.arcInfo !== undefined ) {
+        set.arcInfo.width = roundLinewidth( set.v );
+      } else if ( set.spikeMesh !== undefined ) {
+        set.spikeMesh.scale.z = (set.v * 200) + 0.1;
+      }
+    }
+  }
+  selectVisualization( selectionData.selectedTime, getSelectedCountries() );
+};
+
+function selectTime( time, switchVisualizedMeshes, animationDuration ) {
+  selectionData.selectedTime = time;
+  
+  if ( !switchVisualizedMeshes ) {
+    return;
+  }
+  
+  var prevMeshes = currMeshes;
+  
+  console.time('getVisualizedMesh');
+  var destinationMeshes =
+      getVisualizedMeshes( selectionData.selectedTime, getSelectedCountries() ).meshes;
+  console.timeEnd('getVisualizedMesh');
+  
+  animateBetweenMeshes( prevMeshes, destinationMeshes, animationDuration );
+};
+
+function animateBetweenMeshes( fromMeshes, toMeshes, animationDuration ) {
+  //  add it to scene graph
+  for ( var i = 0; i < toMeshes.length; i++ ) {
+    if ( toMeshes[i].geometry.fullOpacityPerVertex !== undefined ) {  // arcs
+      var opacities = toMeshes[i].geometry.attributes.opacity.array;
+      for ( var j = 0; j < opacities.length; j++ ) {
+        opacities[j] = 0;
+      }
+      toMeshes[i].geometry.attributes.opacity.needsUpdate = true;
+    } else {
+      toMeshes[i].material.opacity = 0;
+    }
+    visualizationMesh.add( toMeshes[i] );
+  }
+  for ( var i = 0; i < toMeshes.length; i++ ) {
+    if ( toMeshes[i].geometry.fullOpacityPerVertex !== undefined ) {  // arcs
+      tweenArcOpacities(toMeshes[i], 0, 1, animationDuration);
+    } else {  // spikes
+      tweenSpikeOpacity(toMeshes[i], 1, animationDuration);
+    }
+  }
+  if ( fromMeshes !== undefined ) {
+    for ( var i = 0; i < fromMeshes.length; i++ ) {
+      if ( fromMeshes[i].geometry.fullOpacityPerVertex !== undefined ) {  // arcs
+        tweenArcOpacities( fromMeshes[i], 1, 0, animationDuration );
+      } else {  // spikes
+        tweenSpikeOpacity( fromMeshes[i], 0, animationDuration );
+      }
+    }
+    setTimeout( function() {
+      for ( var i = 0; i < fromMeshes.length; i++ ) {
+        visualizationMesh.remove( fromMeshes[i] );
+      }
+    }, animationDuration);
+  }
+};
+
+function tweenArcOpacities( mesh, startT, endT, duration ) {
+  var geometry = mesh.geometry;
+  var opacities = geometry.attributes.opacity.array;
+  var fullOpacities = geometry.fullOpacityPerVertex;
+  new TWEEN.Tween( {t: startT} )
+      .to( {t: endT}, duration )
+      .easing( TWEEN.Easing.Linear.None )
+      .onUpdate( function() {
+          for ( var j = 0; j < opacities.length; j++ ) {
+            opacities[j] = this.t * fullOpacities[j];
+          }
+          geometry.attributes.opacity.needsUpdate = true;
+      })
+      .start();
+};
+
+function tweenSpikeOpacity( mesh, endOpacity, duration ) {
+  new TWEEN.Tween( mesh.material )
+      .to( {opacity: endOpacity}, duration )
+      .easing( TWEEN.Easing.Linear.None )
+      .start();
+};
+
+function getSelectedCountries() {
+  var countries = [selectionData.selectedCountry];
+  if ( selectionData.selectedCountry == 'ALL' ) {
+    countries = allCountries;
+  }
+  return countries;
+};

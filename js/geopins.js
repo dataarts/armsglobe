@@ -1,45 +1,34 @@
+var RADIUS = 100;
+
 function loadGeoData( latlonData ){
     //	-----------------------------------------------------------------------------
     //	Load the world geo data json, per country	
-
-	var sphereRad = 1;				
-	var rad = 100;
-
+  
 	//	iterate through each set of country pins
 	for ( var i in latlonData.countries ) {										
-		var country = latlonData.countries[i];	
-		
-		//	can we even find the country in the list?
-		// if( countryLookup[country.n.toUpperCase()] === undefined ){
-		// 	console.log('could not find country that has country code: ' + country.n)
-		// 	continue;				
-		// }
+		var country = latlonData.countries[i];
 
 		//	save out country name and code info
 		country.countryCode = i;
-		country.countryName = countryLookup[i];			
-
-		//	take the lat lon from the data and convert this to 3d globe space
-        var lon = country.lon - 90;
-        var lat = country.lat;
-        
-        var phi = Math.PI/2 - lat * Math.PI / 180 - Math.PI * 0.01;
-        var theta = 2 * Math.PI - lon * Math.PI / 180 + Math.PI * 0.06;
-		
-		var center = new THREE.Vector3();                
-        center.x = Math.sin(phi) * Math.cos(theta) * rad;
-        center.y = Math.cos(phi) * rad;
-        center.z = Math.sin(phi) * Math.sin(theta) * rad;  	
+		country.countryName = countryLookup[i];			  	
 	
 		//	save and catalogue       
-		country.center = center;
+		country.center = latLonTo3dSpace( country.lat, country.lon );
 		countryData[country.countryName] = country;	
 	}		
+};					
 
-	// console.log(countryData);
-}					
+// take the lat lon from the data and convert this to 3d globe space
+function latLonTo3dSpace( lat, lon ) {
+  lon = lon - 90;
+  
+  var phi = Math.PI/2 - lat * Math.PI / 180;
+  var theta = 2 * Math.PI - lon * Math.PI / 180;
 
-//	convenience function to get the country object by name
-function getCountry(name){
-	return countryData[name.toUpperCase()]
-}
+  var pos = new THREE.Vector3();                
+  pos.x = Math.sin(phi) * Math.cos(theta) * RADIUS;
+  pos.y = Math.cos(phi) * RADIUS;
+  pos.z = Math.sin(phi) * Math.sin(theta) * RADIUS;
+  
+  return pos;
+};
