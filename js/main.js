@@ -10,7 +10,7 @@ var glContainer = document.getElementById( 'glContainer' );
 
 //	contains a list of country codes with their matching country names
 var isoFile = 'country_iso3166.json';
-var latlonFile = 'country_lat_lon.json'
+var latlonFile = 'country_lat_lon.json';
 
 var camera, scene, renderer, controls;
 
