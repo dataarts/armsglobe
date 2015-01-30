@@ -1,0 +1,17 @@
+{
+  "name": "dataglobe",
+  "version": "0.0.0",
+  "description": "A more generic version of https://github.com/dataarts/armsglobe for visualizing source/destination data, served up via Node.",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dpetker/dataglobe.git"
+  },
+  "author": "dpetker",
+  "private": true,
+  "homepage": "https://github.com/dpetker/dataglobe.git",
+  "dependencies": {
+    "express": "^4.11.1",
+    "serve-static": "^1.8.1"
+  }
+}

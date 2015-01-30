@@ -4,3 +4,5 @@ client
 
 hostery-files
 .hostery-config
+
+node_modules/
