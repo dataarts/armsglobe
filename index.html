@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 	<head>
-		<title>Interactive Globe: Small Arms Imports &amp; Exports</title>
+		<title>Interactive Globe: Source/Destination Data Visualization</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, initial-scale=1">
 		<link rel="stylesheet" type="text/css" href="style.css">
@@ -11,7 +11,7 @@
 	<body onload="start()" id="dataviz" class="">
 		<div id="wrapper">
 		<div id="loading">
-			<h2>Loading Small Arms and Ammunition Trade Data from 1992 to 2010. Please wait...</h2>
+			<h2>Loading Data. Please wait...</h2>
 		</div>
 
 		<div >
@@ -37,8 +37,8 @@
 		<script src="js/THREEx.WindowResize.js"></script>
 		<script src="js/Stats.js"></script>
 		<script src="js/jquery-1.7.1.min.js"></script>
-    	<script src="js/jquery-ui-1.8.21.custom.min.js"></script>
-    	<script src="js/RequestAnimationFrame.js"></script>
+    <script src="js/jquery-ui-1.8.21.custom.min.js"></script>
+    <script src="js/RequestAnimationFrame.js"></script>
 		<script src="js/ShaderExtras.js"></script>
 		<script src="js/canvg.js"></script>
 		<script src="js/rgbcolor.js"></script>
@@ -140,11 +140,11 @@
 
 
 		<!-- All other hud can go here-->
-        <div id="hudHeader" class="overlayCountries noPointer">
-            <h1 class="noPointer">Small Arms and Ammunition — Imports & Exports
-                <div class="subtitle">An interactive visualization of government-authorized small arms and ammunition transfers from 1992 to 2010. </div>
+    <div id="hudHeader" class="overlayCountries noPointer">
+      <h1 class="noPointer">Data Visualization Globe
+        <div class="subtitle">An interactive visualization of source/destination data over time.</div>
 			</h1>
-        </div>
+    </div>
 
 		<div class="overlayCountries noPointer" id="hudButtons">
             <input type="button" value="SEARCH" class="searchBtn armsBtn pointer">
