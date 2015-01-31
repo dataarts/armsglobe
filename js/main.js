@@ -20,8 +20,8 @@ var lookupTexture;
 var backTexture;
 var worldCanvas;
 var sphere;
-var rotating;	
-var visualizationMesh;							
+var rotating;
+var visualizationMesh;
 
 var mapUniforms;
 
@@ -31,20 +31,20 @@ var mapUniforms;
 var timeBins;
 
 //	contains latlon data for each country
-var latlonData;			    
+var latlonData;
 
 //	contains above but organized as a mapped list via ['countryname'] = countryobject
 //	each country object has data like center of country in 3d space, lat lon, country name, and country code
-var countryData = new Object();		
+var countryData = new Object();
 
 //	contains a list of country code to country name for running lookups
-var countryLookup;		    
+var countryLookup;
 
 var selectableYears = [];
-var selectableCountries = [];			    
+var selectableCountries = [];
 
 /*
-	930100 – military weapons, and includes some light weapons and artillery as well as machine guns and assault rifles etc.  
+	930100 – military weapons, and includes some light weapons and artillery as well as machine guns and assault rifles etc.
 	930190 – military firearms – eg assault rifles, machineguns (sub, light, heavy etc), combat shotguns, machine pistols etc
 	930200 – pistols and revolvers
 	930320 – Sporting shotguns (anything that isn’t rated as a military item).
@@ -68,7 +68,7 @@ for( var i in weaponLookup ){
 	var name = i;
 	var code = weaponLookup[i];
 	reverseWeaponLookup[code] = name;
-}	    	
+}
 
 //	A list of category colors
 var categoryColors = {
@@ -97,7 +97,7 @@ var assetList = [];
 //	TODO
 //	use underscore and ".after" to load these in order
 //	don't look at me I'm ugly
-function start( e ){	
+function start( e ){
 	//	detect for webgl and reject everything else
 	if ( ! Detector.webgl ) {
 		Detector.addGetWebGLMessage();
@@ -113,21 +113,21 @@ function start( e ){
 				loadCountryCodes(
 					function(){
 						loadWorldPins(
-							function(){										
-								loadContentData(								
-									function(){																	
+							function(){
+								loadContentData(
+									function(){
 										initScene();
-										animate();		
+										animate();
 									}
-								);														
+								);
 							}
 						);
 					}
 				);
-			};			
-		};		
+			};
+		};
 	};
-}			
+}
 
 
 
@@ -143,7 +143,7 @@ var Selection = function(){
 	for( var i in weaponLookup ){
 		this.exportCategories[i] = true;
 		this.importCategories[i] = true;
-	}				
+	}
 
 	this.getExportCategories = function(){
 		var list = [];
@@ -152,7 +152,7 @@ var Selection = function(){
 				list.push(i);
 		}
 		return list;
-	}		
+	}
 
 	this.getImportCategories = function(){
 		var list = [];
@@ -169,15 +169,15 @@ var Selection = function(){
 function initScene() {
 
 	//	-----------------------------------------------------------------------------
-    //	Let's make a scene		
+    //	Let's make a scene
 	scene = new THREE.Scene();
-	scene.matrixAutoUpdate = false;		
-	// scene.fog = new THREE.FogExp2( 0xBBBBBB, 0.00003 );		        		       
+	scene.matrixAutoUpdate = false;
+	// scene.fog = new THREE.FogExp2( 0xBBBBBB, 0.00003 );
 
-	scene.add( new THREE.AmbientLight( 0x505050 ) );				
+	scene.add( new THREE.AmbientLight( 0x505050 ) );
 
 	light1 = new THREE.SpotLight( 0xeeeeee, 3 );
-	light1.position.x = 730; 
+	light1.position.x = 730;
 	light1.position.y = 520;
 	light1.position.z = 626;
 	light1.castShadow = true;
@@ -187,15 +187,15 @@ function initScene() {
 	light2.position.x = -640;
 	light2.position.y = -500;
 	light2.position.z = -1000;
-	scene.add( light2 );				
+	scene.add( light2 );
 
 	rotating = new THREE.Object3D();
 	scene.add(rotating);
 
-	lookupCanvas = document.createElement('canvas');	
+	lookupCanvas = document.createElement('canvas');
 	lookupCanvas.width = 256;
 	lookupCanvas.height = 1;
-	
+
 	lookupTexture = new THREE.Texture( lookupCanvas );
 	lookupTexture.magFilter = THREE.NearestFilter;
 	lookupTexture.minFilter = THREE.NearestFilter;
@@ -213,7 +213,7 @@ function initScene() {
 	// outlinedMapTexture.minFilter = THREE.NearestFilter;
 
 	var uniforms = {
-		'mapIndex': { type: 't', value: 0, texture: indexedMapTexture  },		
+		'mapIndex': { type: 't', value: 0, texture: indexedMapTexture  },
 		'lookup': { type: 't', value: 1, texture: lookupTexture },
 		'outline': { type: 't', value: 2, texture: outlinedMapTexture },
 		'outlineLevel': {type: 'f', value: 1 },
@@ -237,26 +237,26 @@ function initScene() {
     // mapGraphic.needsUpdate = true;
 	backMat = new THREE.MeshBasicMaterial(
 		{
-			// color: 		0xffffff, 
-			// shininess: 	10, 
+			// color: 		0xffffff,
+			// shininess: 	10,
 // 			specular: 	0x333333,
 			// map: 		mapGraphic,
 			// lightMap: 	mapGraphic
 		}
-	);				
-	// backMat.ambient = new THREE.Color(255,255,255);							
-	sphere = new THREE.Mesh( new THREE.SphereGeometry( 100, 40, 40 ), shaderMaterial );				
+	);
+	// backMat.ambient = new THREE.Color(255,255,255);
+	sphere = new THREE.Mesh( new THREE.SphereGeometry( 100, 40, 40 ), shaderMaterial );
 	// sphere.receiveShadow = true;
 	// sphere.castShadow = true;
 	sphere.doubleSided = false;
-	sphere.rotation.x = Math.PI;				
+	sphere.rotation.x = Math.PI;
 	sphere.rotation.y = -Math.PI/2;
 	sphere.rotation.z = Math.PI;
-	sphere.id = "base";	
-	rotating.add( sphere );	
+	sphere.id = "base";
+	rotating.add( sphere );
 
 
-	for( var i in timeBins ){					
+	for( var i in timeBins ){
 		var bin = timeBins[i].data;
 		for( var s in bin ){
 			var set = bin[s];
@@ -277,22 +277,22 @@ function initScene() {
 	}
 
 	console.log( selectableCountries );
-	
+
 	// load geo data (country lat lons in this case)
 	console.time('loadGeoData');
-	loadGeoData( latlonData );				
-	console.timeEnd('loadGeoData');				
+	loadGeoData( latlonData );
+	console.timeEnd('loadGeoData');
 
 	console.time('buildDataVizGeometries');
 	var vizilines = buildDataVizGeometries(timeBins);
 	console.timeEnd('buildDataVizGeometries');
 
 	visualizationMesh = new THREE.Object3D();
-	rotating.add(visualizationMesh);	
+	rotating.add(visualizationMesh);
 
 	buildGUI();
 
-	selectVisualization( timeBins, '2010', ['UNITED STATES'], ['Military Weapons','Civilian Weapons', 'Ammunition'], ['Military Weapons','Civilian Weapons', 'Ammunition'] );					
+	selectVisualization( timeBins, '2010', ['UNITED STATES'], ['Military Weapons','Civilian Weapons', 'Ammunition'], ['Military Weapons','Civilian Weapons', 'Ammunition'] );
 
 		// test for highlighting specific countries
 	// highlightCountry( ["United States", "Switzerland", "China"] );
@@ -303,11 +303,11 @@ function initScene() {
 	renderer = new THREE.WebGLRenderer({antialias:false});
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	renderer.autoClear = false;
-	
-	renderer.sortObjects = false;		
-	renderer.generateMipmaps = false;					
 
-	glContainer.appendChild( renderer.domElement );									
+	renderer.sortObjects = false;
+	renderer.generateMipmaps = false;
+
+	glContainer.appendChild( renderer.domElement );
 
 
     //	-----------------------------------------------------------------------------
@@ -315,42 +315,42 @@ function initScene() {
 	document.addEventListener( 'mousemove', onDocumentMouseMove, true );
 	document.addEventListener( 'windowResize', onDocumentResize, false );
 
-	//masterContainer.addEventListener( 'mousedown', onDocumentMouseDown, true );	
-	//masterContainer.addEventListener( 'mouseup', onDocumentMouseUp, false );	
-	document.addEventListener( 'mousedown', onDocumentMouseDown, true );	
-	document.addEventListener( 'mouseup', onDocumentMouseUp, false );	
-	
-	masterContainer.addEventListener( 'click', onClick, true );	
+	//masterContainer.addEventListener( 'mousedown', onDocumentMouseDown, true );
+	//masterContainer.addEventListener( 'mouseup', onDocumentMouseUp, false );
+	document.addEventListener( 'mousedown', onDocumentMouseDown, true );
+	document.addEventListener( 'mouseup', onDocumentMouseUp, false );
+
+	masterContainer.addEventListener( 'click', onClick, true );
 	masterContainer.addEventListener( 'mousewheel', onMouseWheel, false );
-	
-	//	firefox	
+
+	//	firefox
 	masterContainer.addEventListener( 'DOMMouseScroll', function(e){
 		    var evt=window.event || e; //equalize event object
     		onMouseWheel(evt);
 	}, false );
 
-	document.addEventListener( 'keydown', onKeyDown, false);												    			    	
+	document.addEventListener( 'keydown', onKeyDown, false);
 
     //	-----------------------------------------------------------------------------
     //	Setup our camera
-    camera = new THREE.PerspectiveCamera( 12, window.innerWidth / window.innerHeight, 1, 20000 ); 		        
+    camera = new THREE.PerspectiveCamera( 12, window.innerWidth / window.innerHeight, 1, 20000 );
 	camera.position.z = 1400;
 	camera.position.y = 0;
-	camera.lookAt(scene.width/2, scene.height/2);	
-	scene.add( camera );	  
+	camera.lookAt(scene.width/2, scene.height/2);
+	scene.add( camera );
 
-	var windowResize = THREEx.WindowResize(renderer, camera)		
+	var windowResize = THREEx.WindowResize(renderer, camera)
 }
-	
 
-function animate() {	
+
+function animate() {
 
 	//	Disallow roll for now, this is interfering with keyboard input during search
-/*	    	
+/*
 	if(keyboard.pressed('o') && keyboard.pressed('shift') == false)
-		camera.rotation.z -= 0.08;		    	
+		camera.rotation.z -= 0.08;
 	if(keyboard.pressed('p') && keyboard.pressed('shift') == false)
-		camera.rotation.z += 0.08;		   
+		camera.rotation.z += 0.08;
 */
 
 	if( rotateTargetX !== undefined && rotateTargetY !== undefined ){
@@ -366,14 +366,14 @@ function animate() {
 		// move.multiplyScalar( distance );
 
 		// rotateVX = move.x;
-		// rotateVy = move.y;		
+		// rotateVy = move.y;
 
 		if( Math.abs(rotateTargetX - rotateX) < 0.1 && Math.abs(rotateTargetY - rotateY) < 0.1 ){
 			rotateTargetX = undefined;
 			rotateTargetY = undefined;
 		}
 	}
-	
+
 	rotateX += rotateVX;
 	rotateY += rotateVY;
 
@@ -385,7 +385,7 @@ function animate() {
 	if(dragging || rotateTargetX !== undefined ){
 		rotateVX *= 0.6;
 		rotateVY *= 0.6;
-	}	     
+	}
 
 	rotateY += controllers.spin * 0.01;
 
@@ -398,37 +398,38 @@ function animate() {
 	if(rotateX > rotateXMax){
 		rotateX = rotateXMax;
 		rotateVX *= -0.95;
-	}		    			    		   
+	}
 
-	TWEEN.update();		
+	TWEEN.update();
 
 	rotating.rotation.x = rotateX;
-	rotating.rotation.y = rotateY;	
+	rotating.rotation.y = rotateY;
 
-    render();	
-    		        		       
-    requestAnimationFrame( animate );	
+    render();
+
+    requestAnimationFrame( animate );
 
 
-	THREE.SceneUtils.traverseHierarchy( rotating, 
+	THREE.SceneUtils.traverseHierarchy( rotating,
 		function(mesh) {
 			if (mesh.update !== undefined) {
 				mesh.update();
-			} 
+			}
 		}
-	);	
+	);
 
-	for( var i in markers ){
-		var marker = markers[i];
-		marker.update();
-	}		    	
+  /* Removing markers until I decide what to do with them */
+	// for( var i in markers ){
+	// 	var marker = markers[i];
+	// 	marker.update();
+	// }
 
 }
 
-function render() {	
-	renderer.clear();		    					
-    renderer.render( scene, camera );				
-}		   
+function render() {
+	renderer.clear();
+    renderer.render( scene, camera );
+}
 
 function findCode(countryName){
 	countryName = countryName.toUpperCase();
@@ -458,18 +459,18 @@ var countryColorMap = {'PE':1,
 'AW':210,'LI':211,'VG':212,'SH':213,'JE':214,'AI':215,'MF_1_':216,'GG':217,'SM':218,'BM':219,'TV':220,'NR':221,'GI':222,'PN':223,'MC':224,'VA':225,
 'IM':226,'GU':227,'SG':228};
 
-function highlightCountry( countries ){	
+function highlightCountry( countries ){
 	var countryCodes = [];
 	for( var i in countries ){
 		var code = findCode(countries[i]);
 		countryCodes.push(code);
 	}
 
-	var ctx = lookupCanvas.getContext('2d');	
+	var ctx = lookupCanvas.getContext('2d');
 	ctx.clearRect(0,0,256,1);
 
 	//	color index 0 is the ocean, leave it something neutral
-	
+
 	//	this fixes a bug where the fill for ocean was being applied during pick
 	//	all non-countries were being pointed to 10 - bolivia
 	//	the fact that it didn't select was because bolivia shows up as an invalid country due to country name mismatch
@@ -486,7 +487,7 @@ function highlightCountry( countries ){
 	// }
 
 	var selectedCountryCode = selectedCountry.countryCode;
-	
+
 	for( var i in countryCodes ){
 		var countryCode = countryCodes[i];
 		var colorIndex = countryColorMap[ countryCode ];
@@ -504,12 +505,12 @@ function highlightCountry( countries ){
 		ctx.fillStyle = fillCSS;
 		ctx.fillRect( colorIndex, 0, 1, 1 );
 	}
-	
+
 	lookupTexture.needsUpdate = true;
 }
 
 function getHistoricalData( country ){
-	var history = [];	
+	var history = [];
 
 	var countryName = country.countryName;
 
@@ -517,16 +518,16 @@ function getHistoricalData( country ){
 	var importCategories = selectionData.getImportCategories();
 
 	for( var i in timeBins ){
-		var yearBin = timeBins[i].data;		
+		var yearBin = timeBins[i].data;
 		var value = {imports: 0, exports:0};
 		for( var s in yearBin ){
 			var set = yearBin[s];
 			var categoryName = reverseWeaponLookup[set.wc];
 
 			var exporterCountryName = set.e.toUpperCase();
-			var importerCountryName = set.i.toUpperCase();			
-			var relevantCategory = ( countryName == exporterCountryName && $.inArray(categoryName, exportCategories ) >= 0 ) || 
-								   ( countryName == importerCountryName && $.inArray(categoryName, importCategories ) >= 0 );				
+			var importerCountryName = set.i.toUpperCase();
+			var relevantCategory = ( countryName == exporterCountryName && $.inArray(categoryName, exportCategories ) >= 0 ) ||
+								   ( countryName == importerCountryName && $.inArray(categoryName, importCategories ) >= 0 );
 
 			if( relevantCategory == false )
 				continue;
@@ -534,7 +535,7 @@ function getHistoricalData( country ){
 			//	ignore all unidentified country data
 			if( countryData[exporterCountryName] === undefined || countryData[importerCountryName] === undefined )
 				continue;
-			
+
 			if( exporterCountryName == countryName )
 				value.exports += set.v;
 			if( importerCountryName == countryName )
@@ -559,7 +560,7 @@ function getPickColor(){
 	renderer.autoClear = false;
 	renderer.autoClearColor = false;
 	renderer.autoClearDepth = false;
-	renderer.autoClearStencil = false;	
+	renderer.autoClearStencil = false;
 	renderer.preserve
 
     renderer.clear();
@@ -573,17 +574,17 @@ function getPickColor(){
 	mx = Math.floor( mx );
 	my = Math.floor( my );
 
-	var buf = new Uint8Array( 4 );		    	
+	var buf = new Uint8Array( 4 );
 	// console.log(buf);
 	gl.readPixels( mx, my, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, buf );
-	// console.log(buf);		
+	// console.log(buf);
 
 	renderer.autoClear = true;
 	renderer.autoClearColor = true;
 	renderer.autoClearDepth = true;
 	renderer.autoClearStencil = true;
 
-	gl.preserveDrawingBuffer = false;	
+	gl.preserveDrawingBuffer = false;
 
 	mapUniforms['outlineLevel'].value = 1;
 	rotating.add(visualizationMesh);
@@ -592,5 +593,5 @@ function getPickColor(){
 	if( affectedCountries !== undefined ){
 		highlightCountry(affectedCountries);
 	}
-	return buf[0]; 	
+	return buf[0];
 }
