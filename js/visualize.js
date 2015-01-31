@@ -1,12 +1,12 @@
-function buildDataVizGeometries( linearData ){	
+function buildDataVizGeometries( linearData ){
 
 	var loadLayer = document.getElementById('loading');
 
 	for( var i in linearData ){
-		var yearBin = linearData[i].data;		
+		var yearBin = linearData[i].data;
 
 		var year = linearData[i].t;
-		selectableYears.push(year);	
+		selectableYears.push(year);
 
 		var count = 0;
 		console.log('Building data for ...' + year);
@@ -17,14 +17,14 @@ function buildDataVizGeometries( linearData ){
 			var importerName = set.i.toUpperCase();
 
 			exporter = countryData[exporterName];
-			importer = countryData[importerName];	
-			
+			importer = countryData[importerName];
+
 			//	we couldn't find the country, it wasn't in our list...
 			if( exporter === undefined || importer === undefined )
-				continue;			
+				continue;
 
 			//	visualize this event
-			set.lineGeometry = makeConnectionLineGeometry( exporter, importer, set.v, set.wc );		
+			set.lineGeometry = makeConnectionLineGeometry( exporter, importer, set.v, set.wc );
 
 			// if( s % 1000 == 0 )
 			// 	console.log( 'calculating ' + s + ' of ' + yearBin.length + ' in year ' + year);
@@ -36,9 +36,9 @@ function buildDataVizGeometries( linearData ){
 		//	how to make this work?
 		// loadLayer.innerHTML = 'loading data for ' + year + '...';
 		// console.log(loadLayer.innerHTML);
-	}			
+	}
 
-	loadLayer.style.display = 'none';	
+	loadLayer.style.display = 'none';
 }
 
 function getVisualizedMesh( linearData, year, countries, exportCategories, importCategories ){
@@ -54,13 +54,13 @@ function getVisualizedMesh( linearData, year, countries, exportCategories, impor
 
 	var affectedCountries = [];
 
-	var bin = linearData[indexFromYear].data;	
+	var bin = linearData[indexFromYear].data;
 
 	var linesGeo = new THREE.Geometry();
 	var lineColors = [];
 
 	var particlesGeo = new THREE.Geometry();
-	var particleColors = [];			
+	var particleColors = [];
 
 	// var careAboutExports = ( action === 'exports' );
 	// var careAboutImports = ( action === 'imports' );
@@ -80,8 +80,8 @@ function getVisualizedMesh( linearData, year, countries, exportCategories, impor
 		var useImporter = relevantImport;
 
 		var categoryName = reverseWeaponLookup[set.wc];
-		var relevantExportCategory = relevantExport && $.inArray(categoryName,exportCategories) >= 0;		
-		var relevantImportCategory = relevantImport && $.inArray(categoryName,importCategories) >= 0;		
+		var relevantExportCategory = relevantExport && $.inArray(categoryName,exportCategories) >= 0;
+		var relevantImportCategory = relevantImport && $.inArray(categoryName,importCategories) >= 0;
 
 		if( (useImporter || useExporter) && (relevantExportCategory || relevantImportCategory) ){
 			//	we may not have line geometry... (?)
@@ -99,7 +99,7 @@ function getVisualizedMesh( linearData, year, countries, exportCategories, impor
 			var lastColor;
 			//	grab the colors from the vertices
 			for( s in set.lineGeometry.vertices ){
-				var v = set.lineGeometry.vertices[s];		
+				var v = set.lineGeometry.vertices[s];
 				lineColors.push(lineColor);
 				lastColor = lineColor;
 			}
@@ -107,11 +107,11 @@ function getVisualizedMesh( linearData, year, countries, exportCategories, impor
 			//	merge it all together
 			THREE.GeometryUtils.merge( linesGeo, set.lineGeometry );
 
-			var particleColor = lastColor.clone();		
+			var particleColor = lastColor.clone();
 			var points = set.lineGeometry.vertices;
 			var particleCount = Math.floor(set.v / 8000 / set.lineGeometry.vertices.length) + 1;
 			particleCount = constrain(particleCount,1,100);
-			var particleSize = set.lineGeometry.size;			
+			var particleSize = set.lineGeometry.size;
 			for( var s=0; s<particleCount; s++ ){
 				// var rIndex = Math.floor( Math.random() * points.length );
 				// var rIndex = Math.min(s,points.length-1);
@@ -119,7 +119,7 @@ function getVisualizedMesh( linearData, year, countries, exportCategories, impor
 				var desiredIndex = s / particleCount * points.length;
 				var rIndex = constrain(Math.floor(desiredIndex),0,points.length-1);
 
-				var point = points[rIndex];						
+				var point = points[rIndex];
 				var particle = point.clone();
 				particle.moveIndex = rIndex;
 				particle.nextIndex = rIndex+1;
@@ -127,14 +127,14 @@ function getVisualizedMesh( linearData, year, countries, exportCategories, impor
 					particle.nextIndex = 0;
 				particle.lerpN = 0;
 				particle.path = points;
-				particlesGeo.vertices.push( particle );	
+				particlesGeo.vertices.push( particle );
 				particle.size = particleSize;
-				particleColors.push( particleColor );						
-			}			
+				particleColors.push( particleColor );
+			}
 
 			if( $.inArray( exporterName, affectedCountries ) < 0 ){
 				affectedCountries.push(exporterName);
-			}							
+			}
 
 			if( $.inArray( importerName, affectedCountries ) < 0 ){
 				affectedCountries.push(importerName);
@@ -145,48 +145,48 @@ function getVisualizedMesh( linearData, year, countries, exportCategories, impor
 			if( exporterCountry.mapColor === undefined ){
 				exporterCountry.mapColor = vb;
 			}
-			else{				
+			else{
 				exporterCountry.mapColor += vb;
-			}			
+			}
 
 			var importerCountry = countryData[importerName];
 			if( importerCountry.mapColor === undefined ){
 				importerCountry.mapColor = vb;
 			}
-			else{				
+			else{
 				importerCountry.mapColor += vb;
-			}	
+			}
 
 			exporterCountry.exportedAmount += vb;
 			importerCountry.importedAmount += vb;
 
-			if( exporterCountry == selectedCountry ){				
+			if( exporterCountry == selectedCountry ){
 				selectedCountry.summary.exported[set.wc] += set.v;
-				selectedCountry.summary.exported.total += set.v;				
-			}		
+				selectedCountry.summary.exported.total += set.v;
+			}
 			if( importerCountry == selectedCountry ){
 				selectedCountry.summary.imported[set.wc] += set.v;
 				selectedCountry.summary.imported.total += set.v;
 			}
 
 			if( importerCountry == selectedCountry || exporterCountry == selectedCountry ){
-				selectedCountry.summary.total += set.v;	
+				selectedCountry.summary.total += set.v;
 			}
 
 
-		}		
+		}
 	}
 
 	// console.log(selectedCountry);
 
-	linesGeo.colors = lineColors;	
+	linesGeo.colors = lineColors;
 
 	//	make a final mesh out of this composite
-	var splineOutline = new THREE.Line( linesGeo, new THREE.LineBasicMaterial( 
-		{ 	color: 0xffffff, opacity: 1.0, blending: 
-			THREE.AdditiveBlending, transparent:true, 
-			depthWrite: false, vertexColors: true, 
-			linewidth: 1 } ) 
+	var splineOutline = new THREE.Line( linesGeo, new THREE.LineBasicMaterial(
+		{ 	color: 0xffffff, opacity: 1.0, blending:
+			THREE.AdditiveBlending, transparent:true,
+			depthWrite: false, vertexColors: true,
+			linewidth: 1 } )
 	);
 
 	splineOutline.renderDepth = false;
@@ -220,8 +220,8 @@ function getVisualizedMesh( linearData, year, countries, exportCategories, impor
 
 
 	var particleGraphic = THREE.ImageUtils.loadTexture("images/map_mask.png");
-	var particleMat = new THREE.ParticleBasicMaterial( { map: particleGraphic, color: 0xffffff, size: 60, 
-														blending: THREE.NormalBlending, transparent:true, 
+	var particleMat = new THREE.ParticleBasicMaterial( { map: particleGraphic, color: 0xffffff, size: 60,
+														blending: THREE.NormalBlending, transparent:true,
 														depthWrite: false, vertexColors: true,
 														sizeAttenuation: true } );
 	particlesGeo.colors = particleColors;
@@ -233,18 +233,18 @@ function getVisualizedMesh( linearData, year, countries, exportCategories, impor
 	var values_size = attributes.size.value;
 	var values_color = attributes.customColor.value;
 
-	for( var v = 0; v < vertices.length; v++ ) {		
+	for( var v = 0; v < vertices.length; v++ ) {
 		values_size[ v ] = pSystem.geometry.vertices[v].size;
 		values_color[ v ] = particleColors[v];
 	}
 
-	pSystem.update = function(){	
-		// var time = Date.now()									
-		for( var i in this.geometry.vertices ){						
+	pSystem.update = function(){
+		// var time = Date.now()
+		for( var i in this.geometry.vertices ){
 			var particle = this.geometry.vertices[i];
 			var path = particle.path;
 			var moveLength = path.length;
-			
+
 			particle.lerpN += 0.05;
 			if(particle.lerpN > 1){
 				particle.lerpN = 0;
@@ -258,29 +258,29 @@ function getVisualizedMesh( linearData, year, countries, exportCategories, impor
 
 			var currentPoint = path[particle.moveIndex];
 			var nextPoint = path[particle.nextIndex];
-			
+
 
 			particle.copy( currentPoint );
-			particle.lerpSelf( nextPoint, particle.lerpN );			
+			particle.lerpSelf( nextPoint, particle.lerpN );
 		}
 		this.geometry.verticesNeedUpdate = true;
-	};		
+	};
 
 	//	return this info as part of the mesh package, we'll use this in selectvisualization
 	splineOutline.affectedCountries = affectedCountries;
 
 
-	return splineOutline;	
+	return splineOutline;
 }
 
 function selectVisualization( linearData, year, countries, exportCategories, importCategories ){
 	//	we're only doing one country for now so...
 	var cName = countries[0].toUpperCase();
-	
+
 	$("#hudButtons .countryTextInput").val(cName);
 	previouslySelectedCountry = selectedCountry;
 	selectedCountry = countryData[countries[0].toUpperCase()];
-    
+
 	selectedCountry.summary = {
 		imported: {
 			mil: 0,
@@ -308,10 +308,11 @@ function selectVisualization( linearData, year, countries, exportCategories, imp
 		country.mapColor = 0;
 	}
 
+  /* Removing markers for now until I decide how to use them */
 	//	clear markers
-	for( var i in selectableCountries ){
-		removeMarkerFromCountry( selectableCountries[i] );
-	}
+	// for( var i in selectableCountries ){
+	// 	removeMarkerFromCountry( selectableCountries[i] );
+	// }
 
 	//	clear children
 	while( visualizationMesh.children.length > 0 ){
@@ -321,23 +322,24 @@ function selectVisualization( linearData, year, countries, exportCategories, imp
 
 	//	build the mesh
 	console.time('getVisualizedMesh');
-	var mesh = getVisualizedMesh( timeBins, year, countries, exportCategories, importCategories );				
+	var mesh = getVisualizedMesh( timeBins, year, countries, exportCategories, importCategories );
 	console.timeEnd('getVisualizedMesh');
 
 	//	add it to scene graph
-	visualizationMesh.add( mesh );	
+	visualizationMesh.add( mesh );
 
 
 	//	alright we got no data but at least highlight the country we've selected
 	if( mesh.affectedCountries.length == 0 ){
 		mesh.affectedCountries.push( cName );
-	}	
-
-	for( var i in mesh.affectedCountries ){
-		var countryName = mesh.affectedCountries[i];
-		var country = countryData[countryName];
-		attachMarkerToCountry( countryName, country.mapColor );
 	}
+
+  /* Removing markers for now until I decide how to use them */
+	// for( var i in mesh.affectedCountries ){
+	// 	var countryName = mesh.affectedCountries[i];
+	// 	var country = countryData[countryName];
+	// 	attachMarkerToCountry( countryName, country.mapColor );
+	// }
 
 	// console.log( mesh.affectedCountries );
 	highlightCountry( mesh.affectedCountries );
@@ -362,15 +364,15 @@ function selectVisualization( linearData, year, countries, exportCategories, imp
 			}
             // console.log(rotateTargetY);
             //lines commented below source of rotation error
-			//is there a more reliable way to ensure we don't rotate around the globe too much? 
+			//is there a more reliable way to ensure we don't rotate around the globe too much?
 			/*
 			if( Math.abs(rotateTargetY - rotating.rotation.y) > Math.PI )
-				rotateTargetY += Math.PI;		
+				rotateTargetY += Math.PI;
 			*/
 			rotateVX *= 0.6;
-			rotateVY *= 0.6;		
-		}	
+			rotateVY *= 0.6;
+		}
 	}
-    
+
     d3Graphs.initGraphs();
 }
