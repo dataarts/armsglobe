@@ -30,9 +30,6 @@ var d3Graphs = {
         this.inited = true;
         d3Graphs.windowResize();
         $("#hudHeader, #hudButtons").show();
-        $("#history").show();
-        $("#graphIcon").show();
-        $("#history ul li").click(d3Graphs.clickTimeline);
         $("#handle").draggable({axis: 'x',containment: "parent",grid:[this.handleInterval, this.handleInterval],  stop: d3Graphs.dropHandle, drag: d3Graphs.dropHandle });
         $("#hudButtons .searchBtn").click(d3Graphs.updateViz);
         $("#hudButtons .countryTextInput").autocomplete({ source:selectableCountries, autoFocus: true });
@@ -85,7 +82,6 @@ var d3Graphs = {
     windowResize: function() {
         var windowWidth = $(window).width();
         var windowHeight = $(window).height();
-        d3Graphs.positionHistory(windowWidth);
         var minWidth = 1280;
         var minHeight = 860;
         var w = windowWidth < minWidth ? minWidth : windowWidth;
@@ -96,18 +92,6 @@ var d3Graphs = {
         var barGraphTopPos = (windowHeight < minHeight ? minHeight : windowHeight) - barGraphHeight - barGraphBottomPadding;
 
         $("#barGraph").css('top',barGraphTopPos+'px');
-    },
-    positionHistory: function(windowWidth) {
-        var graphIconPadding = 20;
-        var historyWidth = $("#history").width();
-        var totalWidth = historyWidth + $("#graphIcon").width() + graphIconPadding;
-        var historyLeftPos = (windowWidth - totalWidth) / 2.0;
-        var minLeftPos = 280;
-        if(historyLeftPos < minLeftPos) {
-            historyLeftPos = minLeftPos;
-        }
-        $("#history").css('left',historyLeftPos+"px");
-        $("#graphIcon").css('left',historyLeftPos + historyWidth + graphIconPadding+'px');
     },
     countryFocus:function(event) {
         setTimeout(function() { $('#hudButtons .countryTextInput').select() },50);
