@@ -32,12 +32,9 @@ var d3Graphs = {
         $("#hudHeader, #hudButtons").show();
         $("#history").show();
         $("#graphIcon").show();
-        $("#importExportBtns").show();
         $("#history ul li").click(d3Graphs.clickTimeline);
         $("#handle").draggable({axis: 'x',containment: "parent",grid:[this.handleInterval, this.handleInterval],  stop: d3Graphs.dropHandle, drag: d3Graphs.dropHandle });
         $("#hudButtons .searchBtn").click(d3Graphs.updateViz);
-        $("#importExportBtns .imex>div").not(".label").click(d3Graphs.importExportBtnClick);
-        $("#importExportBtns .imex .label").click(d3Graphs.importExportLabelClick);
         $("#hudButtons .countryTextInput").autocomplete({ source:selectableCountries, autoFocus: true });
         $("#hudButtons .countryTextInput").keyup(d3Graphs.countryKeyUp);
         $("#hudButtons .countryTextInput").focus(d3Graphs.countryFocus);
@@ -94,13 +91,9 @@ var d3Graphs = {
         var w = windowWidth < minWidth ? minWidth : windowWidth;
         var hudButtonWidth = 489;
         $('#hudButtons').css('left',w - hudButtonWidth-20);
-        var importExportButtonWidth = $("#importExportBtns").width();
-        $("#importExportBtns").css('left',w-importExportButtonWidth - 20);
         var barGraphHeight = 800;
         var barGraphBottomPadding = 10;
-        console.log(windowHeight+ " " + barGraphHeight + " " + barGraphBottomPadding);
         var barGraphTopPos = (windowHeight < minHeight ? minHeight : windowHeight) - barGraphHeight - barGraphBottomPadding;
-        console.log(barGraphTopPos);
 
         $("#barGraph").css('top',barGraphTopPos+'px');
     },
@@ -140,35 +133,6 @@ var d3Graphs = {
             return;
         }
 
-        //exports first
-        var exportArray = []
-        var exportBtns = $("#importExportBtns .exports>div").not(".label");
-        for(var i = 0; i < exportBtns.length; i++) {
-            var btn = $(exportBtns[i]);
-            var weaponTypeKey = btn.attr('class');
-            var weaponName = reverseWeaponLookup[weaponTypeKey];
-
-            if(btn.find('.inactive').length == 0) {
-                exportArray.push(weaponName);
-                selectionData.exportCategories[weaponName] = true;
-            } else {
-                selectionData.exportCategories[weaponName] = false;
-            }
-        }
-        //imports esecond
-        var importArray = []
-        var importBtns = $("#importExportBtns .imports>div").not(".label");
-        for(var i = 0; i < importBtns.length; i++) {
-            var btn = $(importBtns[i]);
-            var weaponTypeKey = btn.attr('class');
-            var weaponName = reverseWeaponLookup[weaponTypeKey];
-            if(btn.find('.inactive').length == 0) {
-                importArray.push(weaponName);
-                selectionData.importCategories[weaponName] = true;
-            } else {
-                selectionData.importCategories[weaponName] = false;
-            }
-        }
         selectionData.selectedYear = year;
         selectionData.selectedCountry = country;
         selectVisualization(timeBins, year,[country],exportArray, importArray);
