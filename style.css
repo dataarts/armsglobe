@@ -45,7 +45,7 @@
     font-weight: bold;
     font-style: italic;
 
-}	
+}
 
 /*Import Ropa Sans Font, do we need other font file types??*/
 @font-face {
@@ -76,7 +76,7 @@ li { list-style-type:none; }
     position: fixed;
 }
 
-#dataviz { 				
+#dataviz {
 	background-color: 	#000000;
 	margin: 			0px;
 	overflow-y: 		hidden;
@@ -89,12 +89,12 @@ li { list-style-type:none; }
 	width:						100%;
 	height:						100%;
 	pointer-events:				none;
-}		
+}
 
 .marker {
 	position:				absolute;
 	display:				inline-block;
-	background-color: 		rgba(0,0,0,.87);	
+	background-color: 		rgba(0,0,0,.87);
 	color:					#ffffff;
 	font-size:				4pt;
     font-family: 			'RopaSans';
@@ -104,9 +104,9 @@ li { list-style-type:none; }
 	margin: 				0px;
 	border:					0px;
 	padding:				10px;
-	overflow: 				hidden;		
+	overflow: 				hidden;
 	cursor:					pointer;
-}	
+}
 
 .country {
 	margin-right:			10px;
@@ -197,12 +197,12 @@ Elements to control the title and country selector
 #hudHeader h1 .subtitle {
     font-size: 14px;
     color: #ddd;
-    
+
 }
 #hudButtons {
     display: none;
     position: absolute;
-    top: 20px;    
+    top: 20px;
 
     width: 489px;
 }
@@ -353,7 +353,7 @@ Bar graph on left
     background:             url('yearHandle.png') 0px 0 no-repeat;
     position:               absolute;
     bottom:                 20px;
-    left:                   642px;    
+    left:                   642px;
 }
 #history .graph {
     display: none;
@@ -603,7 +603,7 @@ Bar graph on left
         -ms-transform:rotate(323deg);
         margin-top: -2px;
     }
-    
+
     #importExportBtns .typeLabels .mil {
         margin-left: 8px;
     }
