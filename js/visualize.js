@@ -373,6 +373,4 @@ function selectVisualization( linearData, year, countries, exportCategories, imp
 			rotateVY *= 0.6;
 		}
 	}
-
-    d3Graphs.initGraphs();
 }

@@ -1,16 +1,16 @@
 var mouseX = 0, mouseY = 0, pmouseX = 0, pmouseY = 0;
 var pressX = 0, pressY = 0;
 
-var dragging = false;						
+var dragging = false;
 
 var rotateX = 0, rotateY = 0;
 var rotateVX = 0, rotateVY = 0;
-var rotateXMax = 90 * Math.PI/180;	
+var rotateXMax = 90 * Math.PI/180;
 
 var rotateTargetX = undefined;
 var rotateTargetY = undefined;
 
-var keyboard = new THREEx.KeyboardState();	
+var keyboard = new THREEx.KeyboardState();
 
 function onDocumentMouseMove( event ) {
 
@@ -23,28 +23,27 @@ function onDocumentMouseMove( event ) {
 	if(dragging){
 		if(keyboard.pressed("shift") == false){
 			rotateVY += (mouseX - pmouseX) / 2 * Math.PI / 180 * 0.3;
-  			rotateVX += (mouseY - pmouseY) / 2 * Math.PI / 180 * 0.3;	
+  			rotateVX += (mouseY - pmouseY) / 2 * Math.PI / 180 * 0.3;
   		}
   		else{
-  			camera.position.x -= (mouseX - pmouseX) * .5; 
+  			camera.position.x -= (mouseX - pmouseX) * .5;
   			camera.position.y += (mouseY - pmouseY) * .5;
   		}
 	}
 }
 
-function onDocumentMouseDown( event ) {	
+function onDocumentMouseDown( event ) {
     if(event.target.className.indexOf('noMapDrag') !== -1) {
         return;
     }
-    dragging = true;			   
+    dragging = true;
     pressX = mouseX;
-    pressY = mouseY;   	
+    pressY = mouseY;
     rotateTargetX = undefined;
     rotateTargetX = undefined;
-}	
+}
 
 function onDocumentMouseUp( event ){
-	d3Graphs.zoomBtnMouseup();
 	dragging = false;
 	histogramPressed = false;
 }
@@ -52,9 +51,9 @@ function onDocumentMouseUp( event ){
 function onClick( event ){
 	//	make the rest not work if the event was actually a drag style click
 	if( Math.abs(pressX - mouseX) > 3 || Math.abs(pressY - mouseY) > 3 )
-		return;				
+		return;
 
-	var pickColorIndex = getPickColor();	
+	var pickColorIndex = getPickColor();
 	//	find it
 	for( var i in countryColorMap ){
 		var countryCode = i;
@@ -64,20 +63,20 @@ function onClick( event ){
 			var countryName = countryLookup[countryCode];
 			// console.log("converts to " + countryName);
 			if( countryName === undefined )
-				return;			
+				return;
 			if( $.inArray(countryName, selectableCountries) <= -1 )
 				return;
 			// console.log(countryName);
 			var selection = selectionData;
 			selection.selectedCountry = countryName;
-			selectVisualization( timeBins, selection.selectedYear, [selection.selectedCountry], selection.getExportCategories(), selection.getImportCategories() );	
+			selectVisualization( timeBins, selection.selectedYear, [selection.selectedCountry], selection.getExportCategories(), selection.getImportCategories() );
 			// console.log('selecting ' + countryName + ' from click');
 			return;
 		}
-	}	
+	}
 }
 
-function onKeyDown( event ){	
+function onKeyDown( event ){
 }
 
 function handleMWheel( delta ) {
@@ -90,7 +89,7 @@ function onMouseWheel( event ){
 
 	if (event.wheelDelta) { /* IE/Opera. */
 	        delta = event.wheelDelta/120;
-	} 
+	}
 	//	firefox
 	else if( event.detail ){
 		delta = -event.detail/3;
@@ -99,8 +98,8 @@ function onMouseWheel( event ){
 	if (delta)
 	        handleMWheel(delta);
 
-	event.returnValue = false;			
-}	
+	event.returnValue = false;
+}
 
 function onDocumentResize(e){
 }
