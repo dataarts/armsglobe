@@ -223,30 +223,3 @@ var d3Graphs = {
         event.dataTransfer.effectAllowed='move';
     }
 }
-
-/*
-This is going to be a number formatter. Example of use:
-
-var bigNumber = 57028715;
-var formated = abbreviateNumber(57028715);
-return formated; //should show 57B for 57 Billion
-
-*/
-function abbreviateNumber(value) {
-
-    var newValue = value;
-    if (value >= 1000) {
-        var suffixes = ["", "K", "M", "B","T"];
-        var suffixNum = Math.floor( (""+value).length/3 );
-        var shortValue = '';
-        for (var precision = 3; precision >= 1; precision--) {
-            shortValue = parseFloat( (suffixNum != 0 ? (value / Math.pow(1000,suffixNum) ) : value).toPrecision(precision));
-            var dotLessShortValue = (shortValue + '').replace(/[^a-zA-Z 0-9]+/g,'');
-            if (dotLessShortValue.length <= 3) { break; }
-        }
-        if (shortValue % 1 != 0)  shortNum = shortValue.toFixed(1);
-        newValue = shortValue+suffixes[suffixNum];
-    }
-    return '$' + newValue;
-}
-
