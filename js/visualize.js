@@ -9,7 +9,7 @@ function buildDataVizGeometries( linearData ){
 		selectableYears.push(year);
 
 		var count = 0;
-		console.log('Building data for ...' + year);
+		// console.log('Building data for ...' + year);
 		for( var s in yearBin ){
 			var set = yearBin[s];
 
@@ -321,9 +321,9 @@ function selectVisualization( linearData, year, countries, exportCategories, imp
 	}
 
 	//	build the mesh
-	console.time('getVisualizedMesh');
+	// console.time('getVisualizedMesh');
 	var mesh = getVisualizedMesh( timeBins, year, countries, exportCategories, importCategories );
-	console.timeEnd('getVisualizedMesh');
+	// console.timeEnd('getVisualizedMesh');
 
 	//	add it to scene graph
 	visualizationMesh.add( mesh );

@@ -4,51 +4,51 @@ function loadSVGAssets( filelist, callback ){
 	var _this = this;
 	this.svgList = [];
 
-	this.tempCallback = function( svgToy ){		
+	this.tempCallback = function( svgToy ){
 		_this.svgList.push(svgToy);
 		_this.checkFinished();
-	}	
+	}
 
 	this.checkFinished = function(){
 		if( _this.svgList.length < filelist.length )
 			loadSVGAsset( filelist[_this.svgList.length], _this.tempCallback );
 		else
 			callback( this.svgList );
-	}	
+	}
 
-	loadSVGAsset( filelist[0], this.tempCallback );	
+	loadSVGAsset( filelist[0], this.tempCallback );
 
 }
 
 function loadSVGAsset( filename, callback ){
 	var _this = this;
-	_this.filename = filename;				
+	_this.filename = filename;
 
-	if( (filename in assets) === false ){					
-		console.log("loading " + filename);
+	if( (filename in assets) === false ){
+		// console.log("loading " + filename);
 		//	reserve it so that multiple calls to this don't load multiple times
 		assets[filename] = "";
 		xhr = new XMLHttpRequest();
 		xhr.open( 'GET', filename, true );
-		xhr.send( null );	
-		xhr.onreadystatechange = function() {					
+		xhr.send( null );
+		xhr.onreadystatechange = function() {
 			if ( xhr.readyState === 4 && xhr.status === 200 ) {
-		    	var svgString = xhr.responseText;  	
+		    	var svgString = xhr.responseText;
 				var dXML = new DOMParser();
 				dXML.async = false;
 				var svg = dXML.parseFromString( svgString, 'text/xml').documentElement;
 				svg.svgText = svgString;
-				assets[_this.filename] = svg;					
-				console.log("loaded " + _this.filename);	
+				assets[_this.filename] = svg;
+				// console.log("loaded " + _this.filename);
 				callback(svg);
 		    }
-		};	
+		};
 	}
-}		
+}
 
 
-function SVGToy( svgFile, domContainer ){		
-	var _this = this;	
+function SVGToy( svgFile, domContainer ){
+	var _this = this;
 	this.container = document.createElement('div');
 	if( domContainer )
 		domContainer.appendChild( this.container );
@@ -64,7 +64,7 @@ function SVGToy( svgFile, domContainer ){
 	this.svg.style.position = 'relative';
 	this.svg.style.display = 'block';
 	this.svg.style['pointer-events'] = 'visibleFill';
-	this.container.appendChild( this.svg );		
+	this.container.appendChild( this.svg );
 
 	this.origin = this.getOriginFromFile();
 	this.setOrigin( this.origin.x, this.origin.y );
@@ -83,7 +83,7 @@ function SVGToy( svgFile, domContainer ){
 		this.rotateOrigin = function(angle, originX, originY){
 			this.value += 'translate(' + originX + ',' + originY + ') ';
 			this.value += 'rotate(' + angle + ') ';
-			this.value += 'translate(' + -originX + ',' + -originY + ') ';				
+			this.value += 'translate(' + -originX + ',' + -originY + ') ';
 			return this;
 		}
 		this.scale = function(s){
@@ -93,19 +93,19 @@ function SVGToy( svgFile, domContainer ){
 		this.scaleOrigin = function(s, originX, originY){
 			this.value += 'translate(' + originX + ',' + originY + ') ';
 			this.value += 'scale(' + s + ') ';
-			this.value += 'translate(' + -originX + ',' + -originY + ') ';	
+			this.value += 'translate(' + -originX + ',' + -originY + ') ';
 			return this;
 		}
 		this.endTransform = function(){
 			return this.value;
 		}
-	}	
+	}
 
 	this.prepVars = function( vars ){
 		if( vars._ox === undefined )
 			vars._ox = _this.origin.x;
 		if( vars._oy === undefined )
-			vars._oy = _this.origin.y;		
+			vars._oy = _this.origin.y;
 		if( vars._tx === undefined )
 			vars._tx = 0;
 		if( vars._ty === undefined )
@@ -123,7 +123,7 @@ function SVGToy( svgFile, domContainer ){
 		for( prop in element ){
 			// if( typeof element[prop] == 'SVGAnimatedLength' )
 				// console.log(prop);
-			console.log( typeof element[prop] );
+			// console.log( typeof element[prop] );
 		}
 		// return state;
 		return {};
@@ -132,21 +132,21 @@ function SVGToy( svgFile, domContainer ){
 	this.setAnimation = function( elementName, keyframes ){
 		var element = this.svg.getElementById( elementName );
 		if( element === undefined || element === null )
-			return;	
+			return;
 
 		// _this.getInitialStateFromElement( element, keyframes[0].vars );
-		
+
 		var lastEndState;
 		var lastTween;
-		var firstTween;		
-		for( var i = 0; i<keyframes.length; i++ ){		
+		var firstTween;
+		for( var i = 0; i<keyframes.length; i++ ){
 			var keyframe = keyframes[i];
 			var duration = keyframe.duration !== undefined ? keyframe.duration : 1000;
 			var easing = keyframe.easing !== undefined ? keyframe.easing : TWEEN.Easing.Linear.EaseNone;
 			var loop = keyframe.loop;
 			var loopedVars = keyframe.loopedVars;
 
-			var beginState = {};	
+			var beginState = {};
 
 			for( prop in keyframe.vars ){
 				// console.log(prop);
@@ -158,8 +158,8 @@ function SVGToy( svgFile, domContainer ){
 			}
 
 			if( i > 0 ){
-				beginState = keyframes[i - 1].vars;			
-			}			
+				beginState = keyframes[i - 1].vars;
+			}
 
 			//	copy over from begin state to keep the state from last animation
 			var endState = keyframe.vars;
@@ -197,7 +197,7 @@ function SVGToy( svgFile, domContainer ){
 
 			lastTween = tween;
 		}
-		firstTween.start();	
+		firstTween.start();
 	}
 
 	this.setTweenStates = function( elementName, beginState, endState, duration, easing ){
@@ -206,10 +206,10 @@ function SVGToy( svgFile, domContainer ){
 
 		var state = beginState;
 		var tween = _this.makeTween( state, endState, duration, easing, function(){
-			var value = _this.beginTransform()		
+			var value = _this.beginTransform()
 			.translate( state._tx, state._ty)
 			.rotateOrigin( state._ro, state._ox, state._oy )
-			.scaleOrigin( state._so, state._ox, state._oy )							
+			.scaleOrigin( state._so, state._ox, state._oy )
 			.endTransform();
 			_this.setProperty( elementName, 'transform', value );
 			for( prop in state ){
@@ -231,15 +231,15 @@ function SVGToy( svgFile, domContainer ){
 	}
 
 	this.isEscapeProperty = function( propName ){
-		if( propName === '_ox' || propName === '_oy' || 
+		if( propName === '_ox' || propName === '_oy' ||
 			propName === '_tx' || propName === '_ty' ||
-			propName === '_ro' || propName === '_so' || 
+			propName === '_ro' || propName === '_so' ||
 			propName === 'duration' || propName === 'easing' ||
-			propName === 'vars' || propName === 'loop' || 
+			propName === 'vars' || propName === 'loop' ||
 			propName === 'loopedVars' )
 			return true;
 		return false;
-	}		
+	}
 
 
 }
@@ -247,18 +247,18 @@ function SVGToy( svgFile, domContainer ){
 SVGToy.prototype.getOriginFromFile = function(){
 	if( this.svg === undefined )
 		return {x:0,y:0};
-	var originObject = this.svg.getElementById('Origin');					
+	var originObject = this.svg.getElementById('Origin');
 	var p = {
 		x : 0,
 		y : 0
 	};
 	if( originObject === undefined || originObject === null )
-		return {x:0,y:0};	
+		return {x:0,y:0};
 
 	p.x = parseFloat(originObject.getAttribute('cx'));
 	p.y = parseFloat(originObject.getAttribute('cy'));
 
-	return p;	
+	return p;
 }
 
 SVGToy.prototype.setOrigin = function( x, y ){
@@ -270,7 +270,7 @@ SVGToy.prototype.setOrigin = function( x, y ){
 
 SVGToy.prototype.setPosition = function( x, y, z ){
 	this.container.style.left = x + 'px';
-	this.container.style.top = y + 'px';			
+	this.container.style.top = y + 'px';
 
 	//	umm can't get this to work
 	//	vvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -325,7 +325,7 @@ SVGToy.prototype.hide = function(){
 SVGToy.prototype.show = function(){
 	if( this.container.style.visibility === 'hidden' || this.container.style.visibility === undefined )
 		if( this.showEvent !== undefined )
-			this.showEvent();		
+			this.showEvent();
 	this.container.style.visibility = 'visible';
 	this.svg.style.visibility = 'visible';
 };

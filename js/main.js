@@ -276,16 +276,16 @@ function initScene() {
 		}
 	}
 
-	console.log( selectableCountries );
+	// console.log( selectableCountries );
 
 	// load geo data (country lat lons in this case)
-	console.time('loadGeoData');
+	// console.time('loadGeoData');
 	loadGeoData( latlonData );
-	console.timeEnd('loadGeoData');
+	// console.timeEnd('loadGeoData');
 
-	console.time('buildDataVizGeometries');
+	// console.time('buildDataVizGeometries');
 	var vizilines = buildDataVizGeometries(timeBins);
-	console.timeEnd('buildDataVizGeometries');
+	// console.timeEnd('buildDataVizGeometries');
 
 	visualizationMesh = new THREE.Object3D();
 	rotating.add(visualizationMesh);
