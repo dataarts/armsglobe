@@ -183,9 +183,9 @@ function getVisualizedMesh( linearData, year, countries, exportCategories, impor
 
 	//	make a final mesh out of this composite
 	var splineOutline = new THREE.Line( linesGeo, new THREE.LineBasicMaterial(
-		{ 	color: 0xffffff, opacity: 1.0, blending:
+		{ 	color: 0xffffff, opacity: 0.0, blending:
 			THREE.AdditiveBlending, transparent:true,
-			depthWrite: false, vertexColors: true,
+			depthWrite: false, vertexColors: false,
 			linewidth: 1 } )
 	);
 
