@@ -245,7 +245,7 @@ function getVisualizedMesh( linearData, year, countries, exportCategories, impor
 			var path = particle.path;
 			var moveLength = path.length;
 
-			particle.lerpN += 0.05;
+			particle.lerpN += 0.15;
 			if(particle.lerpN > 1){
 				particle.lerpN = 0;
 				particle.moveIndex = particle.nextIndex;
