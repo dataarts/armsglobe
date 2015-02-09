@@ -340,6 +340,9 @@ function initScene() {
 	scene.add( camera );
 
 	var windowResize = THREEx.WindowResize(renderer, camera);
+
+	// Get the globe spinning (defined in mousekeyboard.js)
+	startAutoRotate();
 }
 
 

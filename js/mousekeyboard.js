@@ -7,8 +7,10 @@ var rotateX = 0, rotateY = 0;
 var rotateVX = 0, rotateVY = 0;
 var rotateXMax = 90 * Math.PI/180;
 
-var rotateTargetX = undefined;
-var rotateTargetY = undefined;
+var rotateTargetX;
+var rotateTargetY;
+
+var _autoRotateId;
 
 var keyboard = new THREEx.KeyboardState();
 
@@ -21,13 +23,13 @@ function onDocumentMouseMove( event ) {
 	mouseY = event.clientY - window.innerHeight * 0.5;
 
 	if(dragging){
-		if(keyboard.pressed("shift") == false){
+		if(keyboard.pressed("shift") === false){
 			rotateVY += (mouseX - pmouseX) / 2 * Math.PI / 180 * 0.3;
   			rotateVX += (mouseY - pmouseY) / 2 * Math.PI / 180 * 0.3;
   		}
   		else{
-  			camera.position.x -= (mouseX - pmouseX) * .5;
-  			camera.position.y += (mouseY - pmouseY) * .5;
+  			camera.position.x -= (mouseX - pmouseX) * 0.5;
+  			camera.position.y += (mouseY - pmouseY) * 0.5;
   		}
 	}
 }
@@ -41,11 +43,13 @@ function onDocumentMouseDown( event ) {
     pressY = mouseY;
     rotateTargetX = undefined;
     rotateTargetX = undefined;
+    stopAutoRotate();
 }
 
 function onDocumentMouseUp( event ){
 	dragging = false;
 	histogramPressed = false;
+  startAutoRotate();
 }
 
 function onClick( event ){
@@ -102,4 +106,14 @@ function onMouseWheel( event ){
 }
 
 function onDocumentResize(e){
+}
+
+function startAutoRotate() {
+  _autoRotateId = window.setInterval( function() {
+    rotateVY += 0.1 * Math.PI / 180 * 0.3;
+  }, 100 );
+}
+
+function stopAutoRotate() {
+  window.clearInterval( _autoRotateId );
 }
