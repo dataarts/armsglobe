@@ -15,7 +15,7 @@ var latlonFile = 'country_lat_lon.json';
 var camera, scene, renderer, controls;
 
 var pinsBase, pinsBaseMat;
-var lookupCanvas
+var lookupCanvas;
 var lookupTexture;
 var backTexture;
 var worldCanvas;
@@ -35,7 +35,7 @@ var latlonData;
 
 //	contains above but organized as a mapped list via ['countryname'] = countryobject
 //	each country object has data like center of country in 3d space, lat lon, country name, and country code
-var countryData = new Object();
+var countryData = {};
 
 //	contains a list of country code to country name for running lookups
 var countryLookup;
@@ -63,7 +63,7 @@ var weaponLookup = {
 };
 
 //	a list of the reverse for easy lookup
-var reverseWeaponLookup = new Object();
+var reverseWeaponLookup = {};
 for( var i in weaponLookup ){
 	var name = i;
 	var code = weaponLookup[i];
@@ -75,7 +75,7 @@ var categoryColors = {
 	'mil' : 0xdd380c,
 	'civ' : 0x3dba00,
 	'ammo' : 0x154492,
-}
+};
 
 var exportColor = 0xdd380c;
 var importColor = 0x154492;
@@ -126,7 +126,7 @@ function start( e ){
 				);
 			};
 		};
-	};
+	}
 }
 
 
@@ -138,8 +138,8 @@ var Selection = function(){
 	// this.showImports = true;
 	// this.importExportFilter = 'both';
 
-	this.exportCategories = new Object();
-	this.importCategories = new Object();
+	this.exportCategories = {};
+	this.importCategories = {};
 	for( var i in weaponLookup ){
 		this.exportCategories[i] = true;
 		this.importCategories[i] = true;
@@ -152,7 +152,7 @@ var Selection = function(){
 				list.push(i);
 		}
 		return list;
-	}
+	};
 
 	this.getImportCategories = function(){
 		var list = [];
@@ -161,7 +161,7 @@ var Selection = function(){
 				list.push(i);
 		}
 		return list;
-	}
+	};
 };
 
 //	-----------------------------------------------------------------------------
@@ -339,7 +339,7 @@ function initScene() {
 	camera.lookAt(scene.width/2, scene.height/2);
 	scene.add( camera );
 
-	var windowResize = THREEx.WindowResize(renderer, camera)
+	var windowResize = THREEx.WindowResize(renderer, camera);
 }
 
 
@@ -475,7 +475,7 @@ function highlightCountry( countries ){
 	//	all non-countries were being pointed to 10 - bolivia
 	//	the fact that it didn't select was because bolivia shows up as an invalid country due to country name mismatch
 	//	...
-	var pickMask = countries.length == 0 ? 0 : 1;
+	var pickMask = countries.length === 0 ? 0 : 1;
 	var oceanFill = 10 * pickMask;
 	ctx.fillStyle = 'rgb(' + oceanFill + ',' + oceanFill + ',' + oceanFill +')';
 	ctx.fillRect( 0, 0, 1, 1 );
@@ -488,7 +488,7 @@ function highlightCountry( countries ){
 
 	var selectedCountryCode = selectedCountry.countryCode;
 
-	for( var i in countryCodes ){
+	for( i in countryCodes ){
 		var countryCode = countryCodes[i];
 		var colorIndex = countryColorMap[ countryCode ];
 
@@ -496,7 +496,7 @@ function highlightCountry( countries ){
 		// var fillCSS = '#ff0000';
 		var fillCSS = '#333333';
 		if( countryCode === selectedCountryCode )
-			fillCSS = '#eeeeee'
+			fillCSS = '#eeeeee';
 		// if( mapColor !== undefined ){
 		// 	var k = map( mapColor, 0, 200000000, 0, 255 );
 		// 	k = Math.floor( constrain( k, 0, 255 ) );
@@ -529,7 +529,7 @@ function getHistoricalData( country ){
 			var relevantCategory = ( countryName == exporterCountryName && $.inArray(categoryName, exportCategories ) >= 0 ) ||
 								   ( countryName == importerCountryName && $.inArray(categoryName, importCategories ) >= 0 );
 
-			if( relevantCategory == false )
+			if( relevantCategory === false )
 				continue;
 
 			//	ignore all unidentified country data
@@ -548,20 +548,20 @@ function getHistoricalData( country ){
 }
 
 function getPickColor(){
-	var affectedCountries = undefined;
+	var affectedCountries;
 	if( visualizationMesh.children[0] !== undefined )
 		affectedCountries = visualizationMesh.children[0].affectedCountries;
 
 	highlightCountry([]);
 	rotating.remove(visualizationMesh);
-	mapUniforms['outlineLevel'].value = 0;
+	mapUniforms.outlineLevel.value = 0;
 	lookupTexture.needsUpdate = true;
 
 	renderer.autoClear = false;
 	renderer.autoClearColor = false;
 	renderer.autoClearDepth = false;
 	renderer.autoClearStencil = false;
-	renderer.preserve
+	// renderer.preserve
 
     renderer.clear();
     renderer.render(scene,camera);
@@ -586,7 +586,7 @@ function getPickColor(){
 
 	gl.preserveDrawingBuffer = false;
 
-	mapUniforms['outlineLevel'].value = 1;
+	mapUniforms.outlineLevel.value = 1;
 	rotating.add(visualizationMesh);
 
 
