@@ -73,7 +73,7 @@ function onClick( event ){
 			// console.log(countryName);
 			var selection = selectionData;
 			selection.selectedCountry = countryName;
-			selectVisualization( sampleData, [selection.selectedCountry], selection.getExportCategories(), selection.getImportCategories() );
+			selectVisualization( sampleData );
 			// console.log('selecting ' + countryName + ' from click');
 			return;
 		}

@@ -286,7 +286,7 @@ function initScene() {
 
 	buildGUI();
 
-	selectVisualization( sampleData, ['UNITED STATES'], ['Military Weapons','Civilian Weapons', 'Ammunition'], ['Military Weapons','Civilian Weapons', 'Ammunition'] );
+	selectVisualization( sampleData );
 
 		// test for highlighting specific countries
 	// highlightCountry( ["United States", "Switzerland", "China"] );
@@ -483,62 +483,27 @@ function highlightCountry( countries ){
 	// 	ctx.fillRect( i, 0, 1, 1 );
 	// }
 
-	var selectedCountryCode = selectedCountry.countryCode;
-
-	for( i in countryCodes ){
-		var countryCode = countryCodes[i];
-		var colorIndex = countryColorMap[ countryCode ];
-
-		var mapColor = countryData[countries[i]].mapColor;
-		// var fillCSS = '#ff0000';
-		var fillCSS = '#333333';
-		if( countryCode === selectedCountryCode )
-			fillCSS = '#eeeeee';
-		// if( mapColor !== undefined ){
-		// 	var k = map( mapColor, 0, 200000000, 0, 255 );
-		// 	k = Math.floor( constrain( k, 0, 255 ) );
-		// 	fillCSS = 'rgb(' + k + ',' + k + ',' + k + ')';
-		// }
-		ctx.fillStyle = fillCSS;
-		ctx.fillRect( colorIndex, 0, 1, 1 );
-	}
+	// var selectedCountryCode = selectedCountry.countryCode;
+	//
+	// for( i in countryCodes ){
+	// 	var countryCode = countryCodes[i];
+	// 	var colorIndex = countryColorMap[ countryCode ];
+	//
+	// 	var mapColor = countryData[countries[i]].mapColor;
+	// 	// var fillCSS = '#ff0000';
+	// 	var fillCSS = '#333333';
+	// 	if( countryCode === selectedCountryCode )
+	// 		fillCSS = '#eeeeee';
+	// 	// if( mapColor !== undefined ){
+	// 	// 	var k = map( mapColor, 0, 200000000, 0, 255 );
+	// 	// 	k = Math.floor( constrain( k, 0, 255 ) );
+	// 	// 	fillCSS = 'rgb(' + k + ',' + k + ',' + k + ')';
+	// 	// }
+	// 	ctx.fillStyle = fillCSS;
+	// 	ctx.fillRect( colorIndex, 0, 1, 1 );
+	// }
 
 	lookupTexture.needsUpdate = true;
-}
-
-function getHistoricalData( country ){
-	var history = [];
-
-	var countryName = country.countryName;
-
-	var exportCategories = selectionData.getExportCategories();
-	var importCategories = selectionData.getImportCategories();
-
-	var value = {imports: 0, exports:0};
-	for( var i in sampleData ){
-		var set = sampleData[i];
-		var categoryName = reverseWeaponLookup[set.wc];
-
-		var exporterCountryName = set.e.toUpperCase();
-		var importerCountryName = set.i.toUpperCase();
-		var relevantCategory = ( countryName == exporterCountryName && $.inArray(categoryName, exportCategories ) >= 0 ) ||
-							   ( countryName == importerCountryName && $.inArray(categoryName, importCategories ) >= 0 );
-
-		if( relevantCategory === false )
-			continue;
-
-		//	ignore all unidentified country data
-		if( countryData[exporterCountryName] === undefined || countryData[importerCountryName] === undefined )
-			continue;
-
-		if( exporterCountryName == countryName )
-			value.exports += set.v;
-		if( importerCountryName == countryName )
-			value.imports += set.v;
-	}
-	history.push(value);
-	// console.log(history);
-	return history;
 }
 
 function getPickColor(){
