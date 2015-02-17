@@ -73,7 +73,7 @@ function onClick( event ){
 			// console.log(countryName);
 			var selection = selectionData;
 			selection.selectedCountry = countryName;
-			selectVisualization( sampleData );
+			// selectVisualization( sampleData );
 			// console.log('selecting ' + countryName + ' from click');
 			return;
 		}
