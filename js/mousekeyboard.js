@@ -56,28 +56,6 @@ function onClick( event ){
 	//	make the rest not work if the event was actually a drag style click
 	if( Math.abs(pressX - mouseX) > 3 || Math.abs(pressY - mouseY) > 3 )
 		return;
-
-	var pickColorIndex = getPickColor();
-	//	find it
-	for( var i in countryColorMap ){
-		var countryCode = i;
-		var countryColorIndex = countryColorMap[i];
-		if( pickColorIndex == countryColorIndex ){
-			// console.log("selecting code " + countryCode);
-			var countryName = countryLookup[countryCode];
-			// console.log("converts to " + countryName);
-			if( countryName === undefined )
-				return;
-			if( $.inArray(countryName, selectableCountries) <= -1 )
-				return;
-			// console.log(countryName);
-			var selection = selectionData;
-			selection.selectedCountry = countryName;
-			// selectVisualization( sampleData );
-			// console.log('selecting ' + countryName + ' from click');
-			return;
-		}
-	}
 }
 
 function onKeyDown( event ){

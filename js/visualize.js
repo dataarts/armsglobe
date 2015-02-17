@@ -26,101 +26,57 @@ function buildDataVizGeometries( linearData ){
 	loadLayer.style.display = 'none';
 }
 
-function getVisualizedMesh( linearData ){
+function getVisualizedMesh( linearData, scene ){
+	if( !linearData.lineGeometry ) {
+		return null;
+	}
+
 	var linesGeo = new THREE.Geometry();
 	var lineColors = [];
 
 	var particlesGeo = new THREE.Geometry();
 	var particleColors = [];
 
-	// var careAboutExports = ( action === 'exports' );
-	// var careAboutImports = ( action === 'imports' );
-	// var careAboutBoth = ( action === 'both' );
+	var exporterName = linearData.e.toUpperCase();
+	var importerName = linearData.i.toUpperCase();
 
-	//	go through the data from year, and find all relevant geometries
-	for( var i in linearData ){
-		var set = linearData[i];
+	var lineColor = new THREE.Color(importColor);//thisLineIsExport ? new THREE.Color(exportColor) : new THREE.Color(importColor);
 
-		var exporterName = set.e.toUpperCase();
-		var importerName = set.i.toUpperCase();
+	var lastColor;
 
-		//	we may not have line geometry... (?)
-		if( set.lineGeometry === undefined ) {
-			continue;
-		}
+	//	grab the colors from the vertices
+	for( var s in linearData.lineGeometry.vertices ){
+		var v = linearData.lineGeometry.vertices[s];
+		lineColors.push(lineColor);
+		lastColor = lineColor;
+	}
 
-		var lineColor = new THREE.Color(importColor);//thisLineIsExport ? new THREE.Color(exportColor) : new THREE.Color(importColor);
+	//	merge it all together
+	THREE.GeometryUtils.merge( linesGeo, linearData.lineGeometry );
 
-		var lastColor;
-		//	grab the colors from the vertices
-		for( var s in set.lineGeometry.vertices ){
-			var v = set.lineGeometry.vertices[s];
-			lineColors.push(lineColor);
-			lastColor = lineColor;
-		}
+	var particleColor = lastColor.clone();
+	var points = linearData.lineGeometry.vertices;
+	var particleCount = Math.floor(linearData.v / 8000 / linearData.lineGeometry.vertices.length) + 1;
+	particleCount = constrain(particleCount,1,100);
+	var particleSize = linearData.lineGeometry.size;
+	for( s=0; s<particleCount; s++ ){
+		// var rIndex = Math.floor( Math.random() * points.length );
+		// var rIndex = Math.min(s,points.length-1);
 
-		//	merge it all together
-		THREE.GeometryUtils.merge( linesGeo, set.lineGeometry );
+		var desiredIndex = s / particleCount * points.length;
+		var rIndex = constrain(Math.floor(desiredIndex),0,points.length-1);
 
-		var particleColor = lastColor.clone();
-		var points = set.lineGeometry.vertices;
-		var particleCount = Math.floor(set.v / 8000 / set.lineGeometry.vertices.length) + 1;
-		particleCount = constrain(particleCount,1,100);
-		var particleSize = set.lineGeometry.size;
-		for( s=0; s<particleCount; s++ ){
-			// var rIndex = Math.floor( Math.random() * points.length );
-			// var rIndex = Math.min(s,points.length-1);
-
-			var desiredIndex = s / particleCount * points.length;
-			var rIndex = constrain(Math.floor(desiredIndex),0,points.length-1);
-
-			var point = points[rIndex];
-			var particle = point.clone();
-			particle.moveIndex = rIndex;
-			particle.nextIndex = rIndex+1;
-			if(particle.nextIndex >= points.length )
-				particle.nextIndex = 0;
-			particle.lerpN = 0;
-			particle.path = points;
-			particlesGeo.vertices.push( particle );
-			particle.size = particleSize;
-			particleColors.push( particleColor );
-		}
-
-		var vb = set.v;
-		var exporterCountry = countryData[exporterName];
-		if( exporterCountry.mapColor === undefined ){
-			exporterCountry.mapColor = vb;
-		}
-		else{
-			exporterCountry.mapColor += vb;
-		}
-
-		var importerCountry = countryData[importerName];
-		if( importerCountry.mapColor === undefined ){
-			importerCountry.mapColor = vb;
-		}
-		else{
-			importerCountry.mapColor += vb;
-		}
-
-		exporterCountry.exportedAmount += vb;
-		importerCountry.importedAmount += vb;
-
-		if( exporterCountry == selectedCountry ){
-			selectedCountry.summary.exported[set.wc] += set.v;
-			selectedCountry.summary.exported.total += set.v;
-		}
-		if( importerCountry == selectedCountry ){
-			selectedCountry.summary.imported[set.wc] += set.v;
-			selectedCountry.summary.imported.total += set.v;
-		}
-
-		if( importerCountry == selectedCountry || exporterCountry == selectedCountry ){
-			selectedCountry.summary.total += set.v;
-		}
-
-
+		var point = points[rIndex];
+		var particle = point.clone();
+		particle.moveIndex = rIndex;
+		particle.nextIndex = rIndex+1;
+		if(particle.nextIndex >= points.length )
+			particle.nextIndex = 0;
+		particle.lerpN = 0;
+		particle.path = points;
+		particlesGeo.vertices.push( particle );
+		particle.size = particleSize;
+		particleColors.push( particleColor );
 	}
 
 	// console.log(selectedCountry);
@@ -187,6 +143,7 @@ function getVisualizedMesh( linearData ){
 	pSystem.update = function(){
 		// var time = Date.now()
 		for( var i in this.geometry.vertices ){
+			var particleDone = false;
 			var particle = this.geometry.vertices[i];
 			var path = particle.path;
 			var moveLength = path.length;
@@ -201,15 +158,19 @@ function getVisualizedMesh( linearData ){
 					//       Need to figure out how to delete this system at this point
 					particle.moveIndex = 0;
 					particle.nextIndex = 1;
+					scene.remove( splineOutline );
+					particleDone = true;
 				}
 			}
 
-			var currentPoint = path[particle.moveIndex];
-			var nextPoint = path[particle.nextIndex];
+			if( !particleDone ) {
+				var currentPoint = path[particle.moveIndex];
+				var nextPoint = path[particle.nextIndex];
 
 
-			particle.copy( currentPoint );
-			particle.lerpSelf( nextPoint, particle.lerpN );
+				particle.copy( currentPoint );
+				particle.lerpSelf( nextPoint, particle.lerpN );
+			}
 		}
 		this.geometry.verticesNeedUpdate = true;
 	};
@@ -232,19 +193,14 @@ function selectVisualization( linearData ){
 	// 	removeMarkerFromCountry( selectableCountries[i] );
 	// }
 
-	//	clear children
-	while( visualizationMesh.children.length > 0 ){
-		var c = visualizationMesh.children[0];
-		visualizationMesh.remove(c);
+	// build the meshes. One for each entry in our data
+	// TODO: ensure this isn't a horrible memory sinkhole
+	for( i in sampleData ) {
+		var mesh = getVisualizedMesh( sampleData[i], visualizationMesh );
+		if( mesh !== null ) {
+			visualizationMesh.add( mesh );
+		}
 	}
-
-	//	build the mesh
-	// console.time('getVisualizedMesh');
-	var mesh = getVisualizedMesh( sampleData );
-	// console.timeEnd('getVisualizedMesh');
-
-	//	add it to scene graph
-	visualizationMesh.add( mesh );
 
   /* Removing markers for now until I decide how to use them */
 	// for( var i in mesh.affectedCountries ){

@@ -371,7 +371,7 @@ function animate() {
 
 	THREE.SceneUtils.traverseHierarchy( rotating,
 		function(mesh) {
-			if (mesh.update !== undefined) {
+			if( mesh && mesh.update !== undefined) {
 				mesh.update();
 			}
 		}
@@ -466,53 +466,4 @@ function highlightCountry( countries ){
 	// }
 
 	lookupTexture.needsUpdate = true;
-}
-
-function getPickColor(){
-	var affectedCountries;
-	if( visualizationMesh.children[0] !== undefined )
-		affectedCountries = visualizationMesh.children[0].affectedCountries;
-
-	highlightCountry([]);
-	rotating.remove(visualizationMesh);
-	mapUniforms.outlineLevel.value = 0;
-	lookupTexture.needsUpdate = true;
-
-	renderer.autoClear = false;
-	renderer.autoClearColor = false;
-	renderer.autoClearDepth = false;
-	renderer.autoClearStencil = false;
-	// renderer.preserve
-
-    renderer.clear();
-    renderer.render(scene,camera);
-
-    var gl = renderer.context;
-    gl.preserveDrawingBuffer = true;
-
-	var mx = ( mouseX + renderer.context.canvas.width/2 );//(mouseX + renderer.context.canvas.width/2) * 0.25;
-	var my = ( -mouseY + renderer.context.canvas.height/2 );//(-mouseY + renderer.context.canvas.height/2) * 0.25;
-	mx = Math.floor( mx );
-	my = Math.floor( my );
-
-	var buf = new Uint8Array( 4 );
-	// console.log(buf);
-	gl.readPixels( mx, my, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, buf );
-	// console.log(buf);
-
-	renderer.autoClear = true;
-	renderer.autoClearColor = true;
-	renderer.autoClearDepth = true;
-	renderer.autoClearStencil = true;
-
-	gl.preserveDrawingBuffer = false;
-
-	mapUniforms.outlineLevel.value = 1;
-	rotating.add(visualizationMesh);
-
-
-	if( affectedCountries !== undefined ){
-		highlightCountry(affectedCountries);
-	}
-	return buf[0];
 }
