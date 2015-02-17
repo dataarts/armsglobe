@@ -37,9 +37,6 @@ function getVisualizedMesh( linearData, scene ){
 	var particlesGeo = new THREE.Geometry();
 	var particleColors = [];
 
-	var exporterName = linearData.e.toUpperCase();
-	var importerName = linearData.i.toUpperCase();
-
 	var lineColor = new THREE.Color(importColor);//thisLineIsExport ? new THREE.Color(exportColor) : new THREE.Color(importColor);
 
 	var lastColor;
@@ -56,30 +53,20 @@ function getVisualizedMesh( linearData, scene ){
 
 	var particleColor = lastColor.clone();
 	var points = linearData.lineGeometry.vertices;
-	var particleCount = Math.floor(linearData.v / 8000 / linearData.lineGeometry.vertices.length) + 1;
+	var particleCount = 1;
 	particleCount = constrain(particleCount,1,100);
 	var particleSize = linearData.lineGeometry.size;
-	for( s=0; s<particleCount; s++ ){
-		// var rIndex = Math.floor( Math.random() * points.length );
-		// var rIndex = Math.min(s,points.length-1);
 
-		var desiredIndex = s / particleCount * points.length;
-		var rIndex = constrain(Math.floor(desiredIndex),0,points.length-1);
-
-		var point = points[rIndex];
-		var particle = point.clone();
-		particle.moveIndex = rIndex;
-		particle.nextIndex = rIndex+1;
-		if(particle.nextIndex >= points.length )
-			particle.nextIndex = 0;
-		particle.lerpN = 0;
-		particle.path = points;
-		particlesGeo.vertices.push( particle );
-		particle.size = particleSize;
-		particleColors.push( particleColor );
-	}
-
-	// console.log(selectedCountry);
+	var point = points[0];
+	var particle = point.clone();
+	particle.moveIndex = 0;
+	particle.nextIndex = 1;
+	particle.lerpN = 0;
+	particle.isFinished = false;
+	particle.path = points;
+	particlesGeo.vertices.push( particle );
+	particle.size = particleSize;
+	particleColors.push( particleColor );
 
 	linesGeo.colors = lineColors;
 
@@ -142,9 +129,16 @@ function getVisualizedMesh( linearData, scene ){
 
 	pSystem.update = function(){
 		// var time = Date.now()
+		var finishedCtr = 0;
 		for( var i in this.geometry.vertices ){
-			var particleDone = false;
 			var particle = this.geometry.vertices[i];
+
+			// no point doing all the calculations if the particle is already done
+			if( particle.isFinished ) {
+				finishedCtr++;
+				continue;
+			}
+
 			var path = particle.path;
 			var moveLength = path.length;
 
@@ -157,13 +151,12 @@ function getVisualizedMesh( linearData, scene ){
 					// TODO: This is the indicator that we've reached the end of the path.
 					//       Need to figure out how to delete this system at this point
 					particle.moveIndex = 0;
-					particle.nextIndex = 1;
-					scene.remove( splineOutline );
-					particleDone = true;
+					particle.nextIndex = 0;
+					particle.isFinished = true;
 				}
 			}
 
-			if( !particleDone ) {
+			if( !particle.isFinished ) {
 				var currentPoint = path[particle.moveIndex];
 				var nextPoint = path[particle.nextIndex];
 
@@ -172,7 +165,11 @@ function getVisualizedMesh( linearData, scene ){
 				particle.lerpSelf( nextPoint, particle.lerpN );
 			}
 		}
-		this.geometry.verticesNeedUpdate = true;
+
+		// only mark the vertices as dirty if something actually changed
+		if( finishedCtr !== this.geometry.vertices.length ) {
+			this.geometry.verticesNeedUpdate = true;
+		}
 	};
 
 	return splineOutline;
