@@ -83,6 +83,7 @@ function start( e ){
 									function(){
 										initScene();
 										animate();
+										startDataPump();
 									}
 								);
 							}
@@ -94,7 +95,18 @@ function start( e ){
 	}
 }
 
-
+var currIndexIntoData = 0;
+var nextIndexIntoData = 5;
+function startDataPump() {
+	window.setInterval( function() {
+		var endIndex = currIndexIntoData + 5;
+		if( endIndex > sampleData.length ) {
+			endIndex = sampleData.length;
+		}
+		selectVisualization( sampleData.slice( currIndexIntoData, endIndex ) );
+		currIndexIntoData = (currIndexIntoData + 5) % sampleData.length;
+	}, 2500 );
+}
 
 var Selection = function(){
 	this.selectedCountry = 'UNITED STATES';
@@ -248,7 +260,7 @@ function initScene() {
 
 	buildGUI();
 
-	selectVisualization( sampleData );
+	// selectVisualization( sampleData );
 
 		// test for highlighting specific countries
 	// highlightCountry( ["United States", "Switzerland", "China"] );

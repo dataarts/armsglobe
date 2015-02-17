@@ -148,8 +148,6 @@ function getVisualizedMesh( linearData, scene ){
 				particle.moveIndex = particle.nextIndex;
 				particle.nextIndex++;
 				if( particle.nextIndex >= path.length ){
-					// TODO: This is the indicator that we've reached the end of the path.
-					//       Need to figure out how to delete this system at this point
 					particle.moveIndex = 0;
 					particle.nextIndex = 0;
 					particle.isFinished = true;
@@ -192,8 +190,8 @@ function selectVisualization( linearData ){
 
 	// build the meshes. One for each entry in our data
 	// TODO: ensure this isn't a horrible memory sinkhole
-	for( i in sampleData ) {
-		var mesh = getVisualizedMesh( sampleData[i], visualizationMesh );
+	for( i in linearData ) {
+		var mesh = getVisualizedMesh( linearData[i], visualizationMesh );
 		if( mesh !== null ) {
 			visualizationMesh.add( mesh );
 		}
