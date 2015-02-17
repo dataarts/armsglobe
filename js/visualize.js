@@ -44,8 +44,6 @@ function getVisualizedMesh( linearData ){
 		var exporterName = set.e.toUpperCase();
 		var importerName = set.i.toUpperCase();
 
-		var categoryName = reverseWeaponLookup[set.wc];
-
 		//	we may not have line geometry... (?)
 		if( set.lineGeometry === undefined ) {
 			continue;

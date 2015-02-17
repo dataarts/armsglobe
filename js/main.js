@@ -42,40 +42,6 @@ var countryLookup;
 
 var selectableCountries = [];
 
-/*
-	930100 – military weapons, and includes some light weapons and artillery as well as machine guns and assault rifles etc.
-	930190 – military firearms – eg assault rifles, machineguns (sub, light, heavy etc), combat shotguns, machine pistols etc
-	930200 – pistols and revolvers
-	930320 – Sporting shotguns (anything that isn’t rated as a military item).
-	930330 – Sporting rifles (basically anything that isn’t fully automatic).
-	930621 – shotgun shells
-	930630 – small caliber ammo (anything below 14.5mm which isn’t fired from a shotgun.
-*/
-
-//	a list of weapon 'codes'
-//	now they are just strings of categories
-//	Category Name : Category Code
-var weaponLookup = {
-	'Military Weapons' 		: 'mil',
-	'Civilian Weapons'		: 'civ',
-	'Ammunition'			: 'ammo',
-};
-
-//	a list of the reverse for easy lookup
-var reverseWeaponLookup = {};
-for( var i in weaponLookup ){
-	var name = i;
-	var code = weaponLookup[i];
-	reverseWeaponLookup[code] = name;
-}
-
-//	A list of category colors
-var categoryColors = {
-	'mil' : 0xdd380c,
-	'civ' : 0x3dba00,
-	'ammo' : 0x154492,
-};
-
 var exportColor = 0xdd380c;
 var importColor = 0x154492;
 
@@ -138,10 +104,6 @@ var Selection = function(){
 
 	this.exportCategories = {};
 	this.importCategories = {};
-	for( var i in weaponLookup ){
-		this.exportCategories[i] = true;
-		this.importCategories[i] = true;
-	}
 
 	this.getExportCategories = function(){
 		var list = [];
