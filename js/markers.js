@@ -144,7 +144,7 @@ function attachMarkerToCountry( countryName, importance ){
 
 	var markerSelect = function(e){
 		var selection = selectionData;
-		selectVisualization( timeBins, [this.countryName], selection.getExportCategories(), selection.getImportCategories() );	
+		selectVisualization( sampleData, [this.countryName], selection.getExportCategories(), selection.getImportCategories() );	
 	};
 	marker.addEventListener('click', markerSelect, true);
 

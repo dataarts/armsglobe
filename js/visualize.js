@@ -2,36 +2,25 @@ function buildDataVizGeometries( linearData ){
 
 	var loadLayer = document.getElementById('loading');
 
+	var count = 0;
 	for( var i in linearData ){
-		var yearBin = linearData[i].data;
+		var set = linearData[i];
 
-		var count = 0;
-		for( var s in yearBin ){
-			var set = yearBin[s];
+		var exporterName = set.e.toUpperCase();
+		var importerName = set.i.toUpperCase();
 
-			var exporterName = set.e.toUpperCase();
-			var importerName = set.i.toUpperCase();
+		exporter = countryData[exporterName];
+		importer = countryData[importerName];
 
-			exporter = countryData[exporterName];
-			importer = countryData[importerName];
+		//	we couldn't find the country, it wasn't in our list...
+		if( exporter === undefined || importer === undefined )
+			continue;
 
-			//	we couldn't find the country, it wasn't in our list...
-			if( exporter === undefined || importer === undefined )
-				continue;
+		//	visualize this event
+		set.lineGeometry = makeConnectionLineGeometry( exporter, importer, set.v, set.wc );
 
-			//	visualize this event
-			set.lineGeometry = makeConnectionLineGeometry( exporter, importer, set.v, set.wc );
-
-			// if( s % 1000 == 0 )
-			// 	console.log( 'calculating ' + s + ' of ' + yearBin.length + ' in year ' + year);
-		}
-
-		//	use this break to only visualize one year (1992)
-		// break;
-
-		//	how to make this work?
-		// loadLayer.innerHTML = 'loading data for ' + year + '...';
-		// console.log(loadLayer.innerHTML);
+		// if( s % 1000 == 0 )
+		// 	console.log( 'calculating ' + s + ' of ' + yearBin.length + ' in year ' + year);
 	}
 
 	loadLayer.style.display = 'none';
@@ -45,8 +34,6 @@ function getVisualizedMesh( linearData, countries, exportCategories, importCateg
 
 	var affectedCountries = [];
 
-	var bin = linearData[0].data;
-
 	var linesGeo = new THREE.Geometry();
 	var lineColors = [];
 
@@ -58,8 +45,8 @@ function getVisualizedMesh( linearData, countries, exportCategories, importCateg
 	// var careAboutBoth = ( action === 'both' );
 
 	//	go through the data from year, and find all relevant geometries
-	for( i in bin ){
-		var set = bin[i];
+	for( i in linearData ){
+		var set = linearData[i];
 
 		//	filter out countries we don't care about
 		var exporterName = set.e.toUpperCase();
@@ -313,7 +300,7 @@ function selectVisualization( linearData, countries, exportCategories, importCat
 
 	//	build the mesh
 	// console.time('getVisualizedMesh');
-	var mesh = getVisualizedMesh( timeBins, countries, exportCategories, importCategories );
+	var mesh = getVisualizedMesh( sampleData, countries, exportCategories, importCategories );
 	// console.timeEnd('getVisualizedMesh');
 
 	//	add it to scene graph

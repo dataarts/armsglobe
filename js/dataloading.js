@@ -29,14 +29,9 @@ function loadContentData(callback){
 	xhr.open( 'GET', filePath, true );
 	xhr.onreadystatechange = function() {
 		if ( xhr.readyState === 4 && xhr.status === 200 ) {
-	    	timeBins = JSON.parse( xhr.responseText ).timeBins;
+	    	sampleData = JSON.parse( xhr.responseText );
 
 			maxValue = 0;
-			// console.log(timeBins);
-
-			startTime = timeBins[0].t;
-	    	endTime = timeBins[timeBins.length-1].t;
-	    	timeLength = endTime - startTime;
 
 			if(callback)
 				callback();
