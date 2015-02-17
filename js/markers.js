@@ -7,7 +7,7 @@ function onMarkerHover( event ){
 	var dy = mouseY - hy;
 	var d = Math.sqrt( dx * dx + dy * dy );
 	// if( event.target.style.visibility == 'visible' )
-	// 	console.log('clicked on something!!');				
+	// 	console.log('clicked on something!!');
 }
 
 function attachMarkerToCountry( countryName, importance ){
@@ -17,7 +17,7 @@ function attachMarkerToCountry( countryName, importance ){
 	if( country === undefined )
 		return;
 
-	var container = document.getElementById( 'visualization' );	
+	var container = document.getElementById( 'visualization' );
 	var template = document.getElementById( 'marker_template' );
 	var marker = template.cloneNode(true);
 
@@ -34,7 +34,7 @@ function attachMarkerToCountry( countryName, importance ){
 
 	marker.setPosition = function(x,y,z){
 		this.style.left = x + 'px';
-		this.style.top = y + 'px';	
+		this.style.top = y + 'px';
 		this.style.zIndex = z;
 	}
 
@@ -51,12 +51,12 @@ function attachMarkerToCountry( countryName, importance ){
 	marker.detailLayer = detailLayer;
     marker.jquery = $(marker);
 	marker.setSize = function( s ){
-	    var detailSize = Math.floor(2 + s * 0.5);	
+	    var detailSize = Math.floor(2 + s * 0.5);
 		this.detailLayer.style.fontSize = detailSize + 'pt';
         var totalHeight = detailSize * 2;
 		this.style.fontSize = totalHeight * 1.125 + 'pt';
 		if(detailSize <= 8) {
-            this.countryLayer.style.marginTop = "0px";  
+            this.countryLayer.style.marginTop = "0px";
 		} else {
 		    this.countryLayer.style.marginTop = "-1px";
 		}
@@ -65,7 +65,7 @@ function attachMarkerToCountry( countryName, importance ){
 	marker.update = function(){
 		var matrix = rotating.matrixWorld;
 		var abspos = matrix.multiplyVector3( country.center.clone() );
-		var screenPos = screenXY(abspos);			
+		var screenPos = screenXY(abspos);
 
 		var s = 0.3 + camera.scale.z * 1;
 		var importanceScale = this.importance / 5000000;
@@ -80,36 +80,36 @@ function attachMarkerToCountry( countryName, importance ){
 
 		if( this.hover )
 			s = 15;
-		
-		this.setSize( s ); 
+
+		this.setSize( s );
 
 		// if( this.selected )
 			// this.setVisible( true )
 		// else
-			this.setVisible( ( abspos.z > 60 ) && s > 3 );	
+			this.setVisible( ( abspos.z > 60 ) && s > 3 );
 
 		var zIndex = Math.floor( 1000 - abspos.z + s );
 		if( this.selected || this.hover )
 			zIndex = 10000;
 
-		this.setPosition( screenPos.x, screenPos.y, zIndex );	
+		this.setPosition( screenPos.x, screenPos.y, zIndex );
 	}
 
-	var nameLayer = marker.querySelector( '#countryText' );		
+	var nameLayer = marker.querySelector( '#countryText' );
 
 	//	right now, something arbitrary like 10 mil dollars or more to be highlighted
-	var tiny = (importance < 20000000) && (!marker.selected);	
+	var tiny = (importance < 20000000) && (!marker.selected);
 	marker.tiny = tiny;
 
 	// if( tiny )
-	// 	nameLayer.innerHTML = country.countryCode;	
+	// 	nameLayer.innerHTML = country.countryCode;
 	// else
-		nameLayer.innerHTML = countryName.replace(' ','&nbsp;');	
+		nameLayer.innerHTML = countryName.replace(' ','&nbsp;');
 
 	// marker.nameLayer = nameLayer;
 	// marker.nameLayerText = countryName;
-	// marker.nameLayerShorten = country.countryCode;;	
-	
+	// marker.nameLayerShorten = country.countryCode;;
+
 	var importExportText = "";
 	if(country.exportedAmount > 0 && country.importedAmount > 0) {
 	   importExportText += "imported:&nbsp;$" + numberWithCommas(country.importedAmount) + "<br />" +
@@ -133,7 +133,7 @@ function attachMarkerToCountry( countryName, importance ){
 		this.hover = false;
 	}
 
-	if( !tiny ) {		
+	if( !tiny ) {
 		detailLayer.innerHTML = importExportText;
 	}
 	else{
@@ -144,12 +144,12 @@ function attachMarkerToCountry( countryName, importance ){
 
 	var markerSelect = function(e){
 		var selection = selectionData;
-		selectVisualization( timeBins, selection.selectedYear, [this.countryName], selection.getExportCategories(), selection.getImportCategories() );	
+		selectVisualization( timeBins, [this.countryName], selection.getExportCategories(), selection.getImportCategories() );	
 	};
 	marker.addEventListener('click', markerSelect, true);
 
 	markers.push( marker );
-}		
+}
 
 function removeMarkerFromCountry( countryName ){
 	countryName = countryName.toUpperCase();
@@ -162,7 +162,7 @@ function removeMarkerFromCountry( countryName ){
 	var index = markers.indexOf(country.marker);
 	if( index >= 0 )
 		markers.splice( index, 1 );
-	var container = document.getElementById( 'visualization' );		
+	var container = document.getElementById( 'visualization' );
 	container.removeChild( country.marker );
-	country.marker = undefined;		
+	country.marker = undefined;
 }

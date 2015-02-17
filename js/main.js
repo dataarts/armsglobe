@@ -40,7 +40,6 @@ var countryData = {};
 //	contains a list of country code to country name for running lookups
 var countryLookup;
 
-var selectableYears = [];
 var selectableCountries = [];
 
 /*
@@ -132,7 +131,6 @@ function start( e ){
 
 
 var Selection = function(){
-	this.selectedYear = '2010';
 	this.selectedCountry = 'UNITED STATES';
 	// this.showExports = true;
 	// this.showImports = true;
@@ -292,7 +290,7 @@ function initScene() {
 
 	buildGUI();
 
-	selectVisualization( timeBins, '2010', ['UNITED STATES'], ['Military Weapons','Civilian Weapons', 'Ammunition'], ['Military Weapons','Civilian Weapons', 'Ammunition'] );
+	selectVisualization( timeBins, ['UNITED STATES'], ['Military Weapons','Civilian Weapons', 'Ammunition'], ['Military Weapons','Civilian Weapons', 'Ammunition'] );
 
 		// test for highlighting specific countries
 	// highlightCountry( ["United States", "Switzerland", "China"] );

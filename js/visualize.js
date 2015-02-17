@@ -5,11 +5,7 @@ function buildDataVizGeometries( linearData ){
 	for( var i in linearData ){
 		var yearBin = linearData[i].data;
 
-		var year = linearData[i].t;
-		selectableYears.push(year);
-
 		var count = 0;
-		// console.log('Building data for ...' + year);
 		for( var s in yearBin ){
 			var set = yearBin[s];
 
@@ -41,20 +37,15 @@ function buildDataVizGeometries( linearData ){
 	loadLayer.style.display = 'none';
 }
 
-function getVisualizedMesh( linearData, year, countries, exportCategories, importCategories ){
+function getVisualizedMesh( linearData, countries, exportCategories, importCategories ){
 	//	for comparison purposes, all caps the country names
 	for( var i in countries ){
 		countries[i] = countries[i].toUpperCase();
 	}
 
-	//	pick out the year first from the data
-	var indexFromYear = parseInt(year) - 1992;
-	if( indexFromYear >= timeBins.length )
-		indexFromYear = timeBins.length-1;
-
 	var affectedCountries = [];
 
-	var bin = linearData[indexFromYear].data;
+	var bin = linearData[0].data;
 
 	var linesGeo = new THREE.Geometry();
 	var lineColors = [];
@@ -98,7 +89,7 @@ function getVisualizedMesh( linearData, year, countries, exportCategories, impor
 
 			var lastColor;
 			//	grab the colors from the vertices
-			for( s in set.lineGeometry.vertices ){
+			for( var s in set.lineGeometry.vertices ){
 				var v = set.lineGeometry.vertices[s];
 				lineColors.push(lineColor);
 				lastColor = lineColor;
@@ -112,7 +103,7 @@ function getVisualizedMesh( linearData, year, countries, exportCategories, impor
 			var particleCount = Math.floor(set.v / 8000 / set.lineGeometry.vertices.length) + 1;
 			particleCount = constrain(particleCount,1,100);
 			var particleSize = set.lineGeometry.size;
-			for( var s=0; s<particleCount; s++ ){
+			for( s=0; s<particleCount; s++ ){
 				// var rIndex = Math.floor( Math.random() * points.length );
 				// var rIndex = Math.min(s,points.length-1);
 
@@ -233,9 +224,9 @@ function getVisualizedMesh( linearData, year, countries, exportCategories, impor
 	var values_size = attributes.size.value;
 	var values_color = attributes.customColor.value;
 
-	for( var v = 0; v < vertices.length; v++ ) {
-		values_size[ v ] = pSystem.geometry.vertices[v].size;
-		values_color[ v ] = particleColors[v];
+	for( var x = 0; x < vertices.length; x++ ) {
+		values_size[ x ] = pSystem.geometry.vertices[x].size;
+		values_color[ x ] = particleColors[x];
 	}
 
 	pSystem.update = function(){
@@ -273,7 +264,7 @@ function getVisualizedMesh( linearData, year, countries, exportCategories, impor
 	return splineOutline;
 }
 
-function selectVisualization( linearData, year, countries, exportCategories, importCategories ){
+function selectVisualization( linearData, countries, exportCategories, importCategories ){
 	//	we're only doing one country for now so...
 	var cName = countries[0].toUpperCase();
 
@@ -322,7 +313,7 @@ function selectVisualization( linearData, year, countries, exportCategories, imp
 
 	//	build the mesh
 	// console.time('getVisualizedMesh');
-	var mesh = getVisualizedMesh( timeBins, year, countries, exportCategories, importCategories );
+	var mesh = getVisualizedMesh( timeBins, countries, exportCategories, importCategories );
 	// console.timeEnd('getVisualizedMesh');
 
 	//	add it to scene graph
@@ -330,7 +321,7 @@ function selectVisualization( linearData, year, countries, exportCategories, imp
 
 
 	//	alright we got no data but at least highlight the country we've selected
-	if( mesh.affectedCountries.length == 0 ){
+	if( mesh.affectedCountries.length === 0 ){
 		mesh.affectedCountries.push( cName );
 	}
 
