@@ -10,8 +10,7 @@ var camera, scene, renderer, controls,
 		mapIndexedImage, mapOutlineImage,
 		pinsBase, pinsBaseMat,
 		lookupCanvas, lookupTexture, backTexture, worldCanvas,
-		sphere, rotating, visualizationMesh,
-		mapUniforms;
+		sphere, rotating, visualizationMesh;
 
 //	contains our sample data, loaded from categories/All.json
 var sampleData;
@@ -53,7 +52,7 @@ $(function() {
 									function(){
 										initScene();
 										animate();
-										startDataPump();
+										//startDataPump();
 									}
 								);
 							}
@@ -83,10 +82,9 @@ function startDataPump() {
 function initScene() {
 
 	//	-----------------------------------------------------------------------------
-    //	Let's make a scene
+  //	Let's make a scene
 	scene = new THREE.Scene();
 	scene.matrixAutoUpdate = false;
-	// scene.fog = new THREE.FogExp2( 0xBBBBBB, 0.00003 );
 
 	scene.add( new THREE.AmbientLight( 0x505050 ) );
 
@@ -132,7 +130,6 @@ function initScene() {
 		'outline': { type: 't', value: 2, texture: outlinedMapTexture },
 		'outlineLevel': {type: 'f', value: 1 },
 	};
-	mapUniforms = uniforms;
 
 	var shaderMaterial = new THREE.ShaderMaterial( {
 
@@ -257,9 +254,9 @@ function animate() {
 	rotating.rotation.x = rotateX;
 	rotating.rotation.y = rotateY;
 
-  render();
-
   requestAnimationFrame( animate );
+	// renderer.clear();
+	renderer.render( scene, camera );
 
 	rotating.traverse(
 		function(mesh) {
@@ -274,9 +271,4 @@ function animate() {
 	// 	var marker = markers[i];
 	// 	marker.update();
 	// }
-}
-
-function render() {
-	renderer.clear();
-  renderer.render( scene, camera );
 }
