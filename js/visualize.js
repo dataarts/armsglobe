@@ -49,7 +49,7 @@ function getVisualizedMesh( linearData ){
 	}
 
 	//	merge it all together
-	THREE.GeometryUtils.merge( linesGeo, linearData.lineGeometry );
+	linesGeo.merge( linearData.lineGeometry );
 
 	var particleColor = lastColor.clone();
 	var points = linearData.lineGeometry.vertices;
@@ -109,12 +109,12 @@ function getVisualizedMesh( linearData ){
 
 
 	var particleGraphic = THREE.ImageUtils.loadTexture("images/map_mask.png");
-	var particleMat = new THREE.ParticleBasicMaterial( { map: particleGraphic, color: 0xffffff, size: 60,
+	var particleMat = new THREE.PointCloudMaterial( { map: particleGraphic, color: 0xffffff, size: 60,
 														blending: THREE.NormalBlending, transparent:true,
 														depthWrite: false, vertexColors: true,
 														sizeAttenuation: true } );
 	particlesGeo.colors = particleColors;
-	var pSystem = new THREE.ParticleSystem( particlesGeo, shaderMaterial );
+	var pSystem = new THREE.PointCloud( particlesGeo, shaderMaterial );
 	pSystem.dynamic = true;
 	splineOutline.add( pSystem );
 
@@ -163,7 +163,7 @@ function getVisualizedMesh( linearData ){
 
 
 				particle.copy( currentPoint );
-				particle.lerpSelf( nextPoint, particle.lerpN );
+				particle.lerp( nextPoint, particle.lerpN );
 			}
 		}
 

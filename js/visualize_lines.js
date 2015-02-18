@@ -2,12 +2,12 @@ var globeRadius = 1000;
 var vec3_origin = new THREE.Vector3(0,0,0);
 
 function makeConnectionLineGeometry( exporter, importer, value, type ){
-	if( exporter.countryName == undefined || importer.countryName == undefined )
+	if( exporter.countryName === undefined || importer.countryName === undefined )
 		return undefined;
 
 	// console.log("making connection between " + exporter.countryName + " and " + importer.countryName + " with code " + type );
 
-	var distanceBetweenCountryCenter = exporter.center.clone().subSelf(importer.center).length();
+	var distanceBetweenCountryCenter = exporter.center.clone().sub(importer.center).length();
 
 	//	how high we want to shoot the curve upwards
 	var anchorHeight = globeRadius + distanceBetweenCountryCenter * 0.3;
@@ -19,13 +19,13 @@ function makeConnectionLineGeometry( exporter, importer, value, type ){
 	var end = importer.center;
 
 	//	midpoint for the curve
-	var mid = start.clone().lerpSelf(end,0.5);
-	var midLength = mid.length()
+	var mid = start.clone().lerp(end,0.5);
+	var midLength = mid.length();
 	mid.normalize();
 	mid.multiplyScalar( midLength + distanceBetweenCountryCenter * 0.4 );
 
 	//	the normal from start to end
-	var normal = (new THREE.Vector3()).sub(start,end);
+	var normal = (new THREE.Vector3()).subVectors(start,end);
 	normal.normalize();
 
 	/*
@@ -43,8 +43,8 @@ function makeConnectionLineGeometry( exporter, importer, value, type ){
 	var distanceHalf = distanceBetweenCountryCenter * 0.5;
 
 	var startAnchor = start;
-	var midStartAnchor = mid.clone().addSelf( normal.clone().multiplyScalar( distanceHalf ) );
-	var midEndAnchor = mid.clone().addSelf( normal.clone().multiplyScalar( -distanceHalf ) );
+	var midStartAnchor = mid.clone().add( normal.clone().multiplyScalar( distanceHalf ) );
+	var midEndAnchor = mid.clone().add( normal.clone().multiplyScalar( -distanceHalf ) );
 	var endAnchor = end;
 
 	//	now make a bezier curve out of the above like so in the diagram

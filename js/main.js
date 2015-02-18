@@ -381,7 +381,7 @@ function animate() {
     requestAnimationFrame( animate );
 
 
-	THREE.SceneUtils.traverseHierarchy( rotating,
+	rotating.traverse(
 		function(mesh) {
 			if( mesh && mesh.update !== undefined) {
 				mesh.update();
