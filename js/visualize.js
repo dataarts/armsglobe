@@ -26,7 +26,7 @@ function buildDataVizGeometries( linearData ){
 	loadLayer.style.display = 'none';
 }
 
-function getVisualizedMesh( linearData, scene ){
+function getVisualizedMesh( linearData ){
 	if( !linearData.lineGeometry ) {
 		return null;
 	}
@@ -151,6 +151,9 @@ function getVisualizedMesh( linearData, scene ){
 					particle.moveIndex = 0;
 					particle.nextIndex = 0;
 					particle.isFinished = true;
+					// Need to clean up after ourselves so we don't leak memory. Note that
+					// scene is a global variable leaked into this scope from main.js
+					scene.remove( splineOutline );
 				}
 			}
 
@@ -191,7 +194,7 @@ function selectVisualization( linearData ){
 	// build the meshes. One for each entry in our data
 	// TODO: ensure this isn't a horrible memory sinkhole
 	for( i in linearData ) {
-		var mesh = getVisualizedMesh( linearData[i], visualizationMesh );
+		var mesh = getVisualizedMesh( linearData[i] );
 		if( mesh !== null ) {
 			visualizationMesh.add( mesh );
 		}
