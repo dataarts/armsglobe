@@ -125,9 +125,9 @@ function initScene() {
 	// outlinedMapTexture.minFilter = THREE.NearestFilter;
 
 	var uniforms = {
-		'mapIndex': { type: 't', value: 0, texture: indexedMapTexture  },
-		'lookup': { type: 't', value: 1, texture: lookupTexture },
-		'outline': { type: 't', value: 2, texture: outlinedMapTexture },
+		'mapIndex': { type: 't', value: indexedMapTexture  },
+		'lookup': { type: 't', value: lookupTexture },
+		'outline': { type: 't', value: outlinedMapTexture },
 		'outlineLevel': {type: 'f', value: 1 },
 	};
 
@@ -139,7 +139,7 @@ function initScene() {
 
   //	-----------------------------------------------------------------------------
   //	Create the backing (sphere)
-	sphere = new THREE.Mesh( new THREE.SphereGeometry( 100, 40, 40 ), new THREE.MeshBasicMaterial({color: 0x00ff00}) );
+	sphere = new THREE.Mesh( new THREE.SphereGeometry( 100, 40, 40 ), shaderMaterial );
 	sphere.doubleSided = false;
 	sphere.rotation.x = Math.PI;
 	sphere.rotation.y = -Math.PI/2;
