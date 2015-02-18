@@ -52,7 +52,7 @@ $(function() {
 									function(){
 										initScene();
 										animate();
-										//startDataPump();
+										startDataPump();
 									}
 								);
 							}

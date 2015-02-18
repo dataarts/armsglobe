@@ -89,7 +89,7 @@ function getVisualizedMesh( linearData ){
 	uniforms = {
 		amplitude: { type: "f", value: 1.0 },
 		color:     { type: "c", value: new THREE.Color( 0xffffff ) },
-		texture:   { type: "t", value: 0, texture: THREE.ImageUtils.loadTexture( "images/particleA.png" ) },
+		texture:   { type: "t", value: THREE.ImageUtils.loadTexture( "images/particleA.png" ) },
 	};
 
 	var shaderMaterial = new THREE.ShaderMaterial( {
