@@ -26,37 +26,35 @@ function buildDataVizGeometries( linearData ){
 	loadLayer.style.display = 'none';
 }
 
+var _meshPool = [];
+var MESH_POOL_SIZE = 100;
+
+function _getMeshFromPool( callback ) {
+	if( _meshPool.length > 0 ) {
+		callback( _meshPool.pop() );
+	} else {
+		window.setTimeout( _getMeshFromPool, 500, callback );
+	}
+}
+
+function _returnMeshToPool( mesh ) {
+	_meshPool.push( mesh );
+}
+
+/*
+ * TODO: This method should reuse a pool of meshes, rather than allocating new
+ *       ones for every invocation.
+ */
 function getVisualizedMesh( linearData ){
 	if( !linearData.lineGeometry ) {
 		return null;
 	}
 
-	var linesGeo = new THREE.Geometry();
-	var lineColors = [];
-
-	var particlesGeo = new THREE.Geometry();
-	var particleColors = [];
-
-	var lineColor = new THREE.Color(importColor);//thisLineIsExport ? new THREE.Color(exportColor) : new THREE.Color(importColor);
-
-	var lastColor;
-
-	//	grab the colors from the vertices
-	for( var s in linearData.lineGeometry.vertices ){
-		var v = linearData.lineGeometry.vertices[s];
-		lineColors.push(lineColor);
-		lastColor = lineColor;
-	}
+	var meshObj = new ParticleMesh();
 
 	//	merge it all together
-	linesGeo.merge( linearData.lineGeometry );
-
-	var particleColor = lastColor.clone();
+	meshObj.linesGeo.merge( linearData.lineGeometry );
 	var points = linearData.lineGeometry.vertices;
-	var particleCount = 1;
-	particleCount = constrain(particleCount,1,100);
-	var particleSize = linearData.lineGeometry.size;
-
 	var point = points[0];
 	var particle = point.clone();
 	particle.moveIndex = 0;
@@ -64,38 +62,70 @@ function getVisualizedMesh( linearData ){
 	particle.lerpN = 0;
 	particle.isFinished = false;
 	particle.path = points;
-	particlesGeo.vertices.push( particle );
-	particle.size = particleSize;
-	particleColors.push( particleColor );
+	particle.size = meshObj.particleSize;
+	meshObj.particlesGeo.vertices.push( particle );
 
-	linesGeo.colors = lineColors;
+	return meshObj.splineOutline;
+}
 
-	//	make a final mesh out of this composite
-	var splineOutline = new THREE.Line( linesGeo, new THREE.LineBasicMaterial(
-		{ 	color: 0xffffff, opacity: 0.0, blending:
-			THREE.AdditiveBlending, transparent:true,
-			depthWrite: false, vertexColors: false,
-			linewidth: 1 } )
-	);
+function selectVisualization( linearData ){
+	//	clear off the country's internally held color data we used from last highlight
+	for( var i in countryData ){
+		var country = countryData[i];
+		country.exportedAmount = 0;
+		country.importedAmount = 0;
+		country.mapColor = 0;
+	}
 
-	splineOutline.renderDepth = false;
+  /* Removing markers for now until I decide how to use them */
+	//	clear markers
+	// for( var i in selectableCountries ){
+	// 	removeMarkerFromCountry( selectableCountries[i] );
+	// }
 
+	// build the meshes. One for each entry in our data
+	for( i in linearData ) {
+		var mesh = getVisualizedMesh( linearData[i] );
+		if( mesh !== null ) {
+			visualizationMesh.add( mesh );
+		}
+	}
 
-	attributes = {
-		size: {	type: 'f', value: [] },
-		customColor: { type: 'c', value: [] }
-	};
+  /* Removing markers for now until I decide how to use them */
+	// for( var i in mesh.affectedCountries ){
+	// 	var countryName = mesh.affectedCountries[i];
+	// 	var country = countryData[countryName];
+	// 	attachMarkerToCountry( countryName, country.mapColor );
+	// }
+}
 
-	uniforms = {
-		amplitude: { type: "f", value: 1.0 },
-		color:     { type: "c", value: new THREE.Color( 0xffffff ) },
-		texture:   { type: "t", value: THREE.ImageUtils.loadTexture( "images/particleA.png" ) },
-	};
+function ParticleMesh() {
+	this.linesGeo = new THREE.Geometry();
+	this.particlesGeo = new THREE.Geometry();
+	this.particleColor = new THREE.Color( 0x154492 );
+	this.particleSize = 50;
 
-	var shaderMaterial = new THREE.ShaderMaterial( {
+	this.lineMat = new THREE.LineBasicMaterial({
+		color: 0xffffff,
+		opacity: 0.0,
+		blending: THREE.AdditiveBlending,
+		transparent: true,
+		depthWrite: false,
+		vertexColors: false,
+		linewidth: 1
+	});
+	this.splineOutline = new THREE.Line( null, this.lineMat );
 
-		uniforms: 		uniforms,
-		attributes:     attributes,
+	this.shaderMaterial = new THREE.ShaderMaterial({
+		uniforms: 		{
+			amplitude: { type: "f", value: 1.0 },
+			color:     { type: "c", value: new THREE.Color( 0xffffff ) },
+			texture:   { type: "t", value: THREE.ImageUtils.loadTexture( "images/particleA.png" ) },
+		},
+		attributes:     {
+			size: {	type: 'f', value: [ this.particleSize ] },
+			customColor: { type: 'c', value: [ this.particleColor ] }
+		},
 		vertexShader:   document.getElementById( 'vertexshader' ).textContent,
 		fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
 
@@ -103,25 +133,15 @@ function getVisualizedMesh( linearData ){
 		depthTest: 		true,
 		depthWrite: 	false,
 		transparent:	true,
-		// sizeAttenuation: true,
 	});
+	this.pSystem = new THREE.PointCloud( null, this.shaderMaterial );
 
-	particlesGeo.colors = particleColors;
-	var pSystem = new THREE.PointCloud( particlesGeo, shaderMaterial );
-	pSystem.dynamic = true;
-	splineOutline.add( pSystem );
-
-	var vertices = pSystem.geometry.vertices;
-	var values_size = attributes.size.value;
-	var values_color = attributes.customColor.value;
-
-	for( var x = 0; x < vertices.length; x++ ) {
-		values_size[ x ] = pSystem.geometry.vertices[x].size;
-		values_color[ x ] = particleColors[x];
-	}
-
-	pSystem.update = function(){
-		// var time = Date.now()
+	this.splineOutline.renderDepth = false;
+	this.pSystem.dynamic = true;
+	this.splineOutline.add( this.pSystem );
+	this.splineOutline.geometry = this.linesGeo;
+	this.pSystem.geometry = this.particlesGeo;
+	this.pSystem.update = function(){
 		var finishedCtr = 0;
 		for( var i in this.geometry.vertices ){
 			var particle = this.geometry.vertices[i];
@@ -146,14 +166,18 @@ function getVisualizedMesh( linearData ){
 					particle.isFinished = true;
 					// Need to clean up after ourselves so we don't leak memory. Note that
 					// scene is a global variable leaked into this scope from main.js
-					scene.remove( splineOutline );
+					// See http://stackoverflow.com/questions/12945092/memory-leak-with-three-js-and-many-shapes?rq=1
+					// for details
+					// scene.remove( splineOutline );
+					//splineOutline.dispose();
+					// particlesGeo.dispose();
+					//shaderMaterial.dispose();
 				}
 			}
 
 			if( !particle.isFinished ) {
 				var currentPoint = path[particle.moveIndex];
 				var nextPoint = path[particle.nextIndex];
-
 
 				particle.copy( currentPoint );
 				particle.lerp( nextPoint, particle.lerpN );
@@ -165,38 +189,4 @@ function getVisualizedMesh( linearData ){
 			this.geometry.verticesNeedUpdate = true;
 		}
 	};
-
-	return splineOutline;
-}
-
-function selectVisualization( linearData ){
-	//	clear off the country's internally held color data we used from last highlight
-	for( var i in countryData ){
-		var country = countryData[i];
-		country.exportedAmount = 0;
-		country.importedAmount = 0;
-		country.mapColor = 0;
-	}
-
-  /* Removing markers for now until I decide how to use them */
-	//	clear markers
-	// for( var i in selectableCountries ){
-	// 	removeMarkerFromCountry( selectableCountries[i] );
-	// }
-
-	// build the meshes. One for each entry in our data
-	// TODO: ensure this isn't a horrible memory sinkhole
-	for( i in linearData ) {
-		var mesh = getVisualizedMesh( linearData[i] );
-		if( mesh !== null ) {
-			visualizationMesh.add( mesh );
-		}
-	}
-
-  /* Removing markers for now until I decide how to use them */
-	// for( var i in mesh.affectedCountries ){
-	// 	var countryName = mesh.affectedCountries[i];
-	// 	var country = countryData[countryName];
-	// 	attachMarkerToCountry( countryName, country.mapColor );
-	// }
 }

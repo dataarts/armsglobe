@@ -25,9 +25,6 @@ var countryData = {};
 //	contains a list of country code to country name for running lookups
 var countryLookup;
 
-var exportColor = 0xdd380c;
-var importColor = 0x154492;
-
 //	TODO
 //	use underscore and ".after" to load these in order
 //	don't look at me I'm ugly
