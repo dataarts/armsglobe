@@ -132,19 +132,14 @@ function initScene() {
 	};
 
 	var shaderMaterial = new THREE.ShaderMaterial( {
-
 		uniforms: 		uniforms,
-		// attributes:     attributes,
 		vertexShader:   document.getElementById( 'globeVertexShader' ).textContent,
-		fragmentShader: document.getElementById( 'globeFragmentShader' ).textContent,
-		// sizeAttenuation: true,
+		fragmentShader: document.getElementById( 'globeFragmentShader' ).textContent
 	});
 
   //	-----------------------------------------------------------------------------
   //	Create the backing (sphere)
-	sphere = new THREE.Mesh( new THREE.SphereGeometry( 100, 40, 40 ), shaderMaterial );
-	// sphere.receiveShadow = true;
-	// sphere.castShadow = true;
+	sphere = new THREE.Mesh( new THREE.SphereGeometry( 100, 40, 40 ), new THREE.MeshBasicMaterial({color: 0x00ff00}) );
 	sphere.doubleSided = false;
 	sphere.rotation.x = Math.PI;
 	sphere.rotation.y = -Math.PI/2;
@@ -152,20 +147,14 @@ function initScene() {
 	sphere.id = "base";
 	rotating.add( sphere );
 
-	// load geo data (country lat lons in this case)
-	// console.time('loadGeoData');
 	loadGeoData( latlonData );
-	// console.timeEnd('loadGeoData');
-
-	// console.time('buildDataVizGeometries');
 	buildDataVizGeometries(sampleData);
-	// console.timeEnd('buildDataVizGeometries');
 
 	visualizationMesh = new THREE.Object3D();
 	rotating.add(visualizationMesh);
 
-    //	-----------------------------------------------------------------------------
-    //	Setup our renderer
+  //	-----------------------------------------------------------------------------
+  //	Setup our renderer
 	renderer = new THREE.WebGLRenderer({antialias:false, alpha: true});
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	renderer.autoClear = false;
@@ -176,13 +165,11 @@ function initScene() {
 	glContainer.appendChild( renderer.domElement );
 
 
-    //	-----------------------------------------------------------------------------
-    //	Event listeners
+  //	-----------------------------------------------------------------------------
+  //	Event listeners
 	document.addEventListener( 'mousemove', onDocumentMouseMove, true );
 	document.addEventListener( 'windowResize', onDocumentResize, false );
 
-	//masterContainer.addEventListener( 'mousedown', onDocumentMouseDown, true );
-	//masterContainer.addEventListener( 'mouseup', onDocumentMouseUp, false );
 	document.addEventListener( 'mousedown', onDocumentMouseDown, true );
 	document.addEventListener( 'mouseup', onDocumentMouseUp, false );
 
@@ -202,7 +189,6 @@ function initScene() {
   camera = new THREE.PerspectiveCamera( 12, window.innerWidth / window.innerHeight, 1, 20000 );
 	camera.position.z = 1400;
 	camera.position.y = 0;
-	camera.lookAt(scene.width/2, scene.height/2);
 	scene.add( camera );
 
 	var windowResize = THREEx.WindowResize(renderer, camera);
