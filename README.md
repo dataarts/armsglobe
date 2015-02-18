@@ -5,7 +5,7 @@ This fork attempts to make the globe data-agnostic so that users can simply prov
 
 ## TODOs
 
-* Get rid of the memory leak caused by adding new visualized meshes constantly without ever deleting them
+* ~~Get rid of the memory leak caused by adding new visualized meshes constantly without ever deleting them~~
 * Highlight the destination country when the particle "hits" it
 * Allow particle colour to be set via the data
 * Clean up sample data to remove unneeded fields

@@ -45,6 +45,11 @@ function _returnMeshToPool( mesh ) {
 	// clean up the two geometries
 	mesh.linesGeo.vertices = [];
 	mesh.particlesGeo.vertices = [];
+	mesh.pSystem.systemComplete = false;
+
+	// have to remove from the scene or else bad things happen. 'scene' is leaked
+	// into this scope from main.js
+	scene.remove( mesh.splineOutline );
 
 	_meshPool.push( mesh );
 }
@@ -63,7 +68,6 @@ function getVisualizedMesh( linearData, callback ){
 		particle.moveIndex = 0;
 		particle.nextIndex = 1;
 		particle.lerpN = 0;
-		particle.isFinished = false;
 		particle.path = points;
 		particle.size = meshObj.particleSize;
 		meshObj.particlesGeo.vertices.push( particle );
@@ -145,52 +149,53 @@ function ParticleMesh() {
 
 	this.splineOutline.renderDepth = false;
 	this.pSystem.dynamic = true;
+	this.pSystem.systemComplete = false; // So we can know when to re-pool this mesh
 	this.splineOutline.add( this.pSystem );
 	this.splineOutline.geometry = this.linesGeo;
 	this.pSystem.geometry = this.particlesGeo;
+
+	this.pSystem.addEventListener( 'ParticleSystemComplete', _returnMeshToPool.bind( this, this ) );
+
+	/*
+	This update method is what actually gets our points moving across the scene.
+	Once the point has finished its path, this method will emit a "ParticleSystemComplete"
+	event, to allow us to re-pool the mesh.
+	*/
 	this.pSystem.update = function(){
-		var finishedCtr = 0;
-		for( var i in this.geometry.vertices ){
-			var particle = this.geometry.vertices[i];
+		/*
+		Simplified this as our particle geometry will only ever have one point
+		*/
+		var particle = this.geometry.vertices[0];
 
-			// no point doing all the calculations if the particle is already done
-			if( particle.isFinished ) {
-				finishedCtr++;
-				continue;
-			}
+		// no point doing all the calculations if the particle is already done
+		if( this.systemComplete || !particle ) {
+			return;
+		}
 
-			var path = particle.path;
-			var moveLength = path.length;
+		var path = particle.path;
+		var moveLength = path.length;
 
-			particle.lerpN += 0.15;
-			if(particle.lerpN > 1){
-				particle.lerpN = 0;
-				particle.moveIndex = particle.nextIndex;
-				particle.nextIndex++;
-				if( particle.nextIndex >= path.length ){
-					particle.moveIndex = 0;
-					particle.nextIndex = 0;
-					particle.isFinished = true;
-					// Need to clean up after ourselves so we don't leak memory. Note that
-					// scene is a global variable leaked into this scope from main.js
-					scene.remove( splineOutline );
+		particle.lerpN += 0.15;
+		if(particle.lerpN > 1){
+			particle.lerpN = 0;
+			particle.moveIndex = particle.nextIndex;
+			particle.nextIndex++;
+			if( particle.nextIndex >= path.length ){
+				particle.moveIndex = 0;
+				particle.nextIndex = 0;
 
-					// TODO: figure out scope so we can re-add to the pool
-				}
-			}
-
-			if( !particle.isFinished ) {
-				var currentPoint = path[particle.moveIndex];
-				var nextPoint = path[particle.nextIndex];
-
-				particle.copy( currentPoint );
-				particle.lerp( nextPoint, particle.lerpN );
+				this.systemComplete = true;
+				this.dispatchEvent( { type: 'ParticleSystemComplete' } );
+				return;
 			}
 		}
 
-		// only mark the vertices as dirty if something actually changed
-		if( finishedCtr !== this.geometry.vertices.length ) {
-			this.geometry.verticesNeedUpdate = true;
-		}
+		var currentPoint = path[particle.moveIndex];
+		var nextPoint = path[particle.nextIndex];
+
+		particle.copy( currentPoint );
+		particle.lerp( nextPoint, particle.lerpN );
+
+		this.geometry.verticesNeedUpdate = true;
 	};
 }
