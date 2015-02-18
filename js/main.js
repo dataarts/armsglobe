@@ -143,22 +143,8 @@ function initScene() {
 		// sizeAttenuation: true,
 	});
 
-
-    //	-----------------------------------------------------------------------------
-    //	Create the backing (sphere)
-    // var mapGraphic = new THREE.Texture(worldCanvas);//THREE.ImageUtils.loadTexture("images/map.png");
-    // backTexture =  mapGraphic;
-    // mapGraphic.needsUpdate = true;
-	backMat = new THREE.MeshBasicMaterial(
-		{
-			// color: 		0xffffff,
-			// shininess: 	10,
-// 			specular: 	0x333333,
-			// map: 		mapGraphic,
-			// lightMap: 	mapGraphic
-		}
-	);
-	// backMat.ambient = new THREE.Color(255,255,255);
+  //	-----------------------------------------------------------------------------
+  //	Create the backing (sphere)
 	sphere = new THREE.Mesh( new THREE.SphereGeometry( 100, 40, 40 ), shaderMaterial );
 	// sphere.receiveShadow = true;
 	// sphere.castShadow = true;
@@ -175,7 +161,7 @@ function initScene() {
 	// console.timeEnd('loadGeoData');
 
 	// console.time('buildDataVizGeometries');
-	var vizilines = buildDataVizGeometries(sampleData);
+	buildDataVizGeometries(sampleData);
 	// console.timeEnd('buildDataVizGeometries');
 
 	visualizationMesh = new THREE.Object3D();
@@ -214,9 +200,9 @@ function initScene() {
 
 	document.addEventListener( 'keydown', onKeyDown, false);
 
-    //	-----------------------------------------------------------------------------
-    //	Setup our camera
-    camera = new THREE.PerspectiveCamera( 12, window.innerWidth / window.innerHeight, 1, 20000 );
+  //	-----------------------------------------------------------------------------
+  //	Setup our camera
+  camera = new THREE.PerspectiveCamera( 12, window.innerWidth / window.innerHeight, 1, 20000 );
 	camera.position.z = 1400;
 	camera.position.y = 0;
 	camera.lookAt(scene.width/2, scene.height/2);
@@ -231,28 +217,10 @@ function initScene() {
 
 function animate() {
 
-	//	Disallow roll for now, this is interfering with keyboard input during search
-/*
-	if(keyboard.pressed('o') && keyboard.pressed('shift') == false)
-		camera.rotation.z -= 0.08;
-	if(keyboard.pressed('p') && keyboard.pressed('shift') == false)
-		camera.rotation.z += 0.08;
-*/
-
 	if( rotateTargetX !== undefined && rotateTargetY !== undefined ){
 
 		rotateVX += (rotateTargetX - rotateX) * 0.012;
 		rotateVY += (rotateTargetY - rotateY) * 0.012;
-
-		// var move = new THREE.Vector3( rotateVX, rotateVY, 0 );
-		// var distance = move.length();
-		// if( distance > .01 )
-		// 	distance = .01;
-		// move.normalize();
-		// move.multiplyScalar( distance );
-
-		// rotateVX = move.x;
-		// rotateVy = move.y;
 
 		if( Math.abs(rotateTargetX - rotateX) < 0.1 && Math.abs(rotateTargetY - rotateY) < 0.1 ){
 			rotateTargetX = undefined;
@@ -262,8 +230,6 @@ function animate() {
 
 	rotateX += rotateVX;
 	rotateY += rotateVY;
-
-	//rotateY = wrap( rotateY, -Math.PI, Math.PI );
 
 	rotateVX *= 0.98;
 	rotateVY *= 0.98;
@@ -291,10 +257,9 @@ function animate() {
 	rotating.rotation.x = rotateX;
 	rotating.rotation.y = rotateY;
 
-    render();
+  render();
 
-    requestAnimationFrame( animate );
-
+  requestAnimationFrame( animate );
 
 	rotating.traverse(
 		function(mesh) {
@@ -309,10 +274,9 @@ function animate() {
 	// 	var marker = markers[i];
 	// 	marker.update();
 	// }
-
 }
 
 function render() {
 	renderer.clear();
-    renderer.render( scene, camera );
+  renderer.render( scene, camera );
 }
