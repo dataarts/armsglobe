@@ -48,6 +48,7 @@ $(function() {
 								loadContentData(
 									function(){
 										initScene();
+										initMeshPool( 100 ); // defined in visualize.js
 										animate();
 										startDataPump();
 									}
@@ -71,7 +72,7 @@ function startDataPump() {
 		}
 		selectVisualization( sampleData.slice( currIndexIntoData, endIndex ) );
 		currIndexIntoData = (currIndexIntoData + 5) % sampleData.length;
-	}, 2500 );
+	}, 500 );
 }
 
 //	-----------------------------------------------------------------------------

@@ -27,7 +27,11 @@ function buildDataVizGeometries( linearData ){
 }
 
 var _meshPool = [];
-var MESH_POOL_SIZE = 100;
+function initMeshPool( poolSize ) {
+	for( var i = 0; i < poolSize; i++ ) {
+		_meshPool.push( new ParticleMesh() );
+	}
+}
 
 function _getMeshFromPool( callback ) {
 	if( _meshPool.length > 0 ) {
@@ -38,34 +42,34 @@ function _getMeshFromPool( callback ) {
 }
 
 function _returnMeshToPool( mesh ) {
+	// clean up the two geometries
+	mesh.linesGeo.vertices = [];
+	mesh.particlesGeo.vertices = [];
+
 	_meshPool.push( mesh );
 }
 
-/*
- * TODO: This method should reuse a pool of meshes, rather than allocating new
- *       ones for every invocation.
- */
-function getVisualizedMesh( linearData ){
+function getVisualizedMesh( linearData, callback ){
 	if( !linearData.lineGeometry ) {
 		return null;
 	}
 
-	var meshObj = new ParticleMesh();
+	_getMeshFromPool( function( meshObj ) {
+		//	merge it all together
+		meshObj.linesGeo.merge( linearData.lineGeometry );
+		var points = linearData.lineGeometry.vertices;
+		var point = points[0];
+		var particle = point.clone();
+		particle.moveIndex = 0;
+		particle.nextIndex = 1;
+		particle.lerpN = 0;
+		particle.isFinished = false;
+		particle.path = points;
+		particle.size = meshObj.particleSize;
+		meshObj.particlesGeo.vertices.push( particle );
 
-	//	merge it all together
-	meshObj.linesGeo.merge( linearData.lineGeometry );
-	var points = linearData.lineGeometry.vertices;
-	var point = points[0];
-	var particle = point.clone();
-	particle.moveIndex = 0;
-	particle.nextIndex = 1;
-	particle.lerpN = 0;
-	particle.isFinished = false;
-	particle.path = points;
-	particle.size = meshObj.particleSize;
-	meshObj.particlesGeo.vertices.push( particle );
-
-	return meshObj.splineOutline;
+		return callback( meshObj.splineOutline );
+	});
 }
 
 function selectVisualization( linearData ){
@@ -85,10 +89,7 @@ function selectVisualization( linearData ){
 
 	// build the meshes. One for each entry in our data
 	for( i in linearData ) {
-		var mesh = getVisualizedMesh( linearData[i] );
-		if( mesh !== null ) {
-			visualizationMesh.add( mesh );
-		}
+		getVisualizedMesh( linearData[i], _addMeshToViz );
 	}
 
   /* Removing markers for now until I decide how to use them */
@@ -97,6 +98,12 @@ function selectVisualization( linearData ){
 	// 	var country = countryData[countryName];
 	// 	attachMarkerToCountry( countryName, country.mapColor );
 	// }
+}
+
+function _addMeshToViz( mesh ) {
+	if( mesh !== null ) {
+		visualizationMesh.add( mesh );
+	}
 }
 
 function ParticleMesh() {
@@ -166,12 +173,9 @@ function ParticleMesh() {
 					particle.isFinished = true;
 					// Need to clean up after ourselves so we don't leak memory. Note that
 					// scene is a global variable leaked into this scope from main.js
-					// See http://stackoverflow.com/questions/12945092/memory-leak-with-three-js-and-many-shapes?rq=1
-					// for details
-					// scene.remove( splineOutline );
-					//splineOutline.dispose();
-					// particlesGeo.dispose();
-					//shaderMaterial.dispose();
+					scene.remove( splineOutline );
+
+					// TODO: figure out scope so we can re-add to the pool
 				}
 			}
 
