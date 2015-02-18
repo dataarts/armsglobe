@@ -6,8 +6,3 @@ var controllers = {
 	spin: 			0,
 	transitionTime: 2000,
 };
-
-function buildGUI(){
-	var selection = new Selection();
-	selectionData = selection;
-}

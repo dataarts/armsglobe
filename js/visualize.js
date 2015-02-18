@@ -106,13 +106,6 @@ function getVisualizedMesh( linearData ){
 		// sizeAttenuation: true,
 	});
 
-
-
-	var particleGraphic = THREE.ImageUtils.loadTexture("images/map_mask.png");
-	var particleMat = new THREE.PointCloudMaterial( { map: particleGraphic, color: 0xffffff, size: 60,
-														blending: THREE.NormalBlending, transparent:true,
-														depthWrite: false, vertexColors: true,
-														sizeAttenuation: true } );
 	particlesGeo.colors = particleColors;
 	var pSystem = new THREE.PointCloud( particlesGeo, shaderMaterial );
 	pSystem.dynamic = true;
