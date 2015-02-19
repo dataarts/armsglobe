@@ -6,8 +6,8 @@ function buildDataVizGeometries( linearData ){
 	for( var i in linearData ){
 		var set = linearData[i];
 
-		var exporterName = set.e.toUpperCase();
-		var importerName = set.i.toUpperCase();
+		var exporterName = set.src.toUpperCase();
+		var importerName = set.dest.toUpperCase();
 
 		exporter = countryData[exporterName];
 		importer = countryData[importerName];
