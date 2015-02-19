@@ -2,6 +2,17 @@ var masterContainer = document.getElementById('visualization');
 var overlay = document.getElementById('visualization');
 var glContainer = document.getElementById( 'glContainer' );
 
+/*
+Colour Constants
+*/
+COLOUR_MAP = {
+	r: new THREE.Color( 0xFF1E00 ),
+	o: new THREE.Color( 0xFF7F00 ),
+	b: new THREE.Color( 0x008EAF ),
+	g: new THREE.Color( 0x00CA35 ),
+	p: new THREE.Color( 0xDC0068 )
+};
+
 //	contains a list of country codes with their matching country names
 var isoFile = 'country_iso3166.json';
 var latlonFile = 'country_lat_lon.json';

@@ -72,6 +72,9 @@ function getVisualizedMesh( linearData, callback ){
 		particle.size = meshObj.particleSize;
 		meshObj.particlesGeo.vertices.push( particle );
 
+		// set the colour
+		meshObj.setParticleColour( linearData.colour );
+
 		return callback( meshObj.splineOutline );
 	});
 }
@@ -113,7 +116,7 @@ function _addMeshToViz( mesh ) {
 function ParticleMesh() {
 	this.linesGeo = new THREE.Geometry();
 	this.particlesGeo = new THREE.Geometry();
-	this.particleColor = new THREE.Color( 0x154492 );
+	this.particleColor = COLOUR_MAP.r;
 	this.particleSize = 50;
 
 	this.lineMat = new THREE.LineBasicMaterial({
@@ -199,3 +202,13 @@ function ParticleMesh() {
 		this.geometry.verticesNeedUpdate = true;
 	};
 }
+
+ParticleMesh.prototype.setParticleColour = function( colourStr ) {
+	var colour = COLOUR_MAP[colourStr];
+	if( !colour ) {
+		colour = COLOUR_MAP.r;
+	}
+
+	this.particleColor = colour;
+	this.shaderMaterial.attributes.customColor.value = [ colour ];
+};
