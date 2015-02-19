@@ -140,11 +140,11 @@ function initScene() {
 		'outlineLevel': {type: 'f', value: 1 },
 	};
 
-	var shaderMaterial = new THREE.ShaderMaterial( {
+	var shaderMaterial = new THREE.MeshLambertMaterial( { map: outlinedMapTexture } );/*new THREE.ShaderMaterial( {
 		uniforms: 		uniforms,
 		vertexShader:   document.getElementById( 'globeVertexShader' ).textContent,
 		fragmentShader: document.getElementById( 'globeFragmentShader' ).textContent
-	});
+	});*/
 
   //	-----------------------------------------------------------------------------
   //	Create the backing (sphere)
