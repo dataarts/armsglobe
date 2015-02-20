@@ -131,7 +131,7 @@ function ParticleMesh() {
 	this.splineOutline = new THREE.Line( null, this.lineMat );
 
 	this.shaderMaterial = new THREE.PointCloudMaterial({
-		map: 					THREE.ImageUtils.loadTexture( "images/particleA.png" ),
+		map: 					THREE.ImageUtils.loadTexture( "images/particleB.png" ),
 		size: 				this.particleSize,
 		blending: 		THREE.AdditiveBlending,
 		depthTest: 		true,
