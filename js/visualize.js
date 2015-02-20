@@ -117,7 +117,7 @@ function ParticleMesh() {
 	this.linesGeo = new THREE.Geometry();
 	this.particlesGeo = new THREE.Geometry();
 	this.particleColor = COLOUR_MAP.r;
-	this.particleSize = 50;
+	this.particleSize = 150;
 
 	this.lineMat = new THREE.LineBasicMaterial({
 		color: 0xffffff,
@@ -130,23 +130,14 @@ function ParticleMesh() {
 	});
 	this.splineOutline = new THREE.Line( null, this.lineMat );
 
-	this.shaderMaterial = new THREE.ShaderMaterial({
-		uniforms: 		{
-			amplitude: { type: "f", value: 1.0 },
-			color:     { type: "c", value: new THREE.Color( 0xffffff ) },
-			texture:   { type: "t", value: THREE.ImageUtils.loadTexture( "images/particleA.png" ) },
-		},
-		attributes:     {
-			size: {	type: 'f', value: [ this.particleSize ] },
-			customColor: { type: 'c', value: [ this.particleColor ] }
-		},
-		vertexShader:   document.getElementById( 'vertexshader' ).textContent,
-		fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
-
+	this.shaderMaterial = new THREE.PointCloudMaterial({
+		map: 					THREE.ImageUtils.loadTexture( "images/particleA.png" ),
+		size: 				this.particleSize,
 		blending: 		THREE.AdditiveBlending,
 		depthTest: 		true,
 		depthWrite: 	false,
 		transparent:	true,
+		color: 				this.particleColor
 	});
 	this.pSystem = new THREE.PointCloud( null, this.shaderMaterial );
 
@@ -210,5 +201,5 @@ ParticleMesh.prototype.setParticleColour = function( colourStr ) {
 	}
 
 	this.particleColor = colour;
-	this.shaderMaterial.attributes.customColor.value = [ colour ];
+	this.shaderMaterial.color = colour;
 };
