@@ -77,7 +77,7 @@ li { list-style-type:none; }
 }
 
 #dataviz {
-	background-color: 	#000000;
+	background-color: 	#111;
 	margin: 			0px;
 	overflow-y: 		hidden;
 	overflow-x:         auto;
@@ -184,7 +184,6 @@ Elements to control the title and country selector
     top: 					20px;
     color: 					#fff;
     font-family: 			'RopaSans';
-    display:                none;
     background: rgba(0,0,0,0.4);
 }
 #hudHeader h1 {
