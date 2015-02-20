@@ -101,7 +101,7 @@ function initScene() {
 	light1.position.z = 626;
 	light1.castShadow = true;
 	scene.add( light1 );
-  
+
   var light3 = new THREE.SpotLight( 0xeeeeee, 1.5 );
 	light3.position.x = -730;
 	light3.position.y = 520;
@@ -248,8 +248,6 @@ function animate() {
 		rotateX = rotateXMax;
 		rotateVX *= -0.95;
 	}
-
-	TWEEN.update();
 
 	rotating.rotation.x = rotateX;
 	rotating.rotation.y = rotateY;
