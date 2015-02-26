@@ -15,13 +15,12 @@ And everything will be built for you.
 
 ## Running
 
-To run this application, ensure Node.js has been installed along with all the dataglobe dependencies (see "Building"). Once the application has been built, run :
+To run this application, ensure Node.js has been installed along with all the dataglobe dependencies (see "Building"). Once the application has been built, run:
 
 ```
 $ node app.js
 ```
-
-Alternatively, you can run
+And it will start a development server for you to view your work. In addition, you can also run
 
 ```
 $ grunt watch
