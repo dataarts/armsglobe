@@ -10,6 +10,10 @@ This fork attempts to make the globe data-agnostic so that users can simply prov
 * ~~Allow particle colour to be set via the data~~
 * ~~Clean up sample data to remove unneeded fields~~
 * Allow source/destination data to be specified as lat/long, rather than country names
+* Refactor JS to allow better modularization with something like RequireJS, Browserify, etc.
+* Introduce Grunt or Gulp for bundling, uglifying, etc.
+  * Idea would be bundle/browserify my JS > bundle with thirdparty > minify and uglify
+* Look at re-writing modules using CoffeeScript (would need to be incorporated into the build workflow)
 
 ## Notes
 
