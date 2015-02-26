@@ -3,6 +3,31 @@ A more generic version of https://github.com/dataarts/armsglobe for visualizing 
 
 This fork attempts to make the globe data-agnostic so that users can simply provide source/destination data and have it graphed. If timestamp information is provided, this globe can act as a semi-real-time visualization.
 
+## Building
+
+To build this application you'll need an up-to-date copy of [Node.js](http://nodejs.org/), [Grunt CLI](http://gruntjs.com/), and [CoffeeScript](http://coffeescript.org/). Once all these are installed, simply run the following from within the `dataglobe` directory:
+
+```
+$ npm install
+$ grunt
+```
+And everything will be built for you.
+
+## Running
+
+To run this application, ensure Node.js has been installed along with all the dataglobe dependencies (see "Building"). Once the application has been built, run :
+
+```
+$ node app.js
+```
+
+Alternatively, you can run
+
+```
+$ grunt watch
+```
+To have it watch for changes and automatically rebuild.
+
 ## TODOs
 
 * ~~Get rid of the memory leak caused by adding new visualized meshes constantly without ever deleting them~~

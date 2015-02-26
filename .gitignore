@@ -1,8 +1,10 @@
 .DS_Store
 app.yaml
 client
+coffeelint.json
 
 hostery-files
 .hostery-config
 
 node_modules/
+build/
