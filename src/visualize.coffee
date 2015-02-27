@@ -1,3 +1,6 @@
+constants = require './constants'
+vizLines = require './visualize_lines'
+
 _meshPool = []
 
 module.exports =
@@ -17,7 +20,7 @@ module.exports =
         continue
 
       # visualize this event
-      set.lineGeometry = makeConnectionLineGeometry exporter, importer, set.v, set.wc
+      set.lineGeometry = vizLines.makeConnectionLineGeometry exporter, importer, set.v, set.wc
 
     loadLayer.style.display = 'none'
     return
@@ -47,15 +50,9 @@ module.exports =
       return callback meshObj.splineOutline
 
   selectVisualization: ( linearData ) ->
-    # clear off the country's internally held color data we used from last highlight
-    for country in countryData
-      country.exportedAmount = 0
-      country.importedAmount = 0
-      country.mapColor = 0
-
     # build the meshes. One for each entry in our data
     for data in linearData
-      getVisualizedMesh data, _addMeshToViz
+      this.getVisualizedMesh data, _addMeshToViz
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # HELPER METHODS
@@ -70,7 +67,7 @@ _getMeshFromPool = ( callback ) ->
   else
     window.setTimeout _getMeshFromPool, 500, callback
 
-_returnMeshToPool: ( mesh ) ->
+_returnMeshToPool = ( mesh ) ->
   # clean up the two geometries
   mesh.linesGeo.vertices = []
   mesh.particlesGeo.vertices = []
@@ -86,7 +83,7 @@ class ParticleMesh
   constructor: ->
     this.linesGeo = new THREE.Geometry()
     this.particlesGeo = new THREE.Geometry()
-    this.particleColor = COLOUR_MAP.r
+    this.particleColor = constants.COLOUR_MAP.r
     this.particleSize = 150
 
     this.lineMat = new THREE.LineBasicMaterial
@@ -153,8 +150,8 @@ class ParticleMesh
       this.geometry.verticesNeedUpdate = true
 
   setParticleColour: ( colourStr ) ->
-    colour = COLOUR_MAP[colourStr]
-    colour = COLOUR_MAP.r if not colour
+    colour = constants.COLOUR_MAP[colourStr]
+    colour = constants.COLOUR_MAP.r if not colour
 
     this.particleColor = colour
     this.shaderMaterial.color = colour

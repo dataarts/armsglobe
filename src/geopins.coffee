@@ -1,5 +1,6 @@
 module.exports =
   loadGeoData: ( latlonData, countryLookup ) ->
+    countryData = {}
     for country, index in latlonData.countries
       # save out country name and code info
       country.countryCode = index
@@ -10,6 +11,8 @@ module.exports =
 
       country.center = center
       countryData[country.countryName] = country
+
+    return countryData
 
   # Convert arbitrary lat/lon to a vector within the globe's space
   convertLatLonToVector: ( lat, lon ) ->

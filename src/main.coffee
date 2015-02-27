@@ -1,22 +1,29 @@
 # All our dependencies
-dataLoading = require 'dataloading'
-mouseKeyboard = require 'mousekeyboard'
+dataLoading = require './dataloading'
+mouseKeyboard = require './mousekeyboard'
+visualize = require './visualize'
+geopins = require './geopins'
 
 masterContainer = document.getElementById 'visualization'
 overlay = document.getElementById 'visualization'
 glContainer = document.getElementById 'glContainer'
 
-# Colour Constants
-COLOUR_MAP =
-  r: new THREE.Color 0xFF1E00
-  o: new THREE.Color 0xFF7F00
-  b: new THREE.Color 0x008EAF
-  g: new THREE.Color 0x00CA35
-  p: new THREE.Color 0xDC0068
+# Visualization components that need to be accessible throughout this module
+mapIndexedImage = null
+mapOutlineImage = null
+rotating = null
+renderer = null
+scene = null
+camera = null
 
 # contains a list of country codes with their matching country names
 isoFile = 'country_iso3166.json'
 latlonFile = 'country_lat_lon.json'
+
+# Holds all the data we get back from the server
+_countryLookup = null
+_latLonData = null
+_sampleData = null
 
 # Detect WebGL
 if not Detector.webgl
@@ -25,15 +32,20 @@ else
   # ensure the map images are loaded first!!
   mapIndexedImage = new Image()
   mapIndexedImage.src = 'images/map_indexed.png'
+
   mapIndexedImage.onload = ->
+
     mapOutlineImage = new Image()
     mapOutlineImage.src = 'images/map_outline.png'
     mapOutlineImage.onload = ->
-      dataLoading.loadCountryCodes ->
-        dataLoading.loadWorldPins ->
-          dataLoading.loadContentData ->
+      dataLoading.loadCountryCodes isoFile, ( isoData ) ->
+        _countryLookup = isoData
+        dataLoading.loadWorldPins latlonFile, ( latLonData ) ->
+          _latLonData = latLonData
+          dataLoading.loadContentData ( sampleData ) ->
+            _sampleData = sampleData
             initScene()
-            initMeshPool( 100 ) # defined in visualize.js
+            visualize.initMeshPool( 100 )
             animate()
             startDataPump()
 
@@ -44,11 +56,11 @@ nextIndexIntoData = 5
 startDataPump = ->
   window.setInterval ->
     endIndex = currIndexIntoData + 5
-    if endIndex > sampleData.length
-      endIndex = sampleData.length
+    if endIndex > _sampleData.length
+      endIndex = _sampleData.length
 
-    selectVisualization( sampleData.slice( currIndexIntoData, endIndex ) )
-    currIndexIntoData = (currIndexIntoData + 5) % sampleData.length
+    visualize.selectVisualization( _sampleData.slice( currIndexIntoData, endIndex ) )
+    currIndexIntoData = (currIndexIntoData + 5) % _sampleData.length
   , 500
 
 # All the initialization stuff for THREE.js
@@ -113,8 +125,8 @@ initScene = ->
   sphere.id = "base"
   rotating.add sphere
 
-  loadGeoData latlonData
-  buildDataVizGeometries sampleData
+  countryData = geopins.loadGeoData _latLonData, _countryLookup
+  visualize.buildDataVizGeometries _sampleData, countryData
 
   visualizationMesh = new THREE.Object3D()
   rotating.add visualizationMesh
@@ -129,14 +141,13 @@ initScene = ->
 
   glContainer.appendChild renderer.domElement
 
-
   # Event listeners
-  document.addEventListener 'mousemove', onDocumentMouseMove, true
-  document.addEventListener 'mousedown', onDocumentMouseDown, true
-  document.addEventListener 'mouseup', onDocumentMouseUp, false
+  document.addEventListener 'mousemove', mouseKeyboard.onDocumentMouseMove, true
+  document.addEventListener 'mousedown', mouseKeyboard.onDocumentMouseDown, true
+  document.addEventListener 'mouseup', mouseKeyboard.onDocumentMouseUp, false
 
-  masterContainer.addEventListener 'click', onClick, true
-  masterContainer.addEventListener 'mousewheel', onMouseWheel, false
+  masterContainer.addEventListener 'click', mouseKeyboard.onClick, true
+  masterContainer.addEventListener 'mousewheel', mouseKeyboard.onMouseWheel, false
 
   # firefox
   masterContainer.addEventListener 'DOMMouseScroll', (e) ->
@@ -156,38 +167,10 @@ initScene = ->
   mouseKeyboard.startAutoRotate()
 
 animate = ->
-  if rotateTargetX? and rotateTargetY?
-    rotateVX += (rotateTargetX - rotateX) * 0.012
-    rotateVY += (rotateTargetY - rotateY) * 0.012
+  mouseKeyboard.updateRotation()
 
-    if Math.abs(rotateTargetX - rotateX) < 0.1 && Math.abs(rotateTargetY - rotateY) < 0.1
-      rotateTargetX = undefined
-      rotateTargetY = undefined
-
-  rotateX += rotateVX
-  rotateY += rotateVY
-
-  rotateVX *= 0.98
-  rotateVY *= 0.98
-
-  if dragging or rotateTargetX?
-    rotateVX *= 0.6
-    rotateVY *= 0.6
-
-  rotateY += controllers.spin * 0.01
-
-  # constrain the pivot up/down to the poles
-  # force a bit of bounce back action when hitting the poles
-  if rotateX < -rotateXMax
-    rotateX = -rotateXMax
-    rotateVX *= -0.95
-
-  if rotateX > rotateXMax
-    rotateX = rotateXMax
-    rotateVX *= -0.95
-
-  rotating.rotation.x = rotateX
-  rotating.rotation.y = rotateY
+  rotating.rotation.x = mouseKeyboard.rotateX
+  rotating.rotation.y = mouseKeyboard.rotateY
 
   requestAnimationFrame animate
   renderer.render scene, camera

@@ -16,7 +16,7 @@ _getDataFromServer = ( path, callback ) ->
   xhr.open 'GET', path, true
 
   # What do we do when we have it?
-  xhr.onreadystatechange ->
+  xhr.onreadystatechange = ->
     # If we've received the data
     if xhr.readyState is 4 and xhr.status is 200
       # Parse the JSON

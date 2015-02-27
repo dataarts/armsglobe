@@ -1,6 +1,6 @@
 # Ugly variable declarations
 mouseX = 0; mouseY = 0; pmouseX = 0; pmouseY = 0; pressX = 0; pressY = 0
-dragging = false; rotateX = 0; rotateY = 0; rotateVX = 0; rotateVY = 0
+dragging = false; rotateVX = 0; rotateVY = 0
 rotateTargetX = 0; rotateTargetY = 0
 
 rotateXMax = 90 * Math.PI/180
@@ -9,6 +9,41 @@ _autoRotateId = null
 keyboard = new THREEx.KeyboardState()
 
 module.exports =
+
+  rotateX: 0
+  rotateY: 0
+
+  updateRotation: ->
+    if rotateTargetX? and rotateTargetY?
+      rotateVX += (rotateTargetX - this.rotateX) * 0.012
+      rotateVY += (rotateTargetY - this.rotateY) * 0.012
+
+      if Math.abs(rotateTargetX - this.rotateX) < 0.1 && Math.abs(rotateTargetY - this.rotateY) < 0.1
+        rotateTargetX = undefined
+        rotateTargetY = undefined
+
+    this.rotateX += rotateVX
+    this.rotateY += rotateVY
+
+    rotateVX *= 0.98
+    rotateVY *= 0.98
+
+    if dragging or rotateTargetX?
+      rotateVX *= 0.6
+      rotateVY *= 0.6
+
+    this.rotateY += controllers.spin * 0.01
+
+    # constrain the pivot up/down to the poles
+    # force a bit of bounce back action when hitting the poles
+    if this.rotateX < -rotateXMax
+      this.rotateX = -rotateXMax
+      rotateVX *= -0.95
+
+    if this.rotateX > rotateXMax
+      this.rotateX = rotateXMax
+      rotateVX *= -0.95
+
   onDocumentMouseMove: ( event ) ->
     pmouseX = mouseX
     pmouseY = mouseY
