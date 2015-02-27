@@ -29,15 +29,8 @@ To have it watch for changes and automatically rebuild.
 
 ## TODOs
 
-* ~~Get rid of the memory leak caused by adding new visualized meshes constantly without ever deleting them~~
-* Highlight the destination country when the particle "hits" it
-* ~~Allow particle colour to be set via the data~~
-* ~~Clean up sample data to remove unneeded fields~~
 * Allow source/destination data to be specified as lat/long, rather than country names
-* Refactor JS to allow better modularization with something like RequireJS, Browserify, etc.
-* Introduce Grunt or Gulp for bundling, uglifying, etc.
-  * Idea would be bundle/browserify my JS > bundle with thirdparty > minify and uglify
-* Look at re-writing modules using CoffeeScript (would need to be incorporated into the build workflow)
+* Highlight the destination country when the particle "hits" it
 
 ## Notes
 
