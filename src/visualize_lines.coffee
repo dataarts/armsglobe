@@ -2,7 +2,7 @@ globeRadius = 1000
 vec3_origin = new THREE.Vector3 0, 0, 0
 
 module.exports =
-  makeConnectionLineGeometry: ( exporter, importer, value, type ) ->
+  makeConnectionLineGeometry: ( exporter, importer ) ->
     if not exporter.countryName? or not importer.countryName?
       return undefined
 

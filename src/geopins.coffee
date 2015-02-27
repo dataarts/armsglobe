@@ -1,13 +1,13 @@
 module.exports =
   loadGeoData: ( latlonData, countryLookup ) ->
     countryData = {}
-    for country, index in latlonData.countries
+    for index, country of latlonData.countries
       # save out country name and code info
       country.countryCode = index
       country.countryName = countryLookup[index]
 
       # take the lat lon from the data and convert this to 3d globe space
-      center = convertLatLonToVector country.lat, country.lon
+      center = module.exports.convertLatLonToVector country.lat, country.lon
 
       country.center = center
       countryData[country.countryName] = country

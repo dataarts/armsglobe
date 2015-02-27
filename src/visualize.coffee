@@ -9,7 +9,7 @@ _scene = null
 
 module.exports =
   init: ( scene ) ->
-    _scnene = scene
+    _scene = scene
 
   buildDataVizGeometries: ( linearData, countryData ) ->
     loadLayer = document.getElementById 'loading'
@@ -27,7 +27,7 @@ module.exports =
         continue
 
       # visualize this event
-      set.lineGeometry = vizLines.makeConnectionLineGeometry exporter, importer, set.v, set.wc
+      set.lineGeometry = vizLines.makeConnectionLineGeometry exporter, importer
 
     loadLayer.style.display = 'none'
     return
@@ -59,7 +59,7 @@ module.exports =
   selectVisualization: ( linearData, visualizationMesh ) ->
     # build the meshes. One for each entry in our data
     for data in linearData
-      this.getVisualizedMesh data, _addMeshToViz.bind( this, visualizationMesh )
+      module.exports.getVisualizedMesh data, _addMeshToViz.bind( null, visualizationMesh )
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # HELPER METHODS
@@ -129,7 +129,7 @@ class ParticleMesh
       particle = this.geometry.vertices[0]
 
       # no point doing all the calculations if the particle is already done
-      return if this.systemComplete? or not particle
+      return if this.systemComplete or not particle
 
       path = particle.path
       moveLength = path.length
