@@ -5,16 +5,26 @@ module.exports = ( grunt ) ->
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
 
+    clean:
+      [ 'build/tmp', 'build/*.js' ]
+
     coffee:
-      lib:
-        files:
-          'js/*.js': 'src/**/*.coffee'
+      options:
+        bare: true # we don't want the wrapper function or else bad things
+                   # happen with browserify
+      files:
+        expand: true
+        flatten: true
+        cwd: 'src/'
+        src: ['**/*.coffee']
+        dest: 'build/tmp'
+        ext: '.js'
 
     browserify:
       options:
         debug: true
         destFile: 'build/bundle.js'
-        src: [ 'js/**/*.js' ]
+        src: [ 'build/tmp/*.js' ]
 
       dev:
         src: '<%= browserify.options.src %>'
@@ -45,5 +55,6 @@ module.exports = ( grunt ) ->
   grunt.loadNpmTasks 'grunt-browserify'
   grunt.loadNpmTasks 'grunt-contrib-uglify'
   grunt.loadNpmTasks 'grunt-contrib-watch'
+  grunt.loadNpmTasks 'grunt-contrib-clean'
 
-  grunt.registerTask 'default', [ 'coffee', 'browserify', 'uglify' ]
+  grunt.registerTask 'default', [ 'clean', 'coffee', 'browserify', 'uglify' ]
