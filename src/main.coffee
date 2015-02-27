@@ -15,6 +15,7 @@ rotating = null
 renderer = null
 scene = null
 camera = null
+visualizationMesh = null
 
 # contains a list of country codes with their matching country names
 isoFile = 'country_iso3166.json'
@@ -45,6 +46,7 @@ else
           dataLoading.loadContentData ( sampleData ) ->
             _sampleData = sampleData
             initScene()
+            visualize.init( scene )
             visualize.initMeshPool( 100 )
             animate()
             startDataPump()
@@ -59,7 +61,7 @@ startDataPump = ->
     if endIndex > _sampleData.length
       endIndex = _sampleData.length
 
-    visualize.selectVisualization( _sampleData.slice( currIndexIntoData, endIndex ) )
+    visualize.selectVisualization( _sampleData.slice( currIndexIntoData, endIndex ), visualizationMesh )
     currIndexIntoData = (currIndexIntoData + 5) % _sampleData.length
   , 500
 
@@ -152,7 +154,7 @@ initScene = ->
   # firefox
   masterContainer.addEventListener 'DOMMouseScroll', (e) ->
     evt = window.event or e
-    onMouseWheel evt
+    mouseKeyboard.onMouseWheel evt, camera
   , false
 
   # Setup our camera

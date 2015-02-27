@@ -1,3 +1,5 @@
+vizLines = require './visualize_lines'
+
 # Ugly variable declarations
 mouseX = 0; mouseY = 0; pmouseX = 0; pmouseY = 0; pressX = 0; pressY = 0
 dragging = false; rotateVX = 0; rotateVY = 0
@@ -32,8 +34,6 @@ module.exports =
       rotateVX *= 0.6
       rotateVY *= 0.6
 
-    this.rotateY += controllers.spin * 0.01
-
     # constrain the pivot up/down to the poles
     # force a bit of bounce back action when hitting the poles
     if this.rotateX < -rotateXMax
@@ -52,7 +52,7 @@ module.exports =
     mouseY = event.clientY - window.innerHeight * 0.5
 
     if dragging
-      if keyboard.pressed "shift" is false
+      if keyboard.pressed( "shift" ) is false
         rotateVY += (mouseX - pmouseX) / 2 * Math.PI / 180 * 0.3
         rotateVX += (mouseY - pmouseY) / 2 * Math.PI / 180 * 0.3
       else
@@ -60,7 +60,7 @@ module.exports =
         camera.position.y += (mouseY - pmouseY) * 0.5
 
   onDocumentMouseDown: ( event ) ->
-    if event.target.className.indexOf 'noMapDrag' isnt -1
+    if event.target.className.indexOf( 'noMapDrag' ) isnt -1
       return
 
     dragging = true
@@ -68,22 +68,24 @@ module.exports =
     pressY = mouseY
     rotateTargetX = undefined
     rotateTargetX = undefined
-    stopAutoRotate()
+    module.exports.stopAutoRotate()
+    return
 
   onDocumentMouseUp: ( event ) ->
     dragging = false
     histogramPressed = false
-    startAutoRotate()
+    module.exports.startAutoRotate()
+    return
 
   onClick: ( event ) ->
     if Math.abs(pressX - mouseX) > 3 or Math.abs(pressY - mouseY) > 3
       return
 
-  handleMWheel: ( delta ) ->
+  handleMWheel: ( delta, camera ) ->
     camera.scale.z += delta * 0.1
-    camera.scale.z = constrain camera.scale.z, 0.7, 5.0
+    camera.scale.z = vizLines.constrain camera.scale.z, 0.7, 5.0
 
-  onMouseWheel: ( event ) ->
+  onMouseWheel: ( event, camera ) ->
     delta = 0
 
     if event.wheelDelta
@@ -92,7 +94,7 @@ module.exports =
       delta = -event.detail/3
 
     if delta?
-      handleMWheel delta
+      module.exports.handleMWheel delta, camera
 
     event.returnValue = false
 

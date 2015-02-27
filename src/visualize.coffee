@@ -3,7 +3,14 @@ vizLines = require './visualize_lines'
 
 _meshPool = []
 
+# Local copy of the main scene which we need for memory management.
+# Injected from main.coffee via init()
+_scene = null
+
 module.exports =
+  init: ( scene ) ->
+    _scnene = scene
+
   buildDataVizGeometries: ( linearData, countryData ) ->
     loadLayer = document.getElementById 'loading'
     count = 0
@@ -49,17 +56,17 @@ module.exports =
 
       return callback meshObj.splineOutline
 
-  selectVisualization: ( linearData ) ->
+  selectVisualization: ( linearData, visualizationMesh ) ->
     # build the meshes. One for each entry in our data
     for data in linearData
-      this.getVisualizedMesh data, _addMeshToViz
+      this.getVisualizedMesh data, _addMeshToViz.bind( this, visualizationMesh )
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # HELPER METHODS
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-_addMeshToViz = ( mesh ) ->
-  visualizationMesh.add mesh if mesh?
+_addMeshToViz = ( viz, mesh ) ->
+  viz.add mesh if mesh?
 
 _getMeshFromPool = ( callback ) ->
   if _meshPool.length > 0
@@ -73,9 +80,8 @@ _returnMeshToPool = ( mesh ) ->
   mesh.particlesGeo.vertices = []
   mesh.pSystem.systemComplete = false
 
-  # have to remove from the scene or else bad things happen. 'scene' is leaked
-  # into this scope from main.js
-  scene.remove mesh.splineOutline
+  # have to remove from the scene or else bad things happen
+  _scene.remove mesh.splineOutline
 
   _meshPool.push mesh
 
