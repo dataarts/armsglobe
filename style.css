@@ -60,8 +60,8 @@
 
 /* Main Styles */
 body { color:#000000; font-family:'Roboto'; font-size:14px; height:768px; min-width: 1280px; min-height: 860px; overflow: hidden;}
-a { color:#ffffff; text-decoration:none; text-transform:uppercase; }
-a:hover { color:#8eb423; }
+a { color:#ffffff; text-decoration:none; font-weight: bold }
+a:hover { color:#008EAF; }
 h1 { font-family:'RopaSans'; font-weight:normal; }
 h2 { font-family:'RopaSans'; font-weight:normal; }
 li { list-style-type:none; }
@@ -249,4 +249,13 @@ Elements to control the title and country selector
 }
 .purple-back {
   background-color: #dc0068;
+}
+
+footer {
+  position: absolute;
+  right: 30px;
+  bottom: 20px;
+  color: #fff;
+  font-family: 'RopaSans';
+  padding: 10px;
 }
