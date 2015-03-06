@@ -2,9 +2,10 @@ vizLines = require './visualize_lines'
 
 # Ugly variable declarations
 mouseX = 0; mouseY = 0; pmouseX = 0; pmouseY = 0; pressX = 0; pressY = 0
-dragging = false; rotateVX = 0; rotateVY = 0
+dragging = false; rotateVY = 0
 rotateTargetX = 0; rotateTargetY = 0
 
+rotateVX = 0.35 * Math.PI/180
 rotateXMax = 90 * Math.PI/180
 _autoRotateId = null
 
