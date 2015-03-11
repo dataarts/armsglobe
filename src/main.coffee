@@ -154,25 +154,25 @@ initScene = ->
 
   glContainer.appendChild renderer.domElement
 
-  # Event listeners
-  document.addEventListener 'mousemove', mouseKeyboard.onDocumentMouseMove, true
-  document.addEventListener 'mousedown', mouseKeyboard.onDocumentMouseDown, true
-  document.addEventListener 'mouseup', mouseKeyboard.onDocumentMouseUp, false
-
-  masterContainer.addEventListener 'click', mouseKeyboard.onClick, true
-  masterContainer.addEventListener 'mousewheel', mouseKeyboard.onMouseWheel, false
-
-  # firefox
-  masterContainer.addEventListener 'DOMMouseScroll', (e) ->
-    evt = window.event or e
-    mouseKeyboard.onMouseWheel evt, camera
-  , false
-
   # Setup our camera
   camera = new THREE.PerspectiveCamera( 12, window.innerWidth / window.innerHeight, 1, 20000 )
   camera.position.z = 1400
   camera.position.y = 0
   scene.add camera
+
+  # Event listeners
+  masterContainer.addEventListener 'mousemove', mouseKeyboard.onDocumentMouseMove, true
+  masterContainer.addEventListener 'mousedown', mouseKeyboard.onDocumentMouseDown, true
+  masterContainer.addEventListener 'mouseup', mouseKeyboard.onDocumentMouseUp, false
+
+  masterContainer.addEventListener 'click', mouseKeyboard.onClick, true
+  masterContainer.addEventListener 'mousewheel', mouseKeyboard.onMouseWheel.bind( null, camera ), false
+
+  # firefox
+  masterContainer.addEventListener 'DOMMouseScroll', (e) ->
+    evt = window.event or e
+    mouseKeyboard.onMouseWheel camera, evt
+  , false
 
   windowResize = THREEx.WindowResize renderer, camera
 

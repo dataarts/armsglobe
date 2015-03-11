@@ -86,7 +86,7 @@ module.exports =
     camera.scale.z += delta * 0.1
     camera.scale.z = vizLines.constrain camera.scale.z, 0.7, 5.0
 
-  onMouseWheel: ( event, camera ) ->
+  onMouseWheel: ( camera, event ) ->
     delta = 0
 
     if event.wheelDelta
