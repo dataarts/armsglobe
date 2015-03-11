@@ -58,10 +58,10 @@ module.exports = React.createClass
         @circleStyle.backgroundColor = '#ff7f00'
       when "g"
         itemText = 'Green'
-        @circleStyle.backgroundColor = '#008eaf'
+        @circleStyle.backgroundColor = '#00ca35'
       when "b"
         itemText = 'Blue'
-        @circleStyle.backgroundColor = '#00ca35'
+        @circleStyle.backgroundColor = '#008eaf'
       when "p"
         itemText = 'Purple'
         @circleStyle.backgroundColor = '#dc0068'

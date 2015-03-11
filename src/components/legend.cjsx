@@ -21,13 +21,14 @@ module.exports = React.createClass
   # Final Render
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   render: ->
+    legendItems = @props.types.map ( type )->
+      return (
+        <LegendItem type={type} />
+      )
+
     <div>
       <h2 style={@headerStyle}>Legend</h2>
       <ul style={@listStyle}>
-        <LegendItem type="r"/>
-        <LegendItem type="o"/>
-        <LegendItem type="g"/>
-        <LegendItem type="b"/>
-        <LegendItem type="p"/>
+        {legendItems}
       </ul>
     </div>

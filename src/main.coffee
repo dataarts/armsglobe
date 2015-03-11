@@ -3,6 +3,7 @@ dataLoading = require './dataloading'
 mouseKeyboard = require './mousekeyboard'
 visualize = require './visualize'
 geopins = require './geopins'
+constants = require './constants'
 
 # React components
 Legend = require './components/legend'
@@ -54,7 +55,7 @@ else
 
             # Render our interactive legend
             React.render(
-              React.createElement( Legend, null ),
+              React.createElement( Legend, { types: constants.COLOUR_TYPES } ),
               document.getElementById 'legend'
             )
 

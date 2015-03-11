@@ -6,3 +6,5 @@ module.exports =
     b: new THREE.Color 0x008EAF
     g: new THREE.Color 0x00CA35
     p: new THREE.Color 0xDC0068
+
+  COLOUR_TYPES: [ 'r', 'o','b', 'g', 'p' ]
