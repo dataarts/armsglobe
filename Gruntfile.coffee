@@ -6,7 +6,19 @@ module.exports = ( grunt ) ->
     pkg: grunt.file.readJSON 'package.json'
 
     clean:
-      [ 'build/tmp', 'build/*.js' ]
+      [ 'build/tmp/components', 'build/tmp', 'build/*.js' ]
+
+    cjsx:
+      options:
+        bare: true
+
+      files:
+        expand: true
+        flatten: true
+        cwd: 'src/components/'
+        src: ['*.cjsx']
+        dest: 'build/tmp/components'
+        ext: '.js'
 
     coffee:
       options:
@@ -24,7 +36,7 @@ module.exports = ( grunt ) ->
       options:
         debug: true
         destFile: 'build/bundle.js'
-        src: [ 'build/tmp/*.js' ]
+        src: [ 'build/tmp/**/*.js' ]
 
       dev:
         src: '<%= browserify.options.src %>'
@@ -48,13 +60,15 @@ module.exports = ( grunt ) ->
       files: [
         'Gruntfile.coffee'
         'src/**/*.coffee'
+        'src/**/*.cjsx'
       ]
       tasks: 'default'
 
+  grunt.loadNpmTasks 'grunt-coffee-react'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-browserify'
   grunt.loadNpmTasks 'grunt-contrib-uglify'
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-contrib-clean'
 
-  grunt.registerTask 'default', [ 'clean', 'coffee', 'browserify', 'uglify' ]
+  grunt.registerTask 'default', [ 'clean', 'cjsx', 'coffee', 'browserify', 'uglify' ]

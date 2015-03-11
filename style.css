@@ -208,49 +208,6 @@ Elements to control the title and country selector
   padding: 10px;
 }
 
-#legend h2 {
-  font-size: 18px;
-  margin-top: 0;
-}
-
-#legend ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-#legend li {
-  height: 20px;
-  padding-bottom: 5px;
-  color: #ddd;
-}
-
-.circle {
-  display: inline-block;
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
-  /* This is what lets us get the text centered */
-  margin-top: 3px;
-  margin-bottom: -2px;
-}
-
-.red-back {
-  background-color: #ff1e00;
-}
-.orange-back {
-  background-color: #ff7f00;
-}
-.blue-back {
-  background-color: #008eaf;
-}
-.green-back {
-  background-color: #00ca35;
-}
-.purple-back {
-  background-color: #dc0068;
-}
-
 footer {
   position: absolute;
   right: 30px;

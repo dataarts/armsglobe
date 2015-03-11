@@ -4,6 +4,9 @@ mouseKeyboard = require './mousekeyboard'
 visualize = require './visualize'
 geopins = require './geopins'
 
+# React components
+Legend = require './components/legend'
+
 masterContainer = document.getElementById 'visualization'
 overlay = document.getElementById 'visualization'
 glContainer = document.getElementById 'glContainer'
@@ -48,6 +51,13 @@ else
             initScene()
             visualize.init( scene )
             visualize.initMeshPool( 100 )
+
+            # Render our interactive legend
+            React.render(
+              React.createElement( Legend, null ),
+              document.getElementById 'legend'
+            )
+
             animate()
             startDataPump()
 
