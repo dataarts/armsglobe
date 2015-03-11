@@ -55,7 +55,7 @@ else
 
             # Render our interactive legend
             React.render(
-              React.createElement( Legend, { types: constants.COLOUR_TYPES } ),
+              React.createElement( Legend, { types: constants.COLOUR_TYPES, clickCallback: visualize.toggleVisualizationType } ),
               document.getElementById 'legend'
             )
 

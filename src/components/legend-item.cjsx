@@ -41,7 +41,9 @@ module.exports = React.createClass
     return { active: true }
 
   handleLinkClick: ->
-    @setState { active: !@state.active }
+    newActive = !@state.active
+    @setState { active: newActive }
+    @props.clickCallback( @props.type, newActive )
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Final Render

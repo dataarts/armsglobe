@@ -7,6 +7,11 @@ _meshPool = []
 # Injected from main.coffee via init()
 _scene = null
 
+# Used to keep track of which types we're not currently displaying
+_typeStatus = {}
+for type in constants.COLOUR_TYPES
+  _typeStatus[ type ] = true
+
 module.exports =
   init: ( scene ) ->
     _scene = scene
@@ -37,6 +42,8 @@ module.exports =
 
   getVisualizedMesh: ( linearData, callback ) ->
     return null if not linearData.lineGeometry?
+    # Don't display if we've toggled this type off
+    return null if not _typeStatus[ linearData.colour ]
 
     _getMeshFromPool ( meshObj ) ->
       # merge it all together
@@ -60,6 +67,9 @@ module.exports =
     # build the meshes. One for each entry in our data
     for data in linearData
       module.exports.getVisualizedMesh data, _addMeshToViz.bind( null, visualizationMesh )
+
+  toggleVisualizationType: ( type, active ) ->
+    _typeStatus[ type ] = active
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # HELPER METHODS

@@ -21,9 +21,10 @@ module.exports = React.createClass
   # Final Render
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   render: ->
+    callback = @props.clickCallback
     legendItems = @props.types.map ( type )->
       return (
-        <LegendItem type={type} />
+        <LegendItem type={type} clickCallback={callback}/>
       )
 
     <div>
