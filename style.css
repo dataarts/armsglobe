@@ -91,23 +91,6 @@ li { list-style-type:none; }
 	pointer-events:				none;
 }
 
-.marker {
-	position:				absolute;
-	display:				inline-block;
-	background-color: 		rgba(0,0,0,.87);
-	color:					#ffffff;
-	font-size:				4pt;
-    font-family: 			'RopaSans';
-	-moz-user-select:		-moz-none;
-	-khtml-user-select:		none;
-	-webkit-user-select:	none;
-	margin: 				0px;
-	border:					0px;
-	padding:				10px;
-	overflow: 				hidden;
-	cursor:					pointer;
-}
-
 .country {
 	margin-right:			10px;
 }
