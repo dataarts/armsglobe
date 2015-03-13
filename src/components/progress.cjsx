@@ -5,8 +5,10 @@
 # http://jsfiddle.net/oskar/Aapn8/ and
 # https://github.com/pughpugh/react-countdown-clock
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+tween = require 'react-tween-state'
 
 module.exports = React.createClass
+  mixins: [tween.Mixin]
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Component state definition
@@ -54,6 +56,12 @@ module.exports = React.createClass
   componentDidUpdate: ->
     @_updateProgress()
 
+  handleProgressUpdate: (newVal) ->
+    @tweenState( 'currVal',
+      duration: 500,
+      endValue: newVal
+    )
+
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Behaviours
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -65,7 +73,7 @@ module.exports = React.createClass
 
     # Basic idea: angle has to be between PI * -0.5 (12 o'clock) and PI * 1.5
     # (full circle) - since a circle is 2PI radians
-    endAngle = (2 * @state.currVal) - 0.5
+    endAngle = (2 * @getTweeningValue( 'currVal' )) - 0.5
 
     @_context.beginPath()
     @_context.arc(

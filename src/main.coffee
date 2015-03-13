@@ -72,7 +72,7 @@ startDataPump = ->
       endIndex = _sampleData.length
 
     visualize.selectVisualization( _sampleData.slice( currIndexIntoData, endIndex ), visualizationMesh )
-    progressViz.setState( { currVal: endIndex / _sampleData.length } )
+    progressViz.handleProgressUpdate( endIndex / _sampleData.length )
     currIndexIntoData = (currIndexIntoData + 5) % _sampleData.length
   , 500
 
