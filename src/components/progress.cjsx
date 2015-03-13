@@ -98,4 +98,4 @@ module.exports = React.createClass
   # Final Render
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   render: ->
-    <canvas style={@canvasStyle}></canvas>
+    <canvas style={@canvasStyle} width=50 height=50></canvas>
