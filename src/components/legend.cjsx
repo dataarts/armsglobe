@@ -22,14 +22,12 @@ module.exports = React.createClass
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   render: ->
     callback = @props.clickCallback
-    legendItems = @props.types.map ( type )->
-      return (
-        <LegendItem type={type} clickCallback={callback}/>
-      )
 
     <div>
       <h2 style={@headerStyle}>Legend</h2>
       <ul style={@listStyle}>
-        {legendItems}
+        { @props.types.map ( type )->
+          return <LegendItem key={type} type={type} clickCallback={callback}/>
+        }
       </ul>
     </div>

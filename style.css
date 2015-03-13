@@ -199,3 +199,9 @@ footer {
   font-family: 'RopaSans';
   padding: 10px;
 }
+
+#progress {
+  position: absolute;
+  right: 30px;
+  top: 20px;
+}

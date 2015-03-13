@@ -7,6 +7,7 @@ constants = require './constants'
 
 # React components
 Legend = require './components/legend'
+#Progress = require './components/progress'
 
 masterContainer = document.getElementById 'visualization'
 overlay = document.getElementById 'visualization'
@@ -53,14 +54,8 @@ else
             visualize.init( scene )
             visualize.initMeshPool( 100 )
 
-            # Render our interactive legend
-            React.render(
-              React.createElement( Legend,
-                types: constants.COLOUR_TYPES
-                clickCallback: visualize.toggleVisualizationType
-              )
-              document.getElementById 'legend'
-            )
+            # Render our React components
+            reactInit()
 
             animate()
             startDataPump()
@@ -194,3 +189,22 @@ animate = ->
   rotating.traverse ( mesh ) ->
     if mesh? and mesh.update?
       mesh.update()
+
+# Loads our React components into the scene
+reactInit = ->
+  # Legend
+  React.render(
+    React.createElement( Legend,
+      types: constants.COLOUR_TYPES
+      clickCallback: visualize.toggleVisualizationType
+    )
+    document.getElementById 'legend'
+  )
+
+  # ... and our progress bar
+  # React.render(
+  #   React.createElement( Progress,
+  #     currVal: 0.5
+  #   )
+  #   document.getElementById 'progress'
+  # )
