@@ -7,7 +7,7 @@ constants = require './constants'
 
 # React components
 Legend = require './components/legend'
-#Progress = require './components/progress'
+Progress = require './components/progress'
 
 masterContainer = document.getElementById 'visualization'
 overlay = document.getElementById 'visualization'
@@ -21,6 +21,7 @@ renderer = null
 scene = null
 camera = null
 visualizationMesh = null
+progressViz = null
 
 # contains a list of country codes with their matching country names
 isoFile = 'country_iso3166.json'
@@ -71,6 +72,7 @@ startDataPump = ->
       endIndex = _sampleData.length
 
     visualize.selectVisualization( _sampleData.slice( currIndexIntoData, endIndex ), visualizationMesh )
+    progressViz.setState( { currVal: endIndex / _sampleData.length } )
     currIndexIntoData = (currIndexIntoData + 5) % _sampleData.length
   , 500
 
@@ -201,10 +203,9 @@ reactInit = ->
     document.getElementById 'legend'
   )
 
-  # ... and our progress bar
-  # React.render(
-  #   React.createElement( Progress,
-  #     currVal: 0.5
-  #   )
-  #   document.getElementById 'progress'
-  # )
+  # ... and our progress bar. We hold on to a ref so we can update its state as
+  # we cycle through our data
+  progressViz = React.render(
+    React.createElement( Progress, null )
+    document.getElementById 'progress'
+  )
