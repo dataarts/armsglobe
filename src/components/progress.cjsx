@@ -14,7 +14,7 @@ module.exports = React.createClass
   # Component state definition
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   getInitialState: ->
-    currVal: 1.0 # start at 1.0 so we have a blank circle
+    currVal: 0.0
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Styles
@@ -23,7 +23,7 @@ module.exports = React.createClass
     display: 'block'
 
   strokeStyle:
-    radius: 50
+    radius: 25
     width: 5.0
     color: '#008EAF'
 
@@ -51,15 +51,23 @@ module.exports = React.createClass
     @_context.lineWidth = @strokeStyle.width
     @_context.globalAlpha = 0.33
 
-    @_updateProgress()
-
   componentDidUpdate: ->
     @_updateProgress()
 
   handleProgressUpdate: (newVal) ->
+    onEndFunc = undefined
+
+    # Handles weird case where a currVal of 1.0 gives us no circle. Basically
+    # we tween to a value that will appear to be a full circle and then as soon
+    # as it's done, tween back to the start value (i.e. empty circle)
+    if newVal is 1.0
+      newVal = 0.99999
+      onEndFunc = =>
+        @tweenState( 'currVal', { endValue: 0.0 } )
+
     @tweenState( 'currVal',
-      duration: 500,
-      endValue: newVal
+      endValue: newVal,
+      onEnd: onEndFunc
     )
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
