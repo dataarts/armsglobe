@@ -23,7 +23,7 @@ module.exports = React.createClass
   strokeStyle:
     radius: 50
     width: 5.0
-    color: '#99CC33'
+    color: '#008EAF'
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Instance Variables
@@ -47,6 +47,7 @@ module.exports = React.createClass
     @_context.closePath()
     @_context.fill()
     @_context.lineWidth = @strokeStyle.width
+    @_context.globalAlpha = 0.33
 
     @_updateProgress()
 
@@ -58,6 +59,9 @@ module.exports = React.createClass
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   _updateProgress: ->
     if !@_context then return
+
+    # Clear out our previous strokes
+    @_context.clearRect 0, 0, @_canvas.width, @_canvas.height
 
     # Basic idea: angle has to be between PI * -0.5 (12 o'clock) and PI * 1.5
     # (full circle) - since a circle is 2PI radians
