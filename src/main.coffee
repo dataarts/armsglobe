@@ -49,7 +49,7 @@ else
         _countryLookup = isoData
         dataLoading.loadWorldPins latlonFile, ( latLonData ) ->
           _latLonData = latLonData
-          dataLoading.loadContentData ( sampleData ) ->
+          dataLoading.loadRandomizedContentData 200, _countryLookup, ( sampleData ) ->
             _sampleData = sampleData
             initScene()
             visualize.init( scene )

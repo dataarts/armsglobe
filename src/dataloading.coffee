@@ -1,3 +1,5 @@
+constants = require './constants'
+
 module.exports =
   loadWorldPins: ( latLonFile, callback ) -> _getDataFromServer latLonFile, callback
 
@@ -6,6 +8,29 @@ module.exports =
   loadContentData: ( callback ) ->
     filePath = encodeURI "categories/All.json"
     _getDataFromServer filePath, callback
+
+  # Generates randomized src/dest data, for when you want something slightly
+  # more "interesting"
+  loadRandomizedContentData: ( numPoints, countries, callback ) ->
+    toRet = []
+    keys = Object.keys countries
+
+    for idx in [0...numPoints]
+      srcIdx = keys[ Math.floor( Math.random() * keys.length ) ]
+      destIdx = keys[ Math.floor( Math.random() * keys.length ) ]
+      colourIdx = constants.COLOUR_TYPES[ Math.floor( Math.random() * constants.COLOUR_TYPES.length ) ]
+
+      # account for the rare cases where we get the same index
+      if srcIdx is destIdx
+        destIdx = if destIdx is keys.length - 1 then 0 else destIdx + 1
+
+      point = {}
+      point.src = countries[ srcIdx ]
+      point.dest = countries[ destIdx ]
+      point.colour = colourIdx
+      toRet.push point
+
+    callback toRet
 
 # private helper method
 _getDataFromServer = ( path, callback ) ->
