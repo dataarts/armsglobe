@@ -114,11 +114,29 @@ _returnMeshToPool = ( mesh ) ->
 
   _meshPool.push mesh
 
+_systemCompleteHandler = ( mesh ) ->
+  path = mesh.particlesGeo.vertices[0].path
+
+  # The final array element is the origin, hence the -2 offset
+  finalPt = path[ path.length - 2 ]
+  color = mesh.attributes.customColor.value[0].getHex()
+
+  _runExplosion finalPt, color
+  _returnMeshToPool mesh
+
 _getColourFromTypeStr = ( colorStr ) ->
   colour = constants.COLOUR_MAP[colorStr]
   colour = constants.COLOUR_MAP.r if not colour
 
   return colour
+
+_runExplosion = ( point, color ) ->
+  console.log "Creating #{color} explosion at (#{point.x}, #{point.y}, #{point.z})"
+  # mat = new THREE.MeshBasicMaterial {color: color}
+  # circleGeo = new THREE.CircleGeometry 20, 32
+  # circle = new THREE.Mesh circleGeo, mat
+  # circle.position = point.clone()
+  # _scene.add circle
 
 class ParticleMesh
   constructor: ->
@@ -164,7 +182,7 @@ class ParticleMesh
     @splineOutline.add @pSystem
     @splineOutline.geometry = @linesGeo
 
-    @pSystem.addEventListener( 'ParticleSystemComplete', _returnMeshToPool.bind( this, this ) )
+    @pSystem.addEventListener( 'ParticleSystemComplete', _systemCompleteHandler.bind( this, this ) )
 
     # This update method is what actually gets our points moving across the scene.
     # Once the point has finished its path, this method will emit a "ParticleSystemComplete"
@@ -175,7 +193,6 @@ class ParticleMesh
 
       for particle in @geometry.vertices
         path = particle.path
-        moveLength = path.length
 
         particle.lerpN += 0.15
         if particle.lerpN > 1
