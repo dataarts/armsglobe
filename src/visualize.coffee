@@ -58,6 +58,7 @@ module.exports =
       particle.size = meshObj.particleSize
       meshObj.particlesGeo.vertices.push particle
 
+      # Create a trail for the particles by adding extra, slightly offset, particles
       for num in [1..5]
         trail = particle.clone()
         trail.moveIndex = 0
@@ -128,6 +129,7 @@ class ParticleMesh
       depthTest:    true
       depthWrite:   false
       transparent:  true
+      opacity:      0.5
       color:        this.particleColor
     this.pSystem = new THREE.PointCloud null, this.shaderMaterial
 
