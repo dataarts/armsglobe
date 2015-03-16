@@ -60,8 +60,8 @@ module.exports =
       particle.path = points
       meshObj.particlesGeo.vertices.push particle
 
-      meshObj.particleAlphas.push 1.0
-      meshObj.particleColors.push color
+      meshObj.attributes.alpha.value.push 1.0
+      meshObj.attributes.customColor.value.push color
 
       # Create a trail for the particles by adding extra, slightly offset, particles
       for num in [1..5]
@@ -71,8 +71,12 @@ module.exports =
         trail.lerpN = -0.15 * num
         trail.path = points
         meshObj.particlesGeo.vertices.push trail
-        meshObj.particleAlphas.push( 1.0 - ( 0.2 * num ) )
-        meshObj.particleColors.push color
+        meshObj.attributes.alpha.value.push( 1.0 - ( 0.2 * num ) )
+        meshObj.attributes.customColor.value.push color
+
+      # since colours have been updated, tell THREE to force an update
+      meshObj.attributes.alpha.needsUpdate = true
+      meshObj.attributes.customColor.needsUpdate = true
 
       return callback meshObj.splineOutline
 
@@ -102,8 +106,8 @@ _returnMeshToPool = ( mesh ) ->
   mesh.linesGeo.vertices = []
   mesh.particlesGeo.vertices = []
   mesh.pSystem.systemComplete = false
-  mesh.particleColors = []
-  mesh.particleAlphas = []
+  mesh.attributes.alpha.value = []
+  mesh.attributes.customColor.value = []
 
   # have to remove from the scene or else bad things happen
   _scene.remove mesh.splineOutline
@@ -120,8 +124,6 @@ class ParticleMesh
   constructor: ->
     @linesGeo = new THREE.Geometry()
     @particlesGeo = new THREE.Geometry()
-    @particleColors = []
-    @particleAlphas = []
     # Particle size now set in custom shader
     # @particleSize = 150
 
@@ -136,17 +138,17 @@ class ParticleMesh
     @splineOutline = new THREE.Line null, @lineMat
 
     # Use custom shader to have the trail taper off in transparency
-    attributes =
-      alpha: { type: 'f', value: @particleAlphas }
-      customColor: { type: 'c', value: @particleColors }
+    @attributes =
+      alpha: { type: 'f', value: [] }
+      customColor: { type: 'c', value: [] }
 
-    uniforms =
+    @uniforms =
       color: { type: 'c', value: new THREE.Color( 0xffffff ) }
       texture: { type: 't', value: THREE.ImageUtils.loadTexture "images/particleB.png" }
 
     @shaderMaterial = new THREE.ShaderMaterial
-      uniforms:       uniforms
-      attributes:     attributes
+      uniforms:       @uniforms
+      attributes:     @attributes
       vertexShader:   document.getElementById( 'vertexshader' ).textContent
       fragmentShader: document.getElementById( 'fragmentshader' ).textContent
       blending:       THREE.AdditiveBlending
