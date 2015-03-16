@@ -60,10 +60,10 @@ module.exports =
 
       trail = particle.clone()
       trail.moveIndex = 0
-      trail.nextIndex = 0
+      trail.nextIndex = 1
       trail.lerpN = -0.15
       trail.path = points
-      trail.size = meshObj.particleSize * 0.25
+      trail.size = meshObj.particleSize
       meshObj.particlesGeo.vertices.push trail
 
       # set the colour
