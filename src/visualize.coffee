@@ -58,13 +58,14 @@ module.exports =
       particle.size = meshObj.particleSize
       meshObj.particlesGeo.vertices.push particle
 
-      trail = particle.clone()
-      trail.moveIndex = 0
-      trail.nextIndex = 1
-      trail.lerpN = -0.15
-      trail.path = points
-      trail.size = meshObj.particleSize
-      meshObj.particlesGeo.vertices.push trail
+      for num in [1..5]
+        trail = particle.clone()
+        trail.moveIndex = 0
+        trail.nextIndex = 1
+        trail.lerpN = -0.15 * num
+        trail.path = points
+        trail.size = meshObj.particleSize
+        meshObj.particlesGeo.vertices.push trail
 
       # set the colour
       meshObj.setParticleColour linearData.colour
