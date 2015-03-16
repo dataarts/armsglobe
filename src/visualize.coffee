@@ -110,7 +110,8 @@ class ParticleMesh
     @linesGeo = new THREE.Geometry()
     @particlesGeo = new THREE.Geometry()
     @particleColor = constants.COLOUR_MAP.r
-    @particleSize = 150
+    # Particle size now set in custom shader
+    # @particleSize = 150
 
     @lineMat = new THREE.LineBasicMaterial
       color: 0xffffff
@@ -122,23 +123,31 @@ class ParticleMesh
       linewidth: 1
     @splineOutline = new THREE.Line null, @lineMat
 
-    @shaderMaterial = new THREE.PointCloudMaterial
-      map:          THREE.ImageUtils.loadTexture "images/particleB.png"
-      size:         @particleSize
-      blending:     THREE.AdditiveBlending
-      depthTest:    true
-      depthWrite:   false
-      transparent:  true
-      opacity:      0.5
-      color:        @particleColor
-    @pSystem = new THREE.PointCloud null, @shaderMaterial
+    # Use custom shader to have the trail taper off in transparency
+    attributes =
+      alpha: { type: 'f', value: [ 1.0, 0.8, 0.6, 0.4, 0.2, 0.0 ] }
+
+    uniforms =
+      color: { type: 'c', value: @particleColor }
+      texture: { type: 't', value: THREE.ImageUtils.loadTexture "images/particleB.png" }
+
+    @shaderMaterial = new THREE.ShaderMaterial
+      uniforms:       uniforms
+      attributes:     attributes
+      vertexShader:   document.getElementById( 'vertexshader' ).textContent
+      fragmentShader: document.getElementById( 'fragmentshader' ).textContent
+      blending:       THREE.AdditiveBlending
+      transparent:    true
+      depthTest:      true
+      depthWrite:     false
+
+    @pSystem = new THREE.PointCloud @particlesGeo, @shaderMaterial
 
     @splineOutline.renderDepth = false
     @pSystem.dynamic = true
     @pSystem.systemComplete = false # So we can know when to re-pool this mesh
     @splineOutline.add @pSystem
     @splineOutline.geometry = @linesGeo
-    @pSystem.geometry = @particlesGeo
 
     @pSystem.addEventListener( 'ParticleSystemComplete', _returnMeshToPool.bind( this, this ) )
 
@@ -177,8 +186,8 @@ class ParticleMesh
         @geometry.verticesNeedUpdate = true
 
   setParticleColour: ( colourStr ) ->
-    colour = constants.COLOUR_MAP[colourStr]
-    colour = constants.COLOUR_MAP.r if not colour
-
-    @particleColor = colour
-    @shaderMaterial.color = colour
+    # colour = constants.COLOUR_MAP[colourStr]
+    # colour = constants.COLOUR_MAP.r if not colour
+    #
+    # @particleColor = colour
+    # @shaderMaterial.color = colour
