@@ -12,6 +12,9 @@ _typeStatus = {}
 for type in constants.COLOUR_TYPES
   _typeStatus[ type ] = true
 
+# Vector pointing to the centre of the earth
+_earthCore = new THREE.Vector3 0, 0, 0
+
 module.exports =
   init: ( scene ) ->
     _scene = scene
@@ -135,6 +138,9 @@ _runExplosion = ( point, color ) ->
   circleGeo = new THREE.CircleGeometry 3, 32
   circle = new THREE.Mesh circleGeo, mat
   circle.position.set point.x, point.y, point.z
+
+  # This ensures the explosion is flush to the globe
+  circle.lookAt _earthCore
 
   _scene.add circle
 
