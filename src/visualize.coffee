@@ -64,14 +64,14 @@ module.exports =
       meshObj.attributes.customColor.value.push color
 
       # Create a trail for the particles by adding extra, slightly offset, particles
-      for num in [1..5]
+      for num in [1..7]
         trail = particle.clone()
         trail.moveIndex = 0
         trail.nextIndex = 1
         trail.lerpN = -0.15 * num
         trail.path = points
         meshObj.particlesGeo.vertices.push trail
-        meshObj.attributes.alpha.value.push( 1.0 - ( 0.2 * num ) )
+        meshObj.attributes.alpha.value.push( 1.0 - ( 0.14 * num ) )
         meshObj.attributes.customColor.value.push color
 
       # since colours have been updated, tell THREE to force an update

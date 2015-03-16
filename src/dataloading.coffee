@@ -16,8 +16,8 @@ module.exports =
     keys = Object.keys countries
 
     for idx in [0...numPoints]
-      srcIdx = keys[ Math.floor( Math.random() * keys.length ) ]
-      destIdx = keys[ Math.floor( Math.random() * keys.length ) ]
+      srcIdx = Math.floor( Math.random() * keys.length )
+      destIdx = Math.floor( Math.random() * keys.length )
       colourIdx = constants.COLOUR_TYPES[ Math.floor( Math.random() * constants.COLOUR_TYPES.length ) ]
 
       # account for the rare cases where we get the same index
@@ -25,8 +25,8 @@ module.exports =
         destIdx = if destIdx is keys.length - 1 then 0 else destIdx + 1
 
       point = {}
-      point.src = countries[ srcIdx ]
-      point.dest = countries[ destIdx ]
+      point.src = countries[ keys[ srcIdx ] ]
+      point.dest = countries[ keys[ destIdx ] ]
       point.colour = colourIdx
       toRet.push point
 
