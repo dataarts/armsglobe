@@ -47,11 +47,17 @@
 		-->
 		<script type="x-shader/x-vertex" id="vertexshader">
 			attribute float alpha;
+			attribute vec3 customColor;
+
 			varying float vAlpha;
+			varying vec3 vColor;
+
 			void main() {
 				vAlpha = alpha;
+				vColor = customColor;
+
 				vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
-				gl_PointSize = 20.0;
+				gl_PointSize = 25.0;
 				gl_Position = projectionMatrix * mvPosition;
 			}
 		</script>
@@ -59,10 +65,12 @@
 		<script type="x-shader/x-fragment" id="fragmentshader">
 			uniform vec3 color;
 			uniform sampler2D texture;
+
+			varying vec3 vColor;
 			varying float vAlpha;
 
 			void main() {
-				gl_FragColor = vec4( color, 1 );
+				gl_FragColor = vec4( color * vColor, 1 );
 				gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );
 				gl_FragColor.a *= vAlpha;
 			}

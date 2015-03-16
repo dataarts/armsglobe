@@ -46,6 +46,9 @@ module.exports =
     return null if not _typeStatus[ linearData.colour ]
 
     _getMeshFromPool ( meshObj ) ->
+      # get our colour
+      color = _getColourFromTypeStr linearData.colour
+
       # merge it all together
       meshObj.linesGeo.merge linearData.lineGeometry
       points = linearData.lineGeometry.vertices
@@ -55,8 +58,10 @@ module.exports =
       particle.nextIndex = 1
       particle.lerpN = 0
       particle.path = points
-      particle.size = meshObj.particleSize
       meshObj.particlesGeo.vertices.push particle
+
+      meshObj.particleAlphas.push 1.0
+      meshObj.particleColors.push color
 
       # Create a trail for the particles by adding extra, slightly offset, particles
       for num in [1..5]
@@ -65,11 +70,9 @@ module.exports =
         trail.nextIndex = 1
         trail.lerpN = -0.15 * num
         trail.path = points
-        trail.size = meshObj.particleSize
         meshObj.particlesGeo.vertices.push trail
-
-      # set the colour
-      meshObj.setParticleColour linearData.colour
+        meshObj.particleAlphas.push( 1.0 - ( 0.2 * num ) )
+        meshObj.particleColors.push color
 
       return callback meshObj.splineOutline
 
@@ -99,17 +102,26 @@ _returnMeshToPool = ( mesh ) ->
   mesh.linesGeo.vertices = []
   mesh.particlesGeo.vertices = []
   mesh.pSystem.systemComplete = false
+  mesh.particleColors = []
+  mesh.particleAlphas = []
 
   # have to remove from the scene or else bad things happen
   _scene.remove mesh.splineOutline
 
   _meshPool.push mesh
 
+_getColourFromTypeStr = ( colorStr ) ->
+  colour = constants.COLOUR_MAP[colorStr]
+  colour = constants.COLOUR_MAP.r if not colour
+
+  return colour
+
 class ParticleMesh
   constructor: ->
     @linesGeo = new THREE.Geometry()
     @particlesGeo = new THREE.Geometry()
-    @particleColor = constants.COLOUR_MAP.r
+    @particleColors = []
+    @particleAlphas = []
     # Particle size now set in custom shader
     # @particleSize = 150
 
@@ -125,10 +137,11 @@ class ParticleMesh
 
     # Use custom shader to have the trail taper off in transparency
     attributes =
-      alpha: { type: 'f', value: [ 1.0, 0.8, 0.6, 0.4, 0.2, 0.0 ] }
+      alpha: { type: 'f', value: @particleAlphas }
+      customColor: { type: 'c', value: @particleColors }
 
     uniforms =
-      color: { type: 'c', value: @particleColor }
+      color: { type: 'c', value: new THREE.Color( 0xffffff ) }
       texture: { type: 't', value: THREE.ImageUtils.loadTexture "images/particleB.png" }
 
     @shaderMaterial = new THREE.ShaderMaterial
@@ -184,10 +197,3 @@ class ParticleMesh
         particle.lerp nextPoint, particle.lerpN
 
         @geometry.verticesNeedUpdate = true
-
-  setParticleColour: ( colourStr ) ->
-    # colour = constants.COLOUR_MAP[colourStr]
-    # colour = constants.COLOUR_MAP.r if not colour
-    #
-    # @particleColor = colour
-    # @shaderMaterial.color = colour
