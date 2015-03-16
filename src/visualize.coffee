@@ -107,12 +107,12 @@ _returnMeshToPool = ( mesh ) ->
 
 class ParticleMesh
   constructor: ->
-    this.linesGeo = new THREE.Geometry()
-    this.particlesGeo = new THREE.Geometry()
-    this.particleColor = constants.COLOUR_MAP.r
-    this.particleSize = 150
+    @linesGeo = new THREE.Geometry()
+    @particlesGeo = new THREE.Geometry()
+    @particleColor = constants.COLOUR_MAP.r
+    @particleSize = 150
 
-    this.lineMat = new THREE.LineBasicMaterial
+    @lineMat = new THREE.LineBasicMaterial
       color: 0xffffff
       opacity: 0.0
       blending: THREE.AdditiveBlending
@@ -120,34 +120,34 @@ class ParticleMesh
       depthWrite: false
       vertexColors: false
       linewidth: 1
-    this.splineOutline = new THREE.Line null, this.lineMat
+    @splineOutline = new THREE.Line null, @lineMat
 
-    this.shaderMaterial = new THREE.PointCloudMaterial
+    @shaderMaterial = new THREE.PointCloudMaterial
       map:          THREE.ImageUtils.loadTexture "images/particleB.png"
-      size:         this.particleSize
+      size:         @particleSize
       blending:     THREE.AdditiveBlending
       depthTest:    true
       depthWrite:   false
       transparent:  true
       opacity:      0.5
-      color:        this.particleColor
-    this.pSystem = new THREE.PointCloud null, this.shaderMaterial
+      color:        @particleColor
+    @pSystem = new THREE.PointCloud null, @shaderMaterial
 
-    this.splineOutline.renderDepth = false
-    this.pSystem.dynamic = true
-    this.pSystem.systemComplete = false # So we can know when to re-pool this mesh
-    this.splineOutline.add this.pSystem
-    this.splineOutline.geometry = this.linesGeo
-    this.pSystem.geometry = this.particlesGeo
+    @splineOutline.renderDepth = false
+    @pSystem.dynamic = true
+    @pSystem.systemComplete = false # So we can know when to re-pool this mesh
+    @splineOutline.add @pSystem
+    @splineOutline.geometry = @linesGeo
+    @pSystem.geometry = @particlesGeo
 
-    this.pSystem.addEventListener( 'ParticleSystemComplete', _returnMeshToPool.bind( this, this ) )
+    @pSystem.addEventListener( 'ParticleSystemComplete', _returnMeshToPool.bind( this, this ) )
 
     # This update method is what actually gets our points moving across the scene.
     # Once the point has finished its path, this method will emit a "ParticleSystemComplete"
     # event, to allow us to re-pool the mesh.
-    this.pSystem.update = ->
+    @pSystem.update = ->
       # no point doing all the calculations if the particle is already done
-      return if this.systemComplete
+      return if @systemComplete
 
       for particle in @geometry.vertices
         path = particle.path
@@ -164,8 +164,8 @@ class ParticleMesh
 
             # Even though there are multiple particles in the system now, we still
             # do things this way as we don't really care if the "trail" has completed
-            this.systemComplete = true
-            this.dispatchEvent { type: 'ParticleSystemComplete' }
+            @systemComplete = true
+            @dispatchEvent { type: 'ParticleSystemComplete' }
             return
 
         currentPoint = path[particle.moveIndex]
@@ -174,11 +174,11 @@ class ParticleMesh
         particle.copy currentPoint
         particle.lerp nextPoint, particle.lerpN
 
-        this.geometry.verticesNeedUpdate = true
+        @geometry.verticesNeedUpdate = true
 
   setParticleColour: ( colourStr ) ->
     colour = constants.COLOUR_MAP[colourStr]
     colour = constants.COLOUR_MAP.r if not colour
 
-    this.particleColor = colour
-    this.shaderMaterial.color = colour
+    @particleColor = colour
+    @shaderMaterial.color = colour
