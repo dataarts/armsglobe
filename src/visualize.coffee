@@ -160,6 +160,8 @@ class ParticleMesh
             particle.moveIndex = 0
             particle.nextIndex = 0
 
+            # Even though there are multiple particles in the system now, we still
+            # do things this way as we don't really care if the "trail" has completed
             this.systemComplete = true
             this.dispatchEvent { type: 'ParticleSystemComplete' }
             return
