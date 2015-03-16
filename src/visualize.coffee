@@ -58,6 +58,15 @@ module.exports =
       particle.size = meshObj.particleSize
       meshObj.particlesGeo.vertices.push particle
 
+      for num in [1..5]
+        trail = particle.clone()
+        trail.moveIndex = 0
+        trail.nextIndex = 1
+        trail.lerpN = -0.15 * num
+        trail.path = points
+        trail.size = meshObj.particleSize
+        meshObj.particlesGeo.vertices.push trail
+
       # set the colour
       meshObj.setParticleColour linearData.colour
 
@@ -135,35 +144,33 @@ class ParticleMesh
     # Once the point has finished its path, this method will emit a "ParticleSystemComplete"
     # event, to allow us to re-pool the mesh.
     this.pSystem.update = ->
-      #Simplified this as our particle geometry will only ever have one point
-      particle = this.geometry.vertices[0]
-
       # no point doing all the calculations if the particle is already done
-      return if this.systemComplete or not particle
+      return if this.systemComplete
 
-      path = particle.path
-      moveLength = path.length
+      for particle in @geometry.vertices
+        path = particle.path
+        moveLength = path.length
 
-      particle.lerpN += 0.15
-      if particle.lerpN > 1
-        particle.lerpN = 0
-        particle.moveIndex = particle.nextIndex
-        particle.nextIndex++
-        if particle.nextIndex >= path.length
-          particle.moveIndex = 0
-          particle.nextIndex = 0
+        particle.lerpN += 0.15
+        if particle.lerpN > 1
+          particle.lerpN = 0
+          particle.moveIndex = particle.nextIndex
+          particle.nextIndex++
+          if particle.nextIndex >= path.length
+            particle.moveIndex = 0
+            particle.nextIndex = 0
 
-          this.systemComplete = true
-          this.dispatchEvent { type: 'ParticleSystemComplete' }
-          return
+            this.systemComplete = true
+            this.dispatchEvent { type: 'ParticleSystemComplete' }
+            return
 
-      currentPoint = path[particle.moveIndex]
-      nextPoint = path[particle.nextIndex]
+        currentPoint = path[particle.moveIndex]
+        nextPoint = path[particle.nextIndex]
 
-      particle.copy currentPoint
-      particle.lerp nextPoint, particle.lerpN
+        particle.copy currentPoint
+        particle.lerp nextPoint, particle.lerpN
 
-      this.geometry.verticesNeedUpdate = true
+        this.geometry.verticesNeedUpdate = true
 
   setParticleColour: ( colourStr ) ->
     colour = constants.COLOUR_MAP[colourStr]
