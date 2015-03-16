@@ -13,9 +13,6 @@ _typeStatus = {}
 for type in constants.COLOUR_TYPES
   _typeStatus[ type ] = true
 
-# Vector pointing to the centre of the earth
-_earthCore = new THREE.Vector3 0, 0, 0
-
 module.exports =
   init: ( scene, rotating ) ->
     _scene = scene
@@ -137,14 +134,11 @@ _getColourFromTypeStr = ( colorStr ) ->
 
 _runExplosion = ( point, color ) ->
   mat = new THREE.MeshBasicMaterial {color: color}
-  circleGeo = new THREE.CircleGeometry 3, 32
-  circle = new THREE.Mesh circleGeo, mat
-  circle.position.set point.x, point.y, point.z
+  sphereGeo = new THREE.SphereGeometry 3, 32, 32
+  sphere = new THREE.Mesh sphereGeo, mat
+  sphere.position.set point.x, point.y, point.z
 
-  # This ensures the explosion is flush to the globe
-  circle.lookAt _earthCore
-
-  _rotating.add circle
+  _rotating.add sphere
 
 class ParticleMesh
   constructor: ->
