@@ -131,12 +131,12 @@ _getColourFromTypeStr = ( colorStr ) ->
   return colour
 
 _runExplosion = ( point, color ) ->
-  console.log "Creating #{color} explosion at (#{point.x}, #{point.y}, #{point.z})"
-  # mat = new THREE.MeshBasicMaterial {color: color}
-  # circleGeo = new THREE.CircleGeometry 20, 32
-  # circle = new THREE.Mesh circleGeo, mat
-  # circle.position = point.clone()
-  # _scene.add circle
+  mat = new THREE.MeshBasicMaterial {color: color}
+  circleGeo = new THREE.CircleGeometry 3, 32
+  circle = new THREE.Mesh circleGeo, mat
+  circle.position.set point.x, point.y, point.z
+
+  _scene.add circle
 
 class ParticleMesh
   constructor: ->
