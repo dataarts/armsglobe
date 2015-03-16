@@ -6,6 +6,7 @@ _meshPool = []
 # Local copy of the main scene which we need for memory management.
 # Injected from main.coffee via init()
 _scene = null
+_rotating = null
 
 # Used to keep track of which types we're not currently displaying
 _typeStatus = {}
@@ -16,8 +17,9 @@ for type in constants.COLOUR_TYPES
 _earthCore = new THREE.Vector3 0, 0, 0
 
 module.exports =
-  init: ( scene ) ->
+  init: ( scene, rotating ) ->
     _scene = scene
+    _rotating = rotating
 
   buildDataVizGeometries: ( linearData, countryData ) ->
     loadLayer = document.getElementById 'loading'
@@ -142,7 +144,7 @@ _runExplosion = ( point, color ) ->
   # This ensures the explosion is flush to the globe
   circle.lookAt _earthCore
 
-  _scene.add circle
+  _rotating.add circle
 
 class ParticleMesh
   constructor: ->

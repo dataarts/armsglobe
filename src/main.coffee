@@ -52,7 +52,7 @@ else
           dataLoading.loadRandomizedContentData 200, _countryLookup, ( sampleData ) ->
             _sampleData = sampleData
             initScene()
-            visualize.init( scene )
+            visualize.init( scene, rotating )
             visualize.initMeshPool( 100 )
 
             # Render our React components
