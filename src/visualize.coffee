@@ -90,7 +90,7 @@ module.exports =
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 _getMeshFromPool = ( callback ) ->
   if _meshPool.length > 0
-    callback _meshPool.pop()
+    callback _meshPool.shift()
   else
     window.setTimeout _getMeshFromPool, 500, callback
 
