@@ -187,10 +187,6 @@ animate = ->
   requestAnimationFrame animate
   renderer.render scene, camera
 
-  visualizationMesh.traverse ( mesh ) ->
-    if mesh? and mesh.update?
-      mesh.update()
-
 # Loads our React components into the scene
 reactInit = ->
   # Legend

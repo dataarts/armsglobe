@@ -72,6 +72,7 @@ module.exports =
       meshObj.attributes.customColor.needsUpdate = true
 
       meshObj.vizMesh.add meshObj.splineOutline
+      meshObj.startParticleUpdates()
 
   initVisualization: ( linearData ) ->
     # build the meshes. One for each entry in our data
@@ -98,6 +99,8 @@ _returnMeshToPool = ( mesh ) ->
   mesh.attributes.alpha.value = []
   mesh.attributes.customColor.value = []
 
+  mesh.stopParticleUpdates()
+
   # have to remove from the scene or else bad things happen
   mesh.vizMesh.remove mesh.splineOutline
 
@@ -111,6 +114,7 @@ _getColourFromTypeStr = ( colorStr ) ->
 
 class ParticleMesh
   constructor: ( @vizMesh ) ->
+    @particleUpdateId = null
     @linesGeo = new THREE.Geometry()
     @particlesGeo = new THREE.Geometry()
     # Particle size now set in custom shader
@@ -188,3 +192,11 @@ class ParticleMesh
         particle.lerp nextPoint, particle.lerpN
 
         @geometry.verticesNeedUpdate = true
+
+  startParticleUpdates: ->
+    # 16ms interval is approx a 60FPS refresh rate
+    @particleUpdateId = window.setInterval( @pSystem.update.bind( @pSystem ), 16 )
+
+  stopParticleUpdates: ->
+    if @particleUpdateId?
+      window.clearInterval @particleUpdateId
