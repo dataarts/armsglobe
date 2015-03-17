@@ -162,7 +162,10 @@ class ParticleMesh
     @splineOutline.geometry = @linesGeo
 
     # Elements for the explosion effect
-    explosionMat = new THREE.MeshBasicMaterial {color: 0xffffff}
+    explosionMat = new THREE.MeshBasicMaterial
+      color: 0xffffff
+      transparent: true
+      opacity: 0.75
     explosionGeo = new THREE.SphereGeometry 3, 32, 32
     @explosionSphere = new THREE.Mesh explosionGeo, explosionMat
 
