@@ -26,29 +26,6 @@ _countryLookup = null
 _latLonData = null
 _sampleData = null
 
-# Detect WebGL
-if not Detector.webgl
-  Detector.addGetWebGLMessage()
-else
-  dataLoading.loadCountryCodes 'country_iso3166.json', ( isoData ) ->
-    _countryLookup = isoData
-    dataLoading.loadWorldPins 'country_lat_lon.json', ( latLonData ) ->
-      _latLonData = latLonData
-      dataLoading.loadRandomizedContentData 200, _countryLookup, ( sampleData ) ->
-        _sampleData = sampleData
-
-        initScene()
-        visualize.initMeshPool( 100, visualizationMesh )
-
-        # Render our React components
-        reactInit()
-
-        countryData = geopins.loadGeoData _latLonData, _countryLookup
-        visualize.buildDataVizGeometries _sampleData, countryData
-
-        animate()
-        startDataPump()
-
 # used with the data pump
 currIndexIntoData = 0
 nextIndexIntoData = 5
@@ -168,3 +145,27 @@ reactInit = ->
     React.createElement( Progress, null )
     document.getElementById 'progress'
   )
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Startup code
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if not Detector.webgl
+  Detector.addGetWebGLMessage()
+else
+  initScene()
+  visualize.initMeshPool( 100, visualizationMesh )
+
+  # Render our React components
+  reactInit()
+
+  dataLoading.loadCountryCodes 'country_iso3166.json', ( isoData ) ->
+    _countryLookup = isoData
+    dataLoading.loadWorldPins 'country_lat_lon.json', ( latLonData ) ->
+      _latLonData = latLonData
+      dataLoading.loadRandomizedContentData 200, _countryLookup, ( sampleData ) ->
+        _sampleData = sampleData
+        countryData = geopins.loadGeoData _latLonData, _countryLookup
+        visualize.buildDataVizGeometries _sampleData, countryData
+
+        animate()
+        startDataPump()
