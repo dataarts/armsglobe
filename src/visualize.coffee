@@ -113,7 +113,6 @@ _returnMeshToPool = ( mesh ) ->
   mesh.pSystem.systemComplete = false
   mesh.attributes.alpha.value = []
   mesh.attributes.customColor.value = []
-  mesh.explosionSphere.frameCtr = 0
 
   # have to remove from the scene or else bad things happen
   _scene.remove mesh.splineOutline
@@ -175,13 +174,6 @@ class ParticleMesh
     explosionMat = new THREE.MeshBasicMaterial {color: 0xffffff}
     explosionGeo = new THREE.SphereGeometry 3, 32, 32
     @explosionSphere = new THREE.Mesh explosionGeo, explosionMat
-    @explosionSphere.frameCtr = 0
-
-    @explosionSphere.update = ->
-      @frameCtr++
-      if @frameCtr > 60
-        @dispatchEvent { type: 'ExplosionComplete' }
-      return
 
     @pSystem.addEventListener( 'ParticleSystemComplete', @runExplosion.bind( this ) )
     @explosionSphere.addEventListener( 'ExplosionComplete', _returnMeshToPool.bind( this, this ) )
@@ -227,4 +219,9 @@ class ParticleMesh
     color = @attributes.customColor.value[0].getHex()
 
     @explosionSphere.position.set finalPt.x, finalPt.y, finalPt.z
+
+    setTimeout( =>
+      @explosionSphere.dispatchEvent { type: 'ExplosionComplete' }
+    , 1000 )
+
     _rotating.add @explosionSphere
