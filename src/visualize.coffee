@@ -180,7 +180,6 @@ class ParticleMesh
     @explosionSphere.update = ->
       @frameCtr++
       if @frameCtr > 60
-        @explosionRunning = false
         @dispatchEvent { type: 'ExplosionComplete' }
       return
 
