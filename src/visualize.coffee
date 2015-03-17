@@ -76,6 +76,9 @@ module.exports =
         meshObj.attributes.alpha.value.push( 1.0 - ( 0.14 * num ) )
         meshObj.attributes.customColor.value.push color
 
+      # Set the explosion color, too
+      meshObj.explosionSphere.material.color = color
+
       # since colours have been updated, tell THREE to force an update
       meshObj.attributes.alpha.needsUpdate = true
       meshObj.attributes.customColor.needsUpdate = true
@@ -110,35 +113,19 @@ _returnMeshToPool = ( mesh ) ->
   mesh.pSystem.systemComplete = false
   mesh.attributes.alpha.value = []
   mesh.attributes.customColor.value = []
+  mesh.explosionSphere.frameCtr = 0
 
   # have to remove from the scene or else bad things happen
   _scene.remove mesh.splineOutline
+  _rotating.remove mesh.explosionSphere
 
   _meshPool.push mesh
-
-_systemCompleteHandler = ( mesh ) ->
-  path = mesh.particlesGeo.vertices[0].path
-
-  # The final array element is the origin, hence the -2 offset
-  finalPt = path[ path.length - 2 ]
-  color = mesh.attributes.customColor.value[0].getHex()
-
-  _runExplosion finalPt, color
-  _returnMeshToPool mesh
 
 _getColourFromTypeStr = ( colorStr ) ->
   colour = constants.COLOUR_MAP[colorStr]
   colour = constants.COLOUR_MAP.r if not colour
 
   return colour
-
-_runExplosion = ( point, color ) ->
-  mat = new THREE.MeshBasicMaterial {color: color}
-  sphereGeo = new THREE.SphereGeometry 3, 32, 32
-  sphere = new THREE.Mesh sphereGeo, mat
-  sphere.position.set point.x, point.y, point.z
-
-  _rotating.add sphere
 
 class ParticleMesh
   constructor: ->
@@ -184,7 +171,21 @@ class ParticleMesh
     @splineOutline.add @pSystem
     @splineOutline.geometry = @linesGeo
 
-    @pSystem.addEventListener( 'ParticleSystemComplete', _systemCompleteHandler.bind( this, this ) )
+    # Elements for the explosion effect
+    explosionMat = new THREE.MeshBasicMaterial {color: 0xffffff}
+    explosionGeo = new THREE.SphereGeometry 3, 32, 32
+    @explosionSphere = new THREE.Mesh explosionGeo, explosionMat
+    @explosionSphere.frameCtr = 0
+
+    @explosionSphere.update = ->
+      @frameCtr++
+      if @frameCtr > 60
+        @explosionRunning = false
+        @dispatchEvent { type: 'ExplosionComplete' }
+      return
+
+    @pSystem.addEventListener( 'ParticleSystemComplete', @runExplosion.bind( this ) )
+    @explosionSphere.addEventListener( 'ExplosionComplete', _returnMeshToPool.bind( this, this ) )
 
     # This update method is what actually gets our points moving across the scene.
     # Once the point has finished its path, this method will emit a "ParticleSystemComplete"
@@ -218,3 +219,13 @@ class ParticleMesh
         particle.lerp nextPoint, particle.lerpN
 
         @geometry.verticesNeedUpdate = true
+
+  runExplosion: ->
+    path = @particlesGeo.vertices[0].path
+
+    # The final array element is the origin, hence the -2 offset
+    finalPt = path[ path.length - 2 ]
+    color = @attributes.customColor.value[0].getHex()
+
+    @explosionSphere.position.set finalPt.x, finalPt.y, finalPt.z
+    _rotating.add @explosionSphere
