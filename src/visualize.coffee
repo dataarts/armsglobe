@@ -57,14 +57,14 @@ module.exports =
       meshObj.attributes.customColor.value.push color
 
       # Create a trail for the particles by adding extra, slightly offset, particles
-      for num in [1..7]
+      for num in [1..constants.NUM_TRAIL_PARTICLES]
         trail = particle.clone()
         trail.moveIndex = 0
         trail.nextIndex = 1
-        trail.lerpN = -0.15 * num
+        trail.lerpN = -1 * constants.PARTICLE_SPEED * num
         trail.path = points
         meshObj.particlesGeo.vertices.push trail
-        meshObj.attributes.alpha.value.push( 1.0 - ( 0.14 * num ) )
+        meshObj.attributes.alpha.value.push( 1.0 - ( constants.TRAIL_OPACITY_MULTIPLIER * num ) )
         meshObj.attributes.customColor.value.push color
 
       # Set the explosion color, too
@@ -182,7 +182,7 @@ class ParticleMesh
       for particle in @geometry.vertices
         path = particle.path
 
-        particle.lerpN += 0.15
+        particle.lerpN += constants.PARTICLE_SPEED
         if particle.lerpN > 1
           particle.lerpN = 0
           particle.moveIndex = particle.nextIndex

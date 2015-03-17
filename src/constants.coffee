@@ -6,5 +6,8 @@ module.exports =
     b: new THREE.Color 0x008EAF
     g: new THREE.Color 0x00CA35
     p: new THREE.Color 0xDC0068
-
   COLOUR_TYPES: [ 'r', 'o','b', 'g', 'p' ]
+
+  PARTICLE_SPEED: 0.3
+  NUM_TRAIL_PARTICLES: 12
+  TRAIL_OPACITY_MULTIPLIER: 0.083# this is just 1.0 / NUM_TRAIL_PARTICLES
