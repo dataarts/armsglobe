@@ -14,18 +14,12 @@ overlay = document.getElementById 'visualization'
 glContainer = document.getElementById 'glContainer'
 
 # Visualization components that need to be accessible throughout this module
-mapIndexedImage = null
-mapOutlineImage = null
 rotating = null
 renderer = null
 scene = null
 camera = null
 visualizationMesh = null
 progressViz = null
-
-# contains a list of country codes with their matching country names
-isoFile = 'country_iso3166.json'
-latlonFile = 'country_lat_lon.json'
 
 # Holds all the data we get back from the server
 _countryLookup = null
@@ -36,29 +30,24 @@ _sampleData = null
 if not Detector.webgl
   Detector.addGetWebGLMessage()
 else
-  # ensure the map images are loaded first!!
-  mapIndexedImage = new Image()
-  mapIndexedImage.src = 'images/map_indexed.png'
+  dataLoading.loadCountryCodes 'country_iso3166.json', ( isoData ) ->
+    _countryLookup = isoData
+    dataLoading.loadWorldPins 'country_lat_lon.json', ( latLonData ) ->
+      _latLonData = latLonData
+      dataLoading.loadRandomizedContentData 200, _countryLookup, ( sampleData ) ->
+        _sampleData = sampleData
 
-  mapIndexedImage.onload = ->
+        initScene()
+        visualize.initMeshPool( 100, visualizationMesh )
 
-    mapOutlineImage = new Image()
-    mapOutlineImage.src = 'images/map_outline.png'
-    mapOutlineImage.onload = ->
-      dataLoading.loadCountryCodes isoFile, ( isoData ) ->
-        _countryLookup = isoData
-        dataLoading.loadWorldPins latlonFile, ( latLonData ) ->
-          _latLonData = latLonData
-          dataLoading.loadRandomizedContentData 200, _countryLookup, ( sampleData ) ->
-            _sampleData = sampleData
-            initScene()
-            visualize.initMeshPool( 100, visualizationMesh )
+        # Render our React components
+        reactInit()
 
-            # Render our React components
-            reactInit()
+        countryData = geopins.loadGeoData _latLonData, _countryLookup
+        visualize.buildDataVizGeometries _sampleData, countryData
 
-            animate()
-            startDataPump()
+        animate()
+        startDataPump()
 
 # used with the data pump
 currIndexIntoData = 0
@@ -73,6 +62,7 @@ startDataPump = ->
     visualize.initVisualization( _sampleData.slice( currIndexIntoData, endIndex ) )
     progressViz.handleProgressUpdate( endIndex / _sampleData.length )
     currIndexIntoData = (currIndexIntoData + 5) % _sampleData.length
+    return
   , 500
 
 # All the initialization stuff for THREE.js
@@ -103,30 +93,7 @@ initScene = ->
   rotating = new THREE.Object3D()
   scene.add rotating
 
-  lookupCanvas = document.createElement 'canvas'
-  lookupCanvas.width = 256
-  lookupCanvas.height = 1
-
-  lookupTexture = new THREE.Texture lookupCanvas
-  lookupTexture.magFilter = THREE.NearestFilter
-  lookupTexture.minFilter = THREE.NearestFilter
-  lookupTexture.needsUpdate = true
-
-  indexedMapTexture = new THREE.Texture mapIndexedImage
-  indexedMapTexture.needsUpdate = true
-  indexedMapTexture.magFilter = THREE.NearestFilter
-  indexedMapTexture.minFilter = THREE.NearestFilter
-
-  outlinedMapTexture = new THREE.Texture mapOutlineImage
-  outlinedMapTexture.needsUpdate = true
-
-  uniforms =
-    'mapIndex': { type: 't', value: indexedMapTexture  }
-    'lookup': { type: 't', value: lookupTexture }
-    'outline': { type: 't', value: outlinedMapTexture }
-    'outlineLevel': {type: 'f', value: 1 }
-
-  shaderMaterial = new THREE.MeshLambertMaterial { map: outlinedMapTexture }
+  shaderMaterial = new THREE.MeshLambertMaterial { map: THREE.ImageUtils.loadTexture 'images/map_outline.png' }
 
   # Create the backing (sphere)
   sphere = new THREE.Mesh( new THREE.SphereGeometry( 100, 40, 40 ), shaderMaterial )
@@ -136,9 +103,6 @@ initScene = ->
   sphere.rotation.z = Math.PI
   sphere.id = "base"
   rotating.add sphere
-
-  countryData = geopins.loadGeoData _latLonData, _countryLookup
-  visualize.buildDataVizGeometries _sampleData, countryData
 
   visualizationMesh = new THREE.Object3D()
   rotating.add visualizationMesh
