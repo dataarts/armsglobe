@@ -52,8 +52,7 @@ else
           dataLoading.loadRandomizedContentData 200, _countryLookup, ( sampleData ) ->
             _sampleData = sampleData
             initScene()
-            visualize.init( scene )
-            visualize.initMeshPool( 100 )
+            visualize.initMeshPool( 100, visualizationMesh )
 
             # Render our React components
             reactInit()
@@ -71,7 +70,7 @@ startDataPump = ->
     if endIndex > _sampleData.length
       endIndex = _sampleData.length
 
-    visualize.selectVisualization( _sampleData.slice( currIndexIntoData, endIndex ), visualizationMesh )
+    visualize.initVisualization( _sampleData.slice( currIndexIntoData, endIndex ) )
     progressViz.handleProgressUpdate( endIndex / _sampleData.length )
     currIndexIntoData = (currIndexIntoData + 5) % _sampleData.length
   , 500
@@ -188,7 +187,7 @@ animate = ->
   requestAnimationFrame animate
   renderer.render scene, camera
 
-  rotating.traverse ( mesh ) ->
+  visualizationMesh.traverse ( mesh ) ->
     if mesh? and mesh.update?
       mesh.update()
 

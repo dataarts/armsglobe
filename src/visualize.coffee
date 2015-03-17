@@ -3,19 +3,12 @@ vizLines = require './visualize_lines'
 
 _meshPool = []
 
-# Local copy of the main scene which we need for memory management.
-# Injected from main.coffee via init()
-_scene = null
-
 # Used to keep track of which types we're not currently displaying
 _typeStatus = {}
 for type in constants.COLOUR_TYPES
   _typeStatus[ type ] = true
 
 module.exports =
-  init: ( scene ) ->
-    _scene = scene
-
   buildDataVizGeometries: ( linearData, countryData ) ->
     loadLayer = document.getElementById 'loading'
     count = 0
@@ -37,10 +30,10 @@ module.exports =
     loadLayer.style.display = 'none'
     return
 
-  initMeshPool: ( poolSize ) ->
-    _meshPool.push new ParticleMesh() for i in [0...poolSize]
+  initMeshPool: ( poolSize, visualizationMesh ) ->
+    _meshPool.push new ParticleMesh( visualizationMesh ) for i in [0...poolSize]
 
-  getVisualizedMesh: ( linearData, callback ) ->
+  initParticleViz: ( linearData ) ->
     return null if not linearData.lineGeometry?
     # Don't display if we've toggled this type off
     return null if not _typeStatus[ linearData.colour ]
@@ -78,12 +71,12 @@ module.exports =
       meshObj.attributes.alpha.needsUpdate = true
       meshObj.attributes.customColor.needsUpdate = true
 
-      return callback meshObj.splineOutline
+      meshObj.vizMesh.add meshObj.splineOutline
 
-  selectVisualization: ( linearData, visualizationMesh ) ->
+  initVisualization: ( linearData ) ->
     # build the meshes. One for each entry in our data
     for data in linearData
-      module.exports.getVisualizedMesh data, _addMeshToViz.bind( null, visualizationMesh )
+      module.exports.initParticleViz data
 
   toggleVisualizationType: ( type, active ) ->
     _typeStatus[ type ] = active
@@ -91,10 +84,6 @@ module.exports =
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # HELPER METHODS
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-_addMeshToViz = ( viz, mesh ) ->
-  viz.add mesh if mesh?
-
 _getMeshFromPool = ( callback ) ->
   if _meshPool.length > 0
     callback _meshPool.pop()
@@ -110,7 +99,7 @@ _returnMeshToPool = ( mesh ) ->
   mesh.attributes.customColor.value = []
 
   # have to remove from the scene or else bad things happen
-  _scene.remove mesh.splineOutline
+  mesh.vizMesh.remove mesh.splineOutline
 
   _meshPool.push mesh
 
@@ -121,7 +110,7 @@ _getColourFromTypeStr = ( colorStr ) ->
   return colour
 
 class ParticleMesh
-  constructor: ->
+  constructor: ( @vizMesh ) ->
     @linesGeo = new THREE.Geometry()
     @particlesGeo = new THREE.Geometry()
     # Particle size now set in custom shader
