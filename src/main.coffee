@@ -153,7 +153,7 @@ if not Detector.webgl
   Detector.addGetWebGLMessage()
 else
   initScene()
-  visualize.initMeshPool( 100, visualizationMesh )
+  visualize.initMeshPool( constants.MESH_POOL_SIZE, visualizationMesh )
 
   # Render our React components
   reactInit()
