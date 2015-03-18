@@ -1,6 +1,8 @@
 constants = require './constants'
 vizLines = require './visualize_lines'
 
+vec3_origin = new THREE.Vector3 0, 0, 0
+
 _meshPool = []
 
 # Used to keep track of which types we're not currently displaying
@@ -170,7 +172,7 @@ class ParticleMesh
       color: 0xffffff
       transparent: true
       opacity: 0.75
-    explosionGeo = new THREE.SphereGeometry 3, 32, 32
+    explosionGeo = new THREE.RingGeometry 5, 4, 32
     @explosionSphere = new THREE.Mesh explosionGeo, explosionMat
     @explosionSphere.complete = false
     @explosionSphere.lerpN = 0
@@ -239,6 +241,7 @@ class ParticleMesh
     color = @attributes.customColor.value[0].getHex()
 
     @explosionSphere.position.set finalPt.x, finalPt.y, finalPt.z
+    @explosionSphere.lookAt vec3_origin
     @explosionUpdateId = window.setInterval( @explosionSphere.update.bind( @explosionSphere ), 16 )
     @vizMesh.add @explosionSphere
 
