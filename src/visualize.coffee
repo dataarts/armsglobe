@@ -102,7 +102,9 @@ _returnMeshToPool = ( mesh ) ->
   mesh.particlesGeo.vertices = []
   mesh.pSystem.systemComplete = false
   mesh.explosionSphere.complete = false
-  mesh.explosionSphere.lerpN = 0
+  mesh.explosionSphere.innerRadius = 1
+  mesh.explosionSphere.outerRadius = 2
+  mesh.explosionSphere.material.opacity = 1.0
   mesh.attributes.alpha.value = []
   mesh.attributes.customColor.value = []
 
@@ -171,21 +173,34 @@ class ParticleMesh
     explosionMat = new THREE.MeshBasicMaterial
       color: 0xffffff
       transparent: true
-      opacity: 0.75
-    explosionGeo = new THREE.RingGeometry 5, 4, 32
+      opacity: 1.0
+    explosionGeo = new THREE.RingGeometry 2, 1, 32
     @explosionSphere = new THREE.Mesh explosionGeo, explosionMat
     @explosionSphere.complete = false
-    @explosionSphere.lerpN = 0
+    @explosionSphere.innerRadius = 1
+    @explosionSphere.outerRadius = 2
 
     @explosionSphere.update = ->
       return if @complete
 
-      @lerpN += constants.PARTICLE_SPEED
-      if @lerpN > 5
+      if not @visible
+        @visible = true
+
+      if @innerRadius > 10
         @complete = true
+        @visible = false
+        @innerRadius = 1
+        @outerRadius = 2
         @dispatchEvent { type: 'ExplosionComplete' }
         return
 
+      # we purposely reverse the arguments here so that we turn the geometry
+      # inside-out. This allows us to position things the way we want
+      @innerRadius += constants.PARTICLE_SPEED
+      @outerRadius += constants.PARTICLE_SPEED
+      @geometry = new THREE.RingGeometry @outerRadius, @innerRadius, 32
+
+      @material.opacity -= 0.02
       return
 
 
