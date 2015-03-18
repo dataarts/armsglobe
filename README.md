@@ -30,7 +30,7 @@ To have it watch for changes and automatically rebuild.
 ## TODOs
 
 * [ ] Allow source/destination data to be specified as lat/long, rather than country names
-* [ ] Highlight the destination country when the particle "hits" it
+* [x] Highlight the destination country when the particle "hits" it
 * [x] Create subtle trail effect for particles
 
 ## Notes
