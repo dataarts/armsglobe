@@ -179,6 +179,10 @@ class ParticleMesh
       # no point doing all the calculations if the particle is already done
       return if @systemComplete
 
+      # Ensure we're visible
+      if not @visible
+        @visible = true
+
       for particle in @geometry.vertices
         path = particle.path
 
@@ -194,6 +198,10 @@ class ParticleMesh
             # Even though there are multiple particles in the system now, we still
             # do things this way as we don't really care if the "trail" has completed
             @systemComplete = true
+
+            # Make ourselves invisible. This resolves an issue where a pooled mesh
+            # would "flicker" when being reset
+            @visible = false
             @dispatchEvent { type: 'ParticleSystemComplete' }
             return
 
