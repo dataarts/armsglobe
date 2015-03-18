@@ -196,12 +196,12 @@ class ParticleMesh
 
       # we purposely reverse the arguments here so that we turn the geometry
       # inside-out. This allows us to position things the way we want
-      @innerRadius += constants.PARTICLE_SPEED
-      @outerRadius += constants.PARTICLE_SPEED
+      @innerRadius += constants.PARTICLE_SPEED*2
+      @outerRadius += constants.PARTICLE_SPEED*2
       @geometry.dispose()
       @geometry = new THREE.RingGeometry @outerRadius, @innerRadius, 32
 
-      @material.opacity -= 0.02
+      @material.opacity -= 0.05
       return
 
 
