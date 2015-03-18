@@ -99,10 +99,13 @@ _returnMeshToPool = ( mesh ) ->
   mesh.linesGeo.vertices = []
   mesh.particlesGeo.vertices = []
   mesh.pSystem.systemComplete = false
+  mesh.explosionSphere.complete = false
+  mesh.explosionSphere.lerpN = 0
   mesh.attributes.alpha.value = []
   mesh.attributes.customColor.value = []
 
-  mesh.stopParticleUpdates()
+  window.clearInterval mesh.particleUpdateId
+  window.clearInterval mesh.explosionUpdateId
 
   # have to remove from the scene or else bad things happen
   mesh.vizMesh.remove mesh.splineOutline
@@ -119,6 +122,7 @@ _getColourFromTypeStr = ( colorStr ) ->
 class ParticleMesh
   constructor: ( @vizMesh ) ->
     @particleUpdateId = null
+    @explosionUpdateId = null
     @linesGeo = new THREE.Geometry()
     @particlesGeo = new THREE.Geometry()
     # Particle size now set in custom shader
@@ -168,6 +172,20 @@ class ParticleMesh
       opacity: 0.75
     explosionGeo = new THREE.SphereGeometry 3, 32, 32
     @explosionSphere = new THREE.Mesh explosionGeo, explosionMat
+    @explosionSphere.complete = false
+    @explosionSphere.lerpN = 0
+
+    @explosionSphere.update = ->
+      return if @complete
+
+      @lerpN += constants.PARTICLE_SPEED
+      if @lerpN > 5
+        @complete = true
+        @dispatchEvent { type: 'ExplosionComplete' }
+        return
+
+      return
+
 
     @pSystem.addEventListener( 'ParticleSystemComplete', @runExplosion.bind( this ) )
     @explosionSphere.addEventListener( 'ExplosionComplete', _returnMeshToPool.bind( this, this ) )
@@ -221,17 +239,9 @@ class ParticleMesh
     color = @attributes.customColor.value[0].getHex()
 
     @explosionSphere.position.set finalPt.x, finalPt.y, finalPt.z
-
-    setTimeout( =>
-      @explosionSphere.dispatchEvent { type: 'ExplosionComplete' }
-    , 1000 )
-
+    @explosionUpdateId = window.setInterval( @explosionSphere.update.bind( @explosionSphere ), 16 )
     @vizMesh.add @explosionSphere
 
   startParticleUpdates: ->
     # 16ms interval is approx a 60FPS refresh rate
     @particleUpdateId = window.setInterval( @pSystem.update.bind( @pSystem ), 16 )
-
-  stopParticleUpdates: ->
-    if @particleUpdateId?
-      window.clearInterval @particleUpdateId
