@@ -6,7 +6,7 @@ module.exports = ( grunt ) ->
     pkg: grunt.file.readJSON 'package.json'
 
     clean:
-      [ 'build/tmp/components', 'build/tmp', 'build/*.js' ]
+      [ 'build/tmp/components', 'build/tmp', 'build/*.js', 'public/<%= pkg.name %>.min.js' ]
 
     cjsx:
       options:
@@ -54,7 +54,7 @@ module.exports = ( grunt ) ->
 
       dist:
         files:
-          'build/<%= pkg.name %>.min.js': [ '<%= browserify.options.destFile %>' ]
+          'public/<%= pkg.name %>.min.js': [ '<%= browserify.options.destFile %>' ]
 
     watch:
       files: [
