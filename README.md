@@ -5,10 +5,11 @@ This fork attempts to make the globe data-agnostic so that users can simply prov
 
 ## Building
 
-To build this application you'll need an up-to-date copy of [Node.js](http://nodejs.org/), [Grunt CLI](http://gruntjs.com/), and [CoffeeScript](http://coffeescript.org/). Once all these are installed, simply run the following from within the `dataglobe` directory:
+To build this application you'll need an up-to-date copy of [Node.js](http://nodejs.org/), [Grunt CLI](http://gruntjs.com/), [Bower](http://bower.io/), and [CoffeeScript](http://coffeescript.org/). Once all these are installed, simply run the following from within the `dataglobe` directory:
 
 ```
 $ npm install
+$ bower install
 $ grunt
 ```
 And everything will be built for you.
