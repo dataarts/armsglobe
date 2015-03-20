@@ -7,4 +7,5 @@ hostery-files
 .hostery-config
 
 node_modules/
+bower_components/
 build/

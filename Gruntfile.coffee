@@ -1,4 +1,5 @@
 # Gruntfile for building the dataglobe project
+us = require 'underscore'
 
 module.exports = ( grunt ) ->
 
@@ -6,7 +7,17 @@ module.exports = ( grunt ) ->
     pkg: grunt.file.readJSON 'package.json'
 
     clean:
-      [ 'build/tmp/components', 'build/tmp', 'build/*.js', 'public/<%= pkg.name %>.min.js' ]
+      [ 'build/tmp/components', 'build/tmp', 'build/*.js', 'public/*.js' ]
+
+    bower_concat:
+      all:
+        dest: 'build/bower.js'
+        # nice little callback to look for/use minified versions when available
+        callback: ( mainFiles, component ) ->
+          us.map( mainFiles, ( filepath ) ->
+            min = filepath.replace( /\.js$/, '.min.js' )
+            if grunt.file.exists( min ) then return min else return filepath
+          )
 
     cjsx:
       options:
@@ -55,6 +66,7 @@ module.exports = ( grunt ) ->
       dist:
         files:
           'public/<%= pkg.name %>.min.js': [ '<%= browserify.options.destFile %>' ]
+          'public/thirdparty.min.js': [ '<%= bower_concat.all.dest %>' ]
 
     watch:
       files: [
@@ -70,5 +82,6 @@ module.exports = ( grunt ) ->
   grunt.loadNpmTasks 'grunt-contrib-uglify'
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-contrib-clean'
+  grunt.loadNpmTasks 'grunt-bower-concat'
 
-  grunt.registerTask 'default', [ 'clean', 'cjsx', 'coffee', 'browserify', 'uglify' ]
+  grunt.registerTask 'default', [ 'clean', 'bower_concat', 'cjsx', 'coffee', 'browserify', 'uglify' ]
