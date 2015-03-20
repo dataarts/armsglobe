@@ -19,6 +19,13 @@ module.exports = ( grunt ) ->
             if grunt.file.exists( min ) then return min else return filepath
           )
 
+    concat:
+      options:
+        separator: ';'
+      dist:
+        src: ['<%= bower_concat.all.dest %>', 'thirdparty/*.js']
+        dest: 'build/thirdparty.js'
+
     cjsx:
       options:
         bare: true
@@ -66,7 +73,7 @@ module.exports = ( grunt ) ->
       dist:
         files:
           'public/<%= pkg.name %>.min.js': [ '<%= browserify.options.destFile %>' ]
-          'public/thirdparty.min.js': [ '<%= bower_concat.all.dest %>' ]
+          'public/thirdparty.min.js': [ '<%= concat.dist.dest %>' ]
 
     watch:
       files: [
@@ -83,5 +90,6 @@ module.exports = ( grunt ) ->
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-bower-concat'
+  grunt.loadNpmTasks 'grunt-contrib-concat'
 
-  grunt.registerTask 'default', [ 'clean', 'bower_concat', 'cjsx', 'coffee', 'browserify', 'uglify' ]
+  grunt.registerTask 'default', [ 'clean', 'bower_concat', 'concat', 'cjsx', 'coffee', 'browserify', 'uglify' ]
