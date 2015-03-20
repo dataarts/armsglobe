@@ -7,7 +7,8 @@ module.exports = ( grunt ) ->
     pkg: grunt.file.readJSON 'package.json'
 
     clean:
-      [ 'build/tmp/components', 'build/tmp', 'build/*.js', 'public/*.js' ]
+      all: [ 'build/tmp/components', 'build/tmp', 'build/*.js', 'public/*.js' ]
+      incr: [ 'build/tmp/components', 'build/tmp', 'build/*.js', 'public/public/<%= pkg.name %>.min.js' ]
 
     bower_concat:
       all:
@@ -70,10 +71,14 @@ module.exports = ( grunt ) ->
       options:
         banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
 
-      dist:
+      all:
         files:
           'public/<%= pkg.name %>.min.js': [ '<%= browserify.options.destFile %>' ]
           'public/thirdparty.min.js': [ '<%= concat.dist.dest %>' ]
+
+      incr:
+        files:
+          'public/<%= pkg.name %>.min.js': [ '<%= browserify.options.destFile %>' ]
 
     watch:
       files: [
@@ -81,7 +86,7 @@ module.exports = ( grunt ) ->
         'src/**/*.coffee'
         'src/**/*.cjsx'
       ]
-      tasks: 'default'
+      tasks: 'incremental'
 
   grunt.loadNpmTasks 'grunt-coffee-react'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
@@ -92,4 +97,20 @@ module.exports = ( grunt ) ->
   grunt.loadNpmTasks 'grunt-bower-concat'
   grunt.loadNpmTasks 'grunt-contrib-concat'
 
-  grunt.registerTask 'default', [ 'clean', 'bower_concat', 'concat', 'cjsx', 'coffee', 'browserify', 'uglify' ]
+  grunt.registerTask 'default', [
+    'clean:all'
+    'bower_concat:all'
+    'concat:dist'
+    'cjsx'
+    'coffee'
+    'browserify:production'
+    'uglify:all'
+  ]
+
+  grunt.registerTask 'incremental', [
+    'clean:incr'
+    'cjsx'
+    'coffee'
+    'browserify:production'
+    'uglify:incr'
+  ]
