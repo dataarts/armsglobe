@@ -45,7 +45,7 @@ module.exports =
       this.rotateX = rotateXMax
       rotateVX *= -0.95
 
-  onDocumentMouseMove: ( event ) ->
+  onDocumentMouseMove: ( camera, event ) ->
     pmouseX = mouseX
     pmouseY = mouseY
 

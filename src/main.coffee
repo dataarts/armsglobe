@@ -101,7 +101,7 @@ initScene = ->
   scene.add camera
 
   # Event listeners
-  masterContainer.addEventListener 'mousemove', mouseKeyboard.onDocumentMouseMove, true
+  masterContainer.addEventListener 'mousemove', mouseKeyboard.onDocumentMouseMove.bind( null, camera ), true
   masterContainer.addEventListener 'mousedown', mouseKeyboard.onDocumentMouseDown, true
   masterContainer.addEventListener 'mouseup', mouseKeyboard.onDocumentMouseUp, false
 
