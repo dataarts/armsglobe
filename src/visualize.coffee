@@ -174,7 +174,8 @@ class ParticleMesh
       color: 0xffffff
       transparent: true
       opacity: 1.0
-    explosionGeo = new THREE.RingGeometry 2, 1, 32
+      side: THREE.BackSide
+    explosionGeo = new THREE.RingGeometry 1, 2, 32
     @explosionSphere = new THREE.Mesh explosionGeo, explosionMat
     @explosionSphere.complete = false
     @explosionSphere.innerRadius = 1
@@ -194,12 +195,10 @@ class ParticleMesh
         @dispatchEvent { type: 'ExplosionComplete' }
         return
 
-      # we purposely reverse the arguments here so that we turn the geometry
-      # inside-out. This allows us to position things the way we want
       @innerRadius += constants.PARTICLE_SPEED*2
       @outerRadius += constants.PARTICLE_SPEED*2
       @geometry.dispose()
-      @geometry = new THREE.RingGeometry @outerRadius, @innerRadius, 32
+      @geometry = new THREE.RingGeometry @innerRadius, @outerRadius, 32
 
       @material.opacity -= 0.05
       return
