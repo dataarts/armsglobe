@@ -29,21 +29,61 @@ _countryLookup = null
 _latLonData = null
 _sampleData = null
 
-# used with the data pump
-currIndexIntoData = 0
-nextIndexIntoData = 5
+# Used with our data pump. Allows us to evenly distribute the points
+_minDataTimestamp = null
+_maxDataTimestamp = null
+_remainingData = null
 
 startDataPump = ->
-  window.setInterval ->
-    endIndex = currIndexIntoData + 5
-    if endIndex > _sampleData.length
-      endIndex = _sampleData.length
+  # How many times we'll be polling for data in a single "loop"
+  numPollingIntervals = constants.VIZ_LOOP_LENGTH / constants.VIZ_POLLING_INTERVAL
 
-    visualize.initVisualization( _sampleData.slice( currIndexIntoData, endIndex ) )
-    progressViz.handleProgressUpdate( endIndex / _sampleData.length )
-    currIndexIntoData = (currIndexIntoData + 5) % _sampleData.length
+  # keep track of the current polling interval for the progress viz
+  currPollingInterval = 0
+
+  # How much "real time" elapses in the data set
+  timeRangeInData = _maxDataTimestamp.getTime() - _minDataTimestamp.getTime()
+
+  # How much "real time" we'll consume on each tick of the data pump
+  tickLength = Math.floor( timeRangeInData / numPollingIntervals )
+
+  # keep track of our last "start time"
+  lastTime = _minDataTimestamp.getTime()
+
+  window.setInterval ->
+    dataToViz = getDataForTick( lastTime, lastTime + tickLength )
+    lastTime += tickLength
+    currPollingInterval++
+
+    if lastTime >= _maxDataTimestamp.getTime()
+      lastTime = _minDataTimestamp.getTime()
+      currPollingInterval = 0
+
+    visualize.initVisualization( dataToViz )
+    progressViz.handleProgressUpdate( currPollingInterval / numPollingIntervals )
     return
-  , 500
+  , constants.VIZ_POLLING_INTERVAL
+
+getDataForTick = ( startTime, endTime ) ->
+  # We could be smarter about this algorithm and keep track of our last
+  # index into the data to speed up processing, but given that we'll only
+  # be operating on a few thousand points at a time, we kept it fairly simple
+
+  # If we're starting at the beginning, all our data is technically "remaining"
+  if startTime == _minDataTimestamp.getTime()
+    _remainingData = _sampleData
+
+  # This will split our array into two pieces: those points which fall into
+  # the given "tick", and those that don't. Since time's advancing we know that
+  # once a point satisfies this condition we won't use it again until we loop
+  partitions = us.partition( _remainingData, ( point ) ->
+    time = point.time.getTime()
+    return time >= startTime and time <= endTime
+  )
+
+  _remainingData = partitions[1]
+
+  return partitions[0]
 
 # All the initialization stuff for THREE.js
 initScene = ->
@@ -165,8 +205,10 @@ else
     _countryLookup = isoData
     dataLoading.loadWorldPins 'country_lat_lon.json', ( latLonData ) ->
       _latLonData = latLonData
-      dataLoading.loadRandomizedContentData 200, _countryLookup, ( sampleData ) ->
+      dataLoading.loadRandomizedContentData 2000, _countryLookup, ( sampleData ) ->
         _sampleData = us.sortBy sampleData, 'time'
+        _minDataTimestamp = _sampleData[0].time
+        _maxDataTimestamp = _sampleData[ _sampleData.length - 1 ].time
         countryData = geopins.loadGeoData _latLonData, _countryLookup
         visualize.buildDataVizGeometries _sampleData, countryData
 

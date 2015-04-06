@@ -16,3 +16,7 @@ module.exports =
 
   # For generating random dates
   ONE_WEEK_IN_MILLIS: 604800000
+
+  # Determines how long (in ms) we want one "loop" of the viz to run
+  VIZ_LOOP_LENGTH: 300000 # default: 5min
+  VIZ_POLLING_INTERVAL: 500
