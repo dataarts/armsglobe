@@ -32,13 +32,13 @@ To have it watch for changes and automatically rebuild.
 
 The visualization expects data to be of the following format:
 
-```json
+```
 [
   {
-    src: <country name>,
-    dest: <country name>,
-    colour: ['r'|'o'|'b'|'g'|'p'],
-    time: <timestamp>
+    "src": <country name>,
+    "dest": <country name>,
+    "colour": ["r"|"o"|"b"|"g"|"p"],
+    "time": <timestamp>
   },
   // ... etc.
 ]
