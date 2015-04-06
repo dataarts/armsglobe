@@ -13,3 +13,6 @@ module.exports =
   TRAIL_OPACITY_MULTIPLIER: 0.083 # this is just 1.0 / NUM_TRAIL_PARTICLES
 
   MESH_POOL_SIZE: 100
+
+  # For generating random dates
+  ONE_WEEK_IN_MILLIS: 604800000

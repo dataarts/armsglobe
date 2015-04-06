@@ -14,11 +14,15 @@ module.exports =
   loadRandomizedContentData: ( numPoints, countries, callback ) ->
     toRet = []
     keys = Object.keys countries
+    now = Date.now()
 
     for idx in [0...numPoints]
       srcIdx = Math.floor( Math.random() * keys.length )
       destIdx = Math.floor( Math.random() * keys.length )
       colourIdx = constants.COLOUR_TYPES[ Math.floor( Math.random() * constants.COLOUR_TYPES.length ) ]
+
+      # generate a random timestamp within the last week
+      backInTime = Math.floor( Math.random() * constants.ONE_WEEK_IN_MILLIS )
 
       # account for the rare cases where we get the same index
       if srcIdx is destIdx
@@ -28,6 +32,7 @@ module.exports =
       point.src = countries[ keys[ srcIdx ] ]
       point.dest = countries[ keys[ destIdx ] ]
       point.colour = colourIdx
+      point.time = new Date( now - backInTime )
       toRet.push point
 
     callback toRet

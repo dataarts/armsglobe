@@ -13,7 +13,8 @@
   "dependencies": {
     "express": "^4.11.1",
     "react-tween-state": "0.0.4",
-    "serve-static": "^1.8.1"
+    "serve-static": "^1.8.1",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "grunt": "^0.4.5",

@@ -1,3 +1,6 @@
+# 3rd Party libraries
+us = require 'underscore'
+
 # All our dependencies
 dataLoading = require './dataloading'
 mouseKeyboard = require './mousekeyboard'
@@ -163,7 +166,7 @@ else
     dataLoading.loadWorldPins 'country_lat_lon.json', ( latLonData ) ->
       _latLonData = latLonData
       dataLoading.loadRandomizedContentData 200, _countryLookup, ( sampleData ) ->
-        _sampleData = sampleData
+        _sampleData = us.sortBy sampleData, 'time'
         countryData = geopins.loadGeoData _latLonData, _countryLookup
         visualize.buildDataVizGeometries _sampleData, countryData
 
