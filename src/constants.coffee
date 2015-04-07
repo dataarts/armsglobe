@@ -15,9 +15,9 @@ module.exports =
   # Constants for the explosion effect (mostly just "magic numbers" that were
   # determined by trial and error)
   EXPLOSION_INITIAL_LERP_FACTOR: 0.06
-  EXPLOSION_INCREMENTAL_LERP: 0.0035
-  EXPLOSION_OPACITY_LERP: 0.2
-  EXPLOSION_ROTATION_ANGLE: 0.06
+  EXPLOSION_INCREMENTAL_LERP: 0.0018
+  EXPLOSION_OPACITY_LERP: 0.1
+  EXPLOSION_ROTATION_ANGLE: 0.12
 
   MESH_POOL_SIZE: 100
 
