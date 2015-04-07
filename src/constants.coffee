@@ -12,6 +12,12 @@ module.exports =
   NUM_TRAIL_PARTICLES: 12
   TRAIL_OPACITY_MULTIPLIER: 0.083 # this is just 1.0 / NUM_TRAIL_PARTICLES
 
+  # Constants for the explosion effect (mostly just "magic numbers" that were
+  # determined by trial and error)
+  EXPLOSION_INITIAL_LERP_FACTOR: 0.08
+  EXPLOSION_INCREMENTAL_LERP: 0.005
+  EXPLOSION_OPACITY_LERP: 0.05
+
   MESH_POOL_SIZE: 100
 
   # For generating random dates

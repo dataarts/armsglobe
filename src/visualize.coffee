@@ -102,8 +102,8 @@ _returnMeshToPool = ( mesh ) ->
   mesh.particlesGeo.vertices = []
   mesh.pSystem.systemComplete = false
   mesh.explosionSphere.complete = false
-  mesh.explosionSphere.innerRadius = 1
-  mesh.explosionSphere.outerRadius = 2
+  mesh.explosionSphere.lerpVal = constants.EXPLOSION_INITIAL_LERP_FACTOR
+  mesh.explosionSphere.finalPos = null
   mesh.explosionSphere.material.opacity = 1.0
   mesh.attributes.alpha.value = []
   mesh.attributes.customColor.value = []
@@ -174,12 +174,11 @@ class ParticleMesh
       color: 0xffffff
       transparent: true
       opacity: 1.0
-      side: THREE.BackSide
-    explosionGeo = new THREE.RingGeometry 1, 2, 32
+    explosionGeo = new THREE.SphereGeometry 5, 32, 32
     @explosionSphere = new THREE.Mesh explosionGeo, explosionMat
     @explosionSphere.complete = false
-    @explosionSphere.innerRadius = 1
-    @explosionSphere.outerRadius = 2
+    @explosionSphere.lerpVal = constants.EXPLOSION_INITIAL_LERP_FACTOR
+    @explosionSphere.finalPos = null
 
     @explosionSphere.update = ->
       return if @complete
@@ -187,20 +186,17 @@ class ParticleMesh
       if not @visible
         @visible = true
 
-      if @innerRadius > 10
+      if @lerpVal <= 0.0
         @complete = true
         @visible = false
-        @innerRadius = 1
-        @outerRadius = 2
         @dispatchEvent { type: 'ExplosionComplete' }
         return
 
-      @innerRadius += constants.PARTICLE_SPEED*2
-      @outerRadius += constants.PARTICLE_SPEED*2
-      @geometry.dispose()
-      @geometry = new THREE.RingGeometry @innerRadius, @outerRadius, 32
+      @lerpVal -= constants.EXPLOSION_INCREMENTAL_LERP
+      @position.set @finalPos.x, @finalPos.y, @finalPos.z
+      @position.lerp vec3_origin, @lerpVal
 
-      @material.opacity -= 0.05
+      @material.opacity -= constants.EXPLOSION_OPACITY_LERP
       return
 
 
@@ -255,8 +251,9 @@ class ParticleMesh
     finalPt = path[ path.length - 2 ]
     color = @attributes.customColor.value[0].getHex()
 
+    @explosionSphere.finalPos = finalPt.clone()
     @explosionSphere.position.set finalPt.x, finalPt.y, finalPt.z
-    @explosionSphere.lookAt vec3_origin
+    @explosionSphere.position.lerp vec3_origin, @explosionSphere.lerpVal
     @explosionUpdateId = window.setInterval( @explosionSphere.update.bind( @explosionSphere ), 16 )
     @vizMesh.add @explosionSphere
 
