@@ -2,6 +2,9 @@ constants = require './constants'
 vizLines = require './visualize_lines'
 
 vec3_origin = new THREE.Vector3 0, 0, 0
+vec3_x_axis = new THREE.Vector3 1, 0, 0
+vec3_y_axis = new THREE.Vector3 0, 1, 0
+vec3_z_axis = new THREE.Vector3 0, 0, 1
 
 _meshPool = []
 
@@ -104,6 +107,7 @@ _returnMeshToPool = ( mesh ) ->
   mesh.explosionSphere.complete = false
   mesh.explosionSphere.lerpVal = constants.EXPLOSION_INITIAL_LERP_FACTOR
   mesh.explosionSphere.finalPos = null
+  mesh.explosionSphere.rotationAxis = null
   mesh.explosionSphere.material.opacity = 1.0
   mesh.attributes.alpha.value = []
   mesh.attributes.customColor.value = []
@@ -180,6 +184,7 @@ class ParticleMesh
     @explosionSphere.complete = false
     @explosionSphere.lerpVal = constants.EXPLOSION_INITIAL_LERP_FACTOR
     @explosionSphere.finalPos = null
+    @explosionSphere.rotationAxis = null
 
     @explosionSphere.update = ->
       return if @complete
@@ -196,6 +201,8 @@ class ParticleMesh
       @lerpVal -= constants.EXPLOSION_INCREMENTAL_LERP
       @position.set @finalPos.x, @finalPos.y, @finalPos.z
       @position.lerp vec3_origin, @lerpVal
+
+      @rotateOnAxis @rotationAxis, constants.EXPLOSION_ROTATION_ANGLE
 
       # @material.opacity -= constants.EXPLOSION_OPACITY_LERP
       return
@@ -251,6 +258,13 @@ class ParticleMesh
     # The final array element is the origin, hence the -2 offset
     finalPt = path[ path.length - 2 ]
     color = @attributes.customColor.value[0].getHex()
+
+    # Decide which axis this explosion is going to rotate about
+    choice = Math.floor( Math.random() * 3 )
+    switch choice
+      when 0 then @explosionSphere.rotationAxis = vec3_x_axis
+      when 1 then @explosionSphere.rotationAxis = vec3_y_axis
+      when 2 then @explosionSphere.rotationAxis = vec3_z_axis
 
     @explosionSphere.finalPos = finalPt.clone()
     @explosionSphere.position.set finalPt.x, finalPt.y, finalPt.z
