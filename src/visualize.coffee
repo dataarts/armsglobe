@@ -174,6 +174,7 @@ class ParticleMesh
       color: 0xffffff
       transparent: true
       opacity: 1.0
+      map: THREE.ImageUtils.loadTexture 'images/explosion_texture.png'
     explosionGeo = new THREE.SphereGeometry 5, 32, 32
     @explosionSphere = new THREE.Mesh explosionGeo, explosionMat
     @explosionSphere.complete = false
@@ -196,7 +197,7 @@ class ParticleMesh
       @position.set @finalPos.x, @finalPos.y, @finalPos.z
       @position.lerp vec3_origin, @lerpVal
 
-      @material.opacity -= constants.EXPLOSION_OPACITY_LERP
+      # @material.opacity -= constants.EXPLOSION_OPACITY_LERP
       return
 
 
