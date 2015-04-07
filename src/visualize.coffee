@@ -136,15 +136,7 @@ class ParticleMesh
     # Particle size now set in custom shader
     # @particleSize = 150
 
-    @lineMat = new THREE.LineBasicMaterial
-      color: 0xffffff
-      opacity: 0.0
-      blending: THREE.AdditiveBlending
-      transparent: true
-      depthWrite: false
-      vertexColors: false
-      linewidth: 1
-    @splineOutline = new THREE.Line null, @lineMat
+    @splineOutline = new THREE.Line null, new THREE.LineBasicMaterial( { visible: false } )
 
     # Use custom shader to have the trail taper off in transparency
     @attributes =
