@@ -204,7 +204,10 @@ class ParticleMesh
 
       @rotateOnAxis @rotationAxis, constants.EXPLOSION_ROTATION_ANGLE
 
-      # @material.opacity -= constants.EXPLOSION_OPACITY_LERP
+      # Don't start fading out until we're half done
+      if @lerpVal <= constants.EXPLOSION_INITIAL_LERP_FACTOR / 2
+        @material.opacity -= constants.EXPLOSION_OPACITY_LERP
+
       return
 
 
