@@ -58,8 +58,9 @@ module.exports =
       particle.path = points
       meshObj.particlesGeo.vertices.push particle
 
-      # meshObj.traceLine.geometry.vertices = points.slice 0, 10
-      # meshObj.traceLine.geometry.verticesNeedUpdate = true
+      # "Bundle" our trace line points at the start
+      meshObj.traceLine.geometry.vertices = ( particle.clone() for num in [1..particle.path.length] )
+      meshObj.traceLineMat.opacity = 1.0
 
       meshObj.attributes.alpha.value.push 1.0
       meshObj.attributes.customColor.value.push color
@@ -114,6 +115,7 @@ _returnMeshToPool = ( mesh ) ->
   mesh.explosionSphere.finalPos = null
   mesh.explosionSphere.rotationAxis = null
   mesh.explosionSphere.material.opacity = 1.0
+  mesh.traceLine.geometry.vertices = []
   mesh.attributes.alpha.value = []
   mesh.attributes.customColor.value = []
 
@@ -174,7 +176,7 @@ class ParticleMesh
     # Trace line
     @traceLineMat = new THREE.LineBasicMaterial
       color: 0xffffff
-      opacity: 0.5
+      opacity: 1.0
       transparent: true
 
     @traceLine = new THREE.Line new THREE.Geometry(), @traceLineMat
@@ -192,7 +194,7 @@ class ParticleMesh
     @explosionSphere.finalPos = null
     @explosionSphere.rotationAxis = null
 
-    @explosionSphere.update = ->
+    @explosionSphere.update = ( traceLineMat ) ->
       return if @complete
 
       if not @visible
@@ -213,6 +215,7 @@ class ParticleMesh
       # Don't start fading out until we're half done
       if @lerpVal <= constants.EXPLOSION_INITIAL_LERP_FACTOR / 2
         @material.opacity -= constants.EXPLOSION_OPACITY_LERP
+        traceLineMat.opacity -= constants.EXPLOSION_OPACITY_LERP
 
       return
 
@@ -259,12 +262,9 @@ class ParticleMesh
         particle.copy currentPoint
         particle.lerp nextPoint, particle.lerpN
 
-      # update our trace line
-      # TODO: this won't work. See:
-      # http://stackoverflow.com/questions/14840026/dynamically-adding-vertices-to-a-line-in-three-js
-      # firstPt = @geometry.vertices[0]
-      # traceLine.geometry.vertices = firstPt.path.slice( 0, 10 )
-      # traceLine.geometry.verticesNeedUpdate = true
+        for index in [ particle.moveIndex...particle.path.length ]
+          traceLine.geometry.vertices[index].copy nextPoint
+        traceLine.geometry.verticesNeedUpdate = true
 
       @geometry.verticesNeedUpdate = true
 
@@ -285,7 +285,7 @@ class ParticleMesh
     @explosionSphere.finalPos = finalPt.clone()
     @explosionSphere.position.set finalPt.x, finalPt.y, finalPt.z
     @explosionSphere.position.lerp vec3_origin, @explosionSphere.lerpVal
-    @explosionUpdateId = window.setInterval( @explosionSphere.update.bind( @explosionSphere ), 16 )
+    @explosionUpdateId = window.setInterval( @explosionSphere.update.bind( @explosionSphere, @traceLineMat ), 16 )
     @vizMesh.add @explosionSphere
 
   startParticleUpdates: ->
