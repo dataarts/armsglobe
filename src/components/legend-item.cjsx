@@ -1,5 +1,7 @@
 # Component representing an individual legend item
 
+constants = require '../constants'
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # <LegendItem /> Component definition
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -56,25 +58,21 @@ module.exports = React.createClass
     switch @props.type
       when "r"
         itemText = 'Red'
-        @circleStyle.backgroundColor = '#ff1e00'
       when "o"
         itemText = 'Orange'
-        @circleStyle.backgroundColor = '#ff7f00'
       when "g"
         itemText = 'Green'
-        @circleStyle.backgroundColor = '#00ca35'
       when "b"
         itemText = 'Blue'
-        @circleStyle.backgroundColor = '#008eaf'
       when "p"
         itemText = 'Purple'
-        @circleStyle.backgroundColor = '#dc0068'
 
     if !@state.active
       @toggleLinkStyle.color = '#555'
       @circleStyle.backgroundColor = '#555'
     else
       @toggleLinkStyle.color = '#ddd'
+      @circleStyle.backgroundColor = '#' + constants.COLOUR_MAP[ @props.type ].getHexString()
 
     <li style={@legendItemStyle} className="series">
       <a style={@toggleLinkStyle} onClick={@handleLinkClick} href="#">
