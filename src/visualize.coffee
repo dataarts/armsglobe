@@ -58,6 +58,9 @@ module.exports =
       particle.path = points
       meshObj.particlesGeo.vertices.push particle
 
+      # meshObj.traceLine.geometry.vertices = points.slice 0, 10
+      # meshObj.traceLine.geometry.verticesNeedUpdate = true
+
       meshObj.attributes.alpha.value.push 1.0
       meshObj.attributes.customColor.value.push color
 
@@ -74,12 +77,14 @@ module.exports =
 
       # Set the explosion color, too
       meshObj.explosionSphere.material.color = color
+      meshObj.traceLineMat.color = color
 
       # since colours have been updated, tell THREE to force an update
       meshObj.attributes.alpha.needsUpdate = true
       meshObj.attributes.customColor.needsUpdate = true
 
       meshObj.vizMesh.add meshObj.splineOutline
+      meshObj.vizMesh.add meshObj.traceLine
       meshObj.startParticleUpdates()
 
   initVisualization: ( linearData ) ->
@@ -117,6 +122,7 @@ _returnMeshToPool = ( mesh ) ->
 
   # have to remove from the scene or else bad things happen
   mesh.vizMesh.remove mesh.splineOutline
+  mesh.vizMesh.remove mesh.traceLine
   mesh.vizMesh.remove mesh.explosionSphere
 
   _meshPool.push mesh
@@ -165,6 +171,14 @@ class ParticleMesh
     @splineOutline.add @pSystem
     @splineOutline.geometry = @linesGeo
 
+    # Trace line
+    @traceLineMat = new THREE.LineBasicMaterial
+      color: 0xffffff
+      opacity: 0.5
+      transparent: true
+
+    @traceLine = new THREE.Line new THREE.Geometry(), @traceLineMat
+
     # Elements for the explosion effect
     explosionMat = new THREE.MeshBasicMaterial
       color: 0xffffff
@@ -209,7 +223,7 @@ class ParticleMesh
     # This update method is what actually gets our points moving across the scene.
     # Once the point has finished its path, this method will emit a "ParticleSystemComplete"
     # event, to allow us to re-pool the mesh.
-    @pSystem.update = ->
+    @pSystem.update = ( traceLine ) ->
       # no point doing all the calculations if the particle is already done
       return if @systemComplete
 
@@ -245,7 +259,14 @@ class ParticleMesh
         particle.copy currentPoint
         particle.lerp nextPoint, particle.lerpN
 
-        @geometry.verticesNeedUpdate = true
+      # update our trace line
+      # TODO: this won't work. See:
+      # http://stackoverflow.com/questions/14840026/dynamically-adding-vertices-to-a-line-in-three-js
+      # firstPt = @geometry.vertices[0]
+      # traceLine.geometry.vertices = firstPt.path.slice( 0, 10 )
+      # traceLine.geometry.verticesNeedUpdate = true
+
+      @geometry.verticesNeedUpdate = true
 
   runExplosion: ->
     path = @particlesGeo.vertices[0].path
@@ -269,4 +290,4 @@ class ParticleMesh
 
   startParticleUpdates: ->
     # 16ms interval is approx a 60FPS refresh rate
-    @particleUpdateId = window.setInterval( @pSystem.update.bind( @pSystem ), 16 )
+    @particleUpdateId = window.setInterval( @pSystem.update.bind( @pSystem, @traceLine ), 16 )
