@@ -263,7 +263,9 @@ class ParticleMesh
         particle.lerp nextPoint, particle.lerpN
 
       for vertex, index in traceLine.geometry.vertices
-        vertex.copy nextPoint if index >= particle.moveIndex
+        if index >= particle.moveIndex
+          vertex.copy currentPoint
+          vertex.lerp nextPoint, particle.lerpN
       traceLine.geometry.verticesNeedUpdate = true
 
       @geometry.verticesNeedUpdate = true
