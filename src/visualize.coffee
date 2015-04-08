@@ -262,9 +262,9 @@ class ParticleMesh
         particle.copy currentPoint
         particle.lerp nextPoint, particle.lerpN
 
-        for index in [ particle.moveIndex...particle.path.length ]
-          traceLine.geometry.vertices[index].copy nextPoint
-        traceLine.geometry.verticesNeedUpdate = true
+      for vertex, index in traceLine.geometry.vertices
+        vertex.copy nextPoint if index >= particle.moveIndex
+      traceLine.geometry.verticesNeedUpdate = true
 
       @geometry.verticesNeedUpdate = true
 
