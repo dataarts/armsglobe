@@ -233,6 +233,7 @@ class ParticleMesh
       # Ensure we're visible
       if not @visible
         @visible = true
+        traceLine.visible = true
 
       for particle in @geometry.vertices
         path = particle.path
@@ -253,6 +254,7 @@ class ParticleMesh
             # Make ourselves invisible. This resolves an issue where a pooled mesh
             # would "flicker" when being reset
             @visible = false
+            traceLine.visible = false
             @dispatchEvent { type: 'ParticleSystemComplete' }
             return
 
