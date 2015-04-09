@@ -16,7 +16,7 @@ module.exports = function( grunt ) {
         dest: 'build/bower.js',
         // nice little callback to look for/use minified versions when available
         callback: function( mainFiles, component ) {
-          us.map( mainFiles, function( filepath ) {
+          return us.map( mainFiles, function( filepath ) {
             min = filepath.replace( /\.js$/, '.min.js' );
             if( grunt.file.exists( min ) ) {
               return min;
