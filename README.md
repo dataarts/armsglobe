@@ -51,10 +51,6 @@ Data does not need to be in any particular order; the visualization takes care o
 ## TODOs
 
 * [ ] Allow source/destination data to be specified as lat/long, rather than country names
+* [ ] Consider updating repo to use es6 with Babel, rather than CoffeeScript
 * [x] Highlight the destination country when the particle "hits" it
 * [x] Create subtle trail effect for particles
-
-## Notes
-
-* Data is currently fed into the visualization via `main.js:startDataPump()`. Eventually we'll want to replace that with a RESTful endpoint that is periodically polled for new data
-* `visualize.js:selectVisualization()` is the current entry point to add new lines to the visualization, while `visualize.js:getVisualizedMesh()` is the method that actually does the heavy lifting (current call stack is `main.js:startDataPump()` -> `visualize.js:selectVisualization()` -> `visualize.js:getVisualizedMesh()`)
