@@ -58,8 +58,6 @@ module.exports =
       particle.path = points
       meshObj.particlesGeo.vertices.push particle
 
-      # "Bundle" our trace line points at the start
-      meshObj.traceLine.geometry.vertices = ( particle.clone() for num in [1..particle.path.length] )
       meshObj.traceLineMat.opacity = 1.0
 
       meshObj.attributes.alpha.value.push 1.0
@@ -115,7 +113,6 @@ _returnMeshToPool = ( mesh ) ->
   mesh.explosionSphere.finalPos = null
   mesh.explosionSphere.rotationAxis = null
   mesh.explosionSphere.material.opacity = 1.0
-  mesh.traceLine.geometry.vertices = []
   mesh.attributes.alpha.value = []
   mesh.attributes.customColor.value = []
 
@@ -180,6 +177,7 @@ class ParticleMesh
       transparent: true
 
     @traceLine = new THREE.Line new THREE.Geometry(), @traceLineMat
+    @traceLine.geometry.vertices = ( vec3_origin.clone() for num in [1..100] )
 
     # Elements for the explosion effect
     explosionMat = new THREE.MeshBasicMaterial
