@@ -1,7 +1,7 @@
 .DS_Store
 app.yaml
 client
-coffeelint.json
+.jshintrc
 
 hostery-files
 .hostery-config
