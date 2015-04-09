@@ -58,6 +58,8 @@ module.exports =
       particle.path = points
       meshObj.particlesGeo.vertices.push particle
 
+      meshObj.traceLineMat.opacity = 1.0
+
       meshObj.attributes.alpha.value.push 1.0
       meshObj.attributes.customColor.value.push color
 
@@ -74,12 +76,14 @@ module.exports =
 
       # Set the explosion color, too
       meshObj.explosionSphere.material.color = color
+      meshObj.traceLineMat.color = color
 
       # since colours have been updated, tell THREE to force an update
       meshObj.attributes.alpha.needsUpdate = true
       meshObj.attributes.customColor.needsUpdate = true
 
       meshObj.vizMesh.add meshObj.splineOutline
+      meshObj.vizMesh.add meshObj.traceLine
       meshObj.startParticleUpdates()
 
   initVisualization: ( linearData ) ->
@@ -117,6 +121,7 @@ _returnMeshToPool = ( mesh ) ->
 
   # have to remove from the scene or else bad things happen
   mesh.vizMesh.remove mesh.splineOutline
+  mesh.vizMesh.remove mesh.traceLine
   mesh.vizMesh.remove mesh.explosionSphere
 
   _meshPool.push mesh
@@ -136,15 +141,7 @@ class ParticleMesh
     # Particle size now set in custom shader
     # @particleSize = 150
 
-    @lineMat = new THREE.LineBasicMaterial
-      color: 0xffffff
-      opacity: 0.0
-      blending: THREE.AdditiveBlending
-      transparent: true
-      depthWrite: false
-      vertexColors: false
-      linewidth: 1
-    @splineOutline = new THREE.Line null, @lineMat
+    @splineOutline = new THREE.Line null, new THREE.LineBasicMaterial( { visible: false } )
 
     # Use custom shader to have the trail taper off in transparency
     @attributes =
@@ -173,12 +170,21 @@ class ParticleMesh
     @splineOutline.add @pSystem
     @splineOutline.geometry = @linesGeo
 
+    # Trace line
+    @traceLineMat = new THREE.LineBasicMaterial
+      color: 0xffffff
+      opacity: 1.0
+      transparent: true
+
+    @traceLine = new THREE.Line new THREE.Geometry(), @traceLineMat
+    @traceLine.geometry.vertices = ( vec3_origin.clone() for num in [1..constants.TRACE_LINE_VERTEX_COUNT] )
+
     # Elements for the explosion effect
     explosionMat = new THREE.MeshBasicMaterial
       color: 0xffffff
       transparent: true
       opacity: 1.0
-      map: THREE.ImageUtils.loadTexture 'images/explosion_texture.png'
+      map: THREE.ImageUtils.loadTexture 'images/explosion_texture_2.png'
     explosionGeo = new THREE.SphereGeometry 5, 32, 32
     @explosionSphere = new THREE.Mesh explosionGeo, explosionMat
     @explosionSphere.complete = false
@@ -186,7 +192,7 @@ class ParticleMesh
     @explosionSphere.finalPos = null
     @explosionSphere.rotationAxis = null
 
-    @explosionSphere.update = ->
+    @explosionSphere.update = ( traceLine ) ->
       return if @complete
 
       if not @visible
@@ -195,12 +201,22 @@ class ParticleMesh
       if @lerpVal <= 0.0
         @complete = true
         @visible = false
+        traceLine.visible = false
         @dispatchEvent { type: 'ExplosionComplete' }
         return
 
       @lerpVal -= constants.EXPLOSION_INCREMENTAL_LERP
       @position.set @finalPos.x, @finalPos.y, @finalPos.z
       @position.lerp vec3_origin, @lerpVal
+
+      # This will "slurp up" the trace line
+      for vertex, index in traceLine.geometry.vertices
+        break if index > traceLine.slurpIndex or traceLine.slurpIndex >= traceLine.geometry.vertices.length
+        vertex.copy traceLine.geometry.vertices[ traceLine.slurpIndex ]
+
+      traceLine.slurpIndex++
+      traceLine.geometry.verticesNeedUpdate = true
+      traceLine.material.opacity -= constants.TRACE_LINE_OPACITY_LERP
 
       @rotateOnAxis @rotationAxis, constants.EXPLOSION_ROTATION_ANGLE
 
@@ -217,15 +233,16 @@ class ParticleMesh
     # This update method is what actually gets our points moving across the scene.
     # Once the point has finished its path, this method will emit a "ParticleSystemComplete"
     # event, to allow us to re-pool the mesh.
-    @pSystem.update = ->
+    @pSystem.update = ( traceLine ) ->
       # no point doing all the calculations if the particle is already done
       return if @systemComplete
 
       # Ensure we're visible
       if not @visible
         @visible = true
+        traceLine.visible = true
 
-      for particle in @geometry.vertices
+      for particle, pIndex in @geometry.vertices
         path = particle.path
 
         particle.lerpN += constants.PARTICLE_SPEED
@@ -233,6 +250,13 @@ class ParticleMesh
           particle.lerpN = 0
           particle.moveIndex = particle.nextIndex
           particle.nextIndex++
+
+          if pIndex is 0
+            # decrease the opacity of the trace line material so that
+            # it's at 0.34 when we're done (The explosion routine handles
+            # the remaining transparency)
+            traceLine.material.opacity -= (0.7 / path.length)
+
           if particle.nextIndex >= path.length
             particle.moveIndex = 0
             particle.nextIndex = 0
@@ -253,7 +277,13 @@ class ParticleMesh
         particle.copy currentPoint
         particle.lerp nextPoint, particle.lerpN
 
-        @geometry.verticesNeedUpdate = true
+      for vertex, index in traceLine.geometry.vertices
+        if index >= particle.moveIndex
+          vertex.copy currentPoint
+          vertex.lerp nextPoint, particle.lerpN
+      traceLine.geometry.verticesNeedUpdate = true
+
+      @geometry.verticesNeedUpdate = true
 
   runExplosion: ->
     path = @particlesGeo.vertices[0].path
@@ -261,6 +291,9 @@ class ParticleMesh
     # The final array element is the origin, hence the -2 offset
     finalPt = path[ path.length - 2 ]
     color = @attributes.customColor.value[0].getHex()
+
+    # To help "slurp up" the trace line
+    @traceLine.slurpIndex = 0
 
     # Decide which axis this explosion is going to rotate about
     choice = Math.floor( Math.random() * 3 )
@@ -272,9 +305,9 @@ class ParticleMesh
     @explosionSphere.finalPos = finalPt.clone()
     @explosionSphere.position.set finalPt.x, finalPt.y, finalPt.z
     @explosionSphere.position.lerp vec3_origin, @explosionSphere.lerpVal
-    @explosionUpdateId = window.setInterval( @explosionSphere.update.bind( @explosionSphere ), 16 )
+    @explosionUpdateId = window.setInterval( @explosionSphere.update.bind( @explosionSphere, @traceLine ), 16 )
     @vizMesh.add @explosionSphere
 
   startParticleUpdates: ->
     # 16ms interval is approx a 60FPS refresh rate
-    @particleUpdateId = window.setInterval( @pSystem.update.bind( @pSystem ), 16 )
+    @particleUpdateId = window.setInterval( @pSystem.update.bind( @pSystem, @traceLine ), 16 )

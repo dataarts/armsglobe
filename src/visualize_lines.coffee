@@ -9,7 +9,7 @@ module.exports =
     distanceBetweenCountryCenter = exporter.center.clone().sub(importer.center).length()
 
     # how high we want to shoot the curve upwards
-    anchorHeight = globeRadius + distanceBetweenCountryCenter * 0.3
+    anchorHeight = globeRadius + distanceBetweenCountryCenter * 0.7
 
     # start/end of the line
     start = exporter.center
@@ -19,7 +19,7 @@ module.exports =
     mid = start.clone().lerp end, 0.5
     midLength = mid.length()
     mid.normalize()
-    mid.multiplyScalar( midLength + distanceBetweenCountryCenter * 0.4 )
+    mid.multiplyScalar( midLength + distanceBetweenCountryCenter * 0.45 )
 
     # the normal from start to end
     normal = (new THREE.Vector3()).subVectors start, end

@@ -12,10 +12,16 @@ module.exports =
   NUM_TRAIL_PARTICLES: 12
   TRAIL_OPACITY_MULTIPLIER: 0.083 # this is just 1.0 / NUM_TRAIL_PARTICLES
 
+  # This number was reached by multiple trials in which a particle curve never
+  # exceeded 40 vertices; just add a bit of buffer
+  TRACE_LINE_VERTEX_COUNT: 50
+
+  TRACE_LINE_OPACITY_LERP: 0.005 # 0.3/60
+
   # Constants for the explosion effect (mostly just "magic numbers" that were
   # determined by trial and error)
   EXPLOSION_INITIAL_LERP_FACTOR: 0.06
-  EXPLOSION_INCREMENTAL_LERP: 0.0018
+  EXPLOSION_INCREMENTAL_LERP: 0.001
   EXPLOSION_OPACITY_LERP: 0.1
   EXPLOSION_ROTATION_ANGLE: 0.12
 
