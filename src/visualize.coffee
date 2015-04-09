@@ -184,7 +184,7 @@ class ParticleMesh
       color: 0xffffff
       transparent: true
       opacity: 1.0
-      map: THREE.ImageUtils.loadTexture 'images/explosion_texture.png'
+      map: THREE.ImageUtils.loadTexture 'images/explosion_texture_2.png'
     explosionGeo = new THREE.SphereGeometry 5, 32, 32
     @explosionSphere = new THREE.Mesh explosionGeo, explosionMat
     @explosionSphere.complete = false
