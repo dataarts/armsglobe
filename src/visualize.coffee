@@ -209,12 +209,20 @@ class ParticleMesh
       @position.set @finalPos.x, @finalPos.y, @finalPos.z
       @position.lerp vec3_origin, @lerpVal
 
+      # This will "slurp up" the trace line
+      for vertex, index in traceLine.geometry.vertices
+        break if index > traceLine.slurpIndex or traceLine.slurpIndex >= traceLine.geometry.vertices.length
+        vertex.copy traceLine.geometry.vertices[ traceLine.slurpIndex ]
+
+      traceLine.slurpIndex++
+      traceLine.geometry.verticesNeedUpdate = true
+      traceLine.material.opacity -= constants.TRACE_LINE_OPACITY_LERP
+
       @rotateOnAxis @rotationAxis, constants.EXPLOSION_ROTATION_ANGLE
 
       # Don't start fading out until we're half done
       if @lerpVal <= constants.EXPLOSION_INITIAL_LERP_FACTOR / 2
         @material.opacity -= constants.EXPLOSION_OPACITY_LERP
-        traceLine.material.opacity -= constants.EXPLOSION_OPACITY_LERP
 
       return
 
@@ -234,7 +242,7 @@ class ParticleMesh
         @visible = true
         traceLine.visible = true
 
-      for particle in @geometry.vertices
+      for particle, pIndex in @geometry.vertices
         path = particle.path
 
         particle.lerpN += constants.PARTICLE_SPEED
@@ -242,6 +250,13 @@ class ParticleMesh
           particle.lerpN = 0
           particle.moveIndex = particle.nextIndex
           particle.nextIndex++
+
+          if pIndex is 0
+            # decrease the opacity of the trace line material so that
+            # it's at 0.34 when we're done (The explosion routine handles
+            # the remaining transparency)
+            traceLine.material.opacity -= (0.66 / path.length)
+
           if particle.nextIndex >= path.length
             particle.moveIndex = 0
             particle.nextIndex = 0
@@ -276,6 +291,9 @@ class ParticleMesh
     # The final array element is the origin, hence the -2 offset
     finalPt = path[ path.length - 2 ]
     color = @attributes.customColor.value[0].getHex()
+
+    # To help "slurp up" the trace line
+    @traceLine.slurpIndex = 0
 
     # Decide which axis this explosion is going to rotate about
     choice = Math.floor( Math.random() * 3 )
