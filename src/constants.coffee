@@ -16,7 +16,7 @@ module.exports =
   # exceeded 40 vertices; just add a bit of buffer
   TRACE_LINE_VERTEX_COUNT: 50
 
-  TRACE_LINE_OPACITY_LERP: 0.00567 # 0.34/60
+  TRACE_LINE_OPACITY_LERP: 0.005 # 0.3/60
 
   # Constants for the explosion effect (mostly just "magic numbers" that were
   # determined by trial and error)

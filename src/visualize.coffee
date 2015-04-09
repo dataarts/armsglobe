@@ -255,7 +255,7 @@ class ParticleMesh
             # decrease the opacity of the trace line material so that
             # it's at 0.34 when we're done (The explosion routine handles
             # the remaining transparency)
-            traceLine.material.opacity -= (0.66 / path.length)
+            traceLine.material.opacity -= (0.7 / path.length)
 
           if particle.nextIndex >= path.length
             particle.moveIndex = 0
