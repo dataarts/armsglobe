@@ -177,7 +177,7 @@ class ParticleMesh
       transparent: true
 
     @traceLine = new THREE.Line new THREE.Geometry(), @traceLineMat
-    @traceLine.geometry.vertices = ( vec3_origin.clone() for num in [1..100] )
+    @traceLine.geometry.vertices = ( vec3_origin.clone() for num in [1..constants.TRACE_LINE_VERTEX_COUNT] )
 
     # Elements for the explosion effect
     explosionMat = new THREE.MeshBasicMaterial
@@ -192,7 +192,7 @@ class ParticleMesh
     @explosionSphere.finalPos = null
     @explosionSphere.rotationAxis = null
 
-    @explosionSphere.update = ( traceLineMat ) ->
+    @explosionSphere.update = ( traceLine ) ->
       return if @complete
 
       if not @visible
@@ -201,6 +201,7 @@ class ParticleMesh
       if @lerpVal <= 0.0
         @complete = true
         @visible = false
+        traceLine.visible = false
         @dispatchEvent { type: 'ExplosionComplete' }
         return
 
@@ -213,7 +214,7 @@ class ParticleMesh
       # Don't start fading out until we're half done
       if @lerpVal <= constants.EXPLOSION_INITIAL_LERP_FACTOR / 2
         @material.opacity -= constants.EXPLOSION_OPACITY_LERP
-        traceLineMat.opacity -= constants.EXPLOSION_OPACITY_LERP
+        traceLine.material.opacity -= constants.EXPLOSION_OPACITY_LERP
 
       return
 
@@ -252,7 +253,6 @@ class ParticleMesh
             # Make ourselves invisible. This resolves an issue where a pooled mesh
             # would "flicker" when being reset
             @visible = false
-            traceLine.visible = false
             @dispatchEvent { type: 'ParticleSystemComplete' }
             return
 
@@ -287,7 +287,7 @@ class ParticleMesh
     @explosionSphere.finalPos = finalPt.clone()
     @explosionSphere.position.set finalPt.x, finalPt.y, finalPt.z
     @explosionSphere.position.lerp vec3_origin, @explosionSphere.lerpVal
-    @explosionUpdateId = window.setInterval( @explosionSphere.update.bind( @explosionSphere, @traceLineMat ), 16 )
+    @explosionUpdateId = window.setInterval( @explosionSphere.update.bind( @explosionSphere, @traceLine ), 16 )
     @vizMesh.add @explosionSphere
 
   startParticleUpdates: ->
