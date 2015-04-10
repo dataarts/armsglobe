@@ -5,54 +5,58 @@ const constants = require( '../constants' );
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * <LegendItem /> Component definition
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-module.exports = React.createClass({
-  /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   * Styles
-   *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-  legendItemStyle: {
-    height: 20,
-    paddingBottom: 5
-  },
+export class LegendItem extends React.Component {
+  constructor( props ) {
 
-  toggleLinkStyle: {
-    textDecoration: 'none',
-    fontWeight: 'normal',
-    // Transition for when we become inactive
-    WebkitTransition: 'color 500ms ease-out',
-    MozTransition:    'color 500ms ease-out',
-    OTransition:      'color 500ms ease-out',
-    transition:       'color 500ms ease-out',
-  },
+    super( props );
 
-  circleStyle: {
-    display: 'inline-block',
-    width: 15,
-    height: 15,
-    borderRadius: '50%',
-    // This is what lets us get the text centered
-    marginTop: 3,
-    marginBottom: -2,
-    // Transition for when we become inactive
-    WebkitTransition: 'background-color 500ms ease-out',
-    MozTransition:    'background-color 500ms ease-out',
-    OTransition:      'background-color 500ms ease-out',
-    transition:       'background-color 500ms ease-out',
-  },
+    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     * Styles
+     *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+    this.legendItemStyle = {
+      height: 20,
+      paddingBottom: 5
+    };
+
+    this.toggleLinkStyle = {
+      textDecoration: 'none',
+      fontWeight: 'normal',
+      // Transition for when we become inactive
+      WebkitTransition: 'color 500ms ease-out',
+      MozTransition:    'color 500ms ease-out',
+      OTransition:      'color 500ms ease-out',
+      transition:       'color 500ms ease-out',
+    };
+
+    this.circleStyle = {
+      display: 'inline-block',
+      width: 15,
+      height: 15,
+      borderRadius: '50%',
+      // This is what lets us get the text centered
+      marginTop: 3,
+      marginBottom: -2,
+      // Transition for when we become inactive
+      WebkitTransition: 'background-color 500ms ease-out',
+      MozTransition:    'background-color 500ms ease-out',
+      OTransition:      'background-color 500ms ease-out',
+      transition:       'background-color 500ms ease-out',
+    };
+
+    // Set our initial state
+    this.state = { active: true };
+  }
 
   /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    * Behaviours
    *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-  getInitialState() {
-    return { active: true };
-  },
-
   handleLinkClick( e ) {
     e.preventDefault();
     let newActive = !this.state.active;
     this.setState( { active: newActive } );
     this.props.clickCallback( this.props.type, newActive );
     return false;
-  },
+  }
 
   /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    * Final Render
@@ -96,4 +100,4 @@ module.exports = React.createClass({
     );
     /* jshint ignore: end */
   }
-});
+}

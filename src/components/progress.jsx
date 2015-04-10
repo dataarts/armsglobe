@@ -7,34 +7,29 @@
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 const tween = require( 'react-tween-state' );
 
-module.exports = React.createClass({
-  mixins: [tween.Mixin],
+export class Progress extends React.Component {
+  constructor( props ) {
+    super( props );
+    
+    this.mixins = [tween.Mixin];
+    this.state = { currVal: 0.0 };
 
-  /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   * Component state definition
-   *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-  getInitialState() {
-    return { currVal: 0.0 };
-  },
+    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     * Styles
+     *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+    this.canvasStyle = { display: 'block' };
+    this.strokeStyle = {
+      radius: 25,
+      width: 5.0,
+      color: '#008EAF'
+    };
 
-  /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   * Styles
-   *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-  canvasStyle: {
-    display: 'block'
-  },
-
-  strokeStyle: {
-    radius: 25,
-    width: 5.0,
-    color: '#008EAF'
-  },
-
-  /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   * Instance Variables
-   *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-  _canvas: null,
-  _context: null,
+    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     * Instance Variables
+     *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+    this._canvas = null;
+    this._context = null;
+  }
 
   /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    * Component Methods
@@ -53,11 +48,11 @@ module.exports = React.createClass({
     this._context.fill();
     this._context.lineWidth = this.strokeStyle.width;
     this._context.globalAlpha = 0.33;
-  },
+  }
 
   componentDidUpdate() {
     this._updateProgress();
-  },
+  }
 
   handleProgressUpdate( newVal ) {
     let onEndFunc;
@@ -76,7 +71,7 @@ module.exports = React.createClass({
       endValue: newVal,
       onEnd: onEndFunc
     });
-  },
+  }
 
   /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    * Behaviours
@@ -101,7 +96,7 @@ module.exports = React.createClass({
       false // stroke counterclockwise?
     );
     this._context.stroke();
-  },
+  }
 
   /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    * Final Render
@@ -111,4 +106,4 @@ module.exports = React.createClass({
     return( <canvas style={this.canvasStyle} width="50" height="50"></canvas> );
     /* jshint ignore: end */
   }
-});
+}

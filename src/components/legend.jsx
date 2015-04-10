@@ -4,20 +4,25 @@ const LegendItem = require( './legend-item' );
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * <Legend /> Component definition
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-module.exports = React.createClass({
-  /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   * Styles
-   *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-  headerStyle: {
-    fontSize: 18,
-    marginTop: 0
-  },
+export class Legend extends React.Component {
+  constructor( props ) {
 
-  listStyle: {
-    listStyleType: 'none',
-    margin: 0,
-    padding: 0
-  },
+    super( props );
+
+    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     * Styles
+     *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+    this.headerStyle = {
+      fontSize: 18,
+      marginTop: 0
+    };
+
+    this.listStyle = {
+      listStyleType: 'none',
+      margin: 0,
+      padding: 0
+    };
+  }
 
   /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    * Final Render
@@ -38,4 +43,4 @@ module.exports = React.createClass({
     );
     /* jshint ignore: end */
   }
-});
+}
