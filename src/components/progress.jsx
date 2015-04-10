@@ -5,7 +5,7 @@
  * http://jsfiddle.net/oskar/Aapn8/ and
  * https://github.com/pughpugh/react-countdown-clock
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-const tween = require( 'react-tween-state' );
+import tween from 'react-tween-state';
 
 export class Progress extends React.Component {
   constructor( props ) {

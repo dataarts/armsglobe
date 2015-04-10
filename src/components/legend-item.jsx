@@ -1,6 +1,6 @@
 // Component representing an individual legend item
 
-const constants = require( '../constants' );
+import constants from '../constants';
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * <LegendItem /> Component definition

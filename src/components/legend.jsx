@@ -1,5 +1,5 @@
 // Main component for the interactive legend
-const LegendItem = require( './legend-item' );
+import LegendItem from './legend-item';
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * <Legend /> Component definition
