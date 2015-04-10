@@ -10,7 +10,9 @@ const tween = require( 'react-tween-state' );
 export class Progress extends React.Component {
   constructor( props ) {
     super( props );
-    
+
+    // FIXME: React's current es6 state doesn't support mixins. We may need to
+    //        convert this class back to the old-school React.createClass() style
     this.mixins = [tween.Mixin];
     this.state = { currVal: 0.0 };
 
