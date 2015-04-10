@@ -41,7 +41,8 @@ module.exports = function( grunt ) {
     babel: {
       files: {
         expand: true,
-        flatten: true,
+        flatten: false,
+        ext: '.js',
         cwd: 'src/',
         src: ['**/*.js', '**/*.jsx'],
         dest: 'build/tmp'
