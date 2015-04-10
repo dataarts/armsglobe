@@ -1,7 +1,7 @@
 export function loadGeoData( latlonData, countryLookup ) {
   let countryData = {};
 
-  Object.keys( latlonData.countries ).forEach( function( key ) {
+  Object.keys( latlonData.countries ).forEach( ( key ) => {
     let country = latlonData.countries[key];
 
     // save out country name and code info
