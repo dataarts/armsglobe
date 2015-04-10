@@ -38,22 +38,12 @@ module.exports = function( grunt ) {
       }
     },
 
-    babel: {
-      files: {
-        expand: true,
-        flatten: false,
-        ext: '.js',
-        cwd: 'src/',
-        src: ['**/*.js', '**/*.jsx'],
-        dest: 'build/tmp'
-      }
-    },
-
     browserify: {
       options: {
         debug: true,
         destFile: 'build/bundle.js',
-        src: [ 'build/tmp/**/*.js' ]
+        src: ['src/**/*.js', 'src/**/*.jsx'],
+        transform: ['babelify']
       },
 
       dev: {
@@ -99,7 +89,6 @@ module.exports = function( grunt ) {
     },
   });
 
-  grunt.loadNpmTasks( 'grunt-babel' );
   grunt.loadNpmTasks( 'grunt-browserify' );
   grunt.loadNpmTasks( 'grunt-contrib-uglify' );
   grunt.loadNpmTasks( 'grunt-contrib-watch' );
@@ -111,14 +100,12 @@ module.exports = function( grunt ) {
     'clean:all',
     'bower_concat:all',
     'concat:dist',
-    'babel',
     'browserify:production',
     'uglify:all'
   ]);
 
   grunt.registerTask( 'incremental', [
     'clean:incr',
-    'babel',
     'browserify:production',
     'uglify:incr'
   ]);
