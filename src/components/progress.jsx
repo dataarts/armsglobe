@@ -108,7 +108,7 @@ module.exports = React.createClass({
    *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
   render() {
     /* jshint ignore: start */
-    return( <canvas style={this.canvasStyle} width=50 height=50></canvas> );
+    return( <canvas style={this.canvasStyle} width="50" height="50"></canvas> );
     /* jshint ignore: end */
   }
 });

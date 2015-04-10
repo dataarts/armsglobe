@@ -30,11 +30,9 @@ module.exports = React.createClass({
       <div>
         <h2 style={this.headerStyle}>Legend</h2>
         <ul style={this.listStyle}>
-          {
-            this.props.types.map( function( type ) {
-              return <LegendItem key={type} type={type} clickCallback={callback}/>;
-            });
-          }
+          {this.props.types.map( function( type ) {
+            return( <LegendItem key={type} type={type} clickCallback={callback}/> );
+          })}
         </ul>
       </div>
     );
