@@ -21,6 +21,7 @@ export default class LegendItem extends React.Component {
     this.toggleLinkStyle = {
       textDecoration: 'none',
       fontWeight: 'normal',
+      cursor: 'pointer',
       // Transition for when we become inactive
       WebkitTransition: 'color 500ms ease-out',
       MozTransition:    'color 500ms ease-out',
@@ -93,9 +94,9 @@ export default class LegendItem extends React.Component {
     /* jshint ignore: start */
     return (
       <li style={this.legendItemStyle} className="series">
-        <a style={this.toggleLinkStyle} onClick={this.handleLinkClick.bind(this)} href="#">
+        <div style={this.toggleLinkStyle} onClick={this.handleLinkClick.bind(this)} role="checkbox" aria-checked={this.state.active}>
           <div style={this.circleStyle}></div> - {itemText}
-        </a>
+        </div>
       </li>
     );
     /* jshint ignore: end */
