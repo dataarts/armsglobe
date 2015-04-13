@@ -9,7 +9,7 @@ export function loadGeoData( latlonData, countryLookup ) {
     country.countryName = countryLookup[key];
 
     // take the lat lon from the data and convert this to 3d globe space
-    center = convertLatLonToVector( country.lat, country.lon );
+    let center = convertLatLonToVector( country.lat, country.lon );
 
     country.center = center;
     countryData[country.countryName] = country;

@@ -1,4 +1,4 @@
-import constants from './constants';
+import * as constants from './constants';
 
 export function loadWorldPins( latLonFile, callback ) {
   _getDataFromServer( latLonFile, callback );

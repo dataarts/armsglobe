@@ -1,5 +1,5 @@
 // Main component for the interactive legend
-import LegendItem from './legend-item';
+import * as LegendItem from './legend-item';
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * <Legend /> Component definition

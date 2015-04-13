@@ -1,5 +1,5 @@
-import visualize from './visualize';
-import constants from './constants';
+import * as vizLines from './visualize_lines';
+import * as constants from './constants';
 
 const vec3_origin = new THREE.Vector3( 0, 0, 0 );
 const vec3_x_axis = new THREE.Vector3( 1, 0, 0 );
@@ -245,6 +245,7 @@ class ParticleMesh {
           traceLine.slurpIndex >= traceLine.geometry.vertices.length ) {
           break;
         }
+        let vertex = traceLine.geometry.vertices[ index ];
         vertex.copy( traceLine.geometry.vertices[ traceLine.slurpIndex ] );
       }
 
@@ -277,8 +278,10 @@ class ParticleMesh {
         traceLine.visible = true;
       }
 
+      // purposely leak these out so we can use it after with the trace line
+      let particle, currentPoint, nextPoint;
       for( let i = 0; i < this.geometry.vertices.length; i++ ) {
-        let particle = this.geometry.vertices[i];
+        particle = this.geometry.vertices[i];
         let path = particle.path;
 
         particle.lerpN += constants.PARTICLE_SPEED;
@@ -310,8 +313,8 @@ class ParticleMesh {
           }
         }
 
-        let currentPoint = path[particle.moveIndex];
-        let nextPoint = path[particle.nextIndex];
+        currentPoint = path[particle.moveIndex];
+        nextPoint = path[particle.nextIndex];
 
         particle.copy( currentPoint );
         particle.lerp( nextPoint, particle.lerpN );

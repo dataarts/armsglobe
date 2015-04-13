@@ -1,16 +1,16 @@
-// 3rd Party libraries
-import us from 'underscore';
+// 3rd Party libraries (keep this in CommonJS syntax since it's not yet es6)
+var us = require( 'underscore' );
 
 // All our dependencies
-import dataLoading from './dataloading';
-import mouseKeyboard from './mousekeyboard';
-import visualize from './visualize';
-import geopins from './geopins';
-import constants from './constants';
+import * as dataLoading from './dataloading';
+import * as mouseKeyboard from './mousekeyboard';
+import * as visualize from './visualize';
+import * as geopins from './geopins';
+import * as constants from './constants';
 
 // React components
-import Legend from './components/legend';
-import Progress from './components/progress';
+// import Legend from './components/legend';
+// import Progress from './components/progress';
 
 const masterContainer = document.getElementById( 'visualization' );
 const overlay = document.getElementById( 'visualization' );
@@ -61,7 +61,7 @@ function startDataPump() {
     }
 
     visualize.initVisualization( dataToViz );
-    progressViz.handleProgressUpdate( currPollingInterval / numPollingIntervals );
+    // progressViz.handleProgressUpdate( currPollingInterval / numPollingIntervals );
 
   }, constants.VIZ_POLLING_INTERVAL );
 }
@@ -80,7 +80,7 @@ function getDataForTick( startTime, endTime ) {
   // the given "tick", and those that don't. Since time's advancing we know that
   // once a point satisfies this condition we won't use it again until we loop
   let partitions = us.partition( _remainingData, ( point ) => {
-    time = point.time.getTime();
+    let time = point.time.getTime();
     return ( time >= startTime ) && ( time <= endTime );
   });
 
@@ -127,7 +127,6 @@ function initScene() {
   sphere.rotation.x = Math.PI;
   sphere.rotation.y = -Math.PI/2;
   sphere.rotation.z = Math.PI;
-  sphere.id = "base";
   rotating.add( sphere );
 
   visualizationMesh = new THREE.Object3D();
@@ -204,7 +203,7 @@ if( !Detector.webgl ) {
   visualize.initMeshPool( constants.MESH_POOL_SIZE, visualizationMesh );
 
   // Render our React components
-  reactInit();
+  // reactInit();
 
   dataLoading.loadCountryCodes( 'country_iso3166.json', ( isoData ) => {
     _countryLookup = isoData;

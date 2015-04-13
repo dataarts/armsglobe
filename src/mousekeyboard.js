@@ -1,4 +1,4 @@
-import vizLines from './visualize_lines';
+import * as vizLines from './visualize_lines';
 
 // Ugly variable declarations
 const rotateXMax = 90 * Math.PI/180;

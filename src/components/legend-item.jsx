@@ -1,6 +1,6 @@
 // Component representing an individual legend item
 
-import constants from '../constants';
+import * as constants from '../constants';
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * <LegendItem /> Component definition
