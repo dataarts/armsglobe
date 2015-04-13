@@ -5,7 +5,7 @@ import * as constants from '../constants';
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * <LegendItem /> Component definition
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-export class LegendItem extends React.Component {
+export default class LegendItem extends React.Component {
   constructor( props ) {
 
     super( props );

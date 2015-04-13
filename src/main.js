@@ -9,11 +9,10 @@ import * as geopins from './geopins';
 import * as constants from './constants';
 
 // React components
-import * as Legend from './components/legend.jsx';
-import * as Progress from './components/progress.jsx';
+import Legend from './components/legend.jsx';
+import Progress from './components/progress.jsx';
 
 const masterContainer = document.getElementById( 'visualization' );
-const overlay = document.getElementById( 'visualization' );
 const glContainer = document.getElementById( 'glContainer' );
 
 // Visualization components that need to be accessible throughout this module

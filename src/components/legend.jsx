@@ -1,10 +1,10 @@
 // Main component for the interactive legend
-import * as LegendItem from './legend-item.jsx';
+import LegendItem from './legend-item.jsx';
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * <Legend /> Component definition
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-export class Legend extends React.Component {
+export default class Legend extends React.Component {
   constructor( props ) {
 
     super( props );

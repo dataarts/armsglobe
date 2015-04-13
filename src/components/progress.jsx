@@ -8,31 +8,28 @@
 // Keep this in CommonJS syntax as third-party libraries aren't necessarily es6
 var tween = require( 'react-tween-state' );
 
-export class Progress extends React.Component {
-  constructor( props ) {
-    super( props );
+const Progress = React.createClass({
+  mixins: [tween.Mixin],
 
-    // FIXME: React's current es6 state doesn't support mixins. We may need to
-    //        convert this class back to the old-school React.createClass() style
-    this.mixins = [tween.Mixin];
-    this.state = { currVal: 0.0 };
+  /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   * Styles
+   *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+  canvasStyle: { display: 'block' },
+  strokeStyle: {
+    radius: 25,
+    width: 5.0,
+    color: '#008EAF'
+  },
 
-    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     * Styles
-     *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-    this.canvasStyle = { display: 'block' };
-    this.strokeStyle = {
-      radius: 25,
-      width: 5.0,
-      color: '#008EAF'
-    };
+  /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   * Instance Variables
+   *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+  _canvas: null,
+  _context: null,
 
-    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     * Instance Variables
-     *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-    this._canvas = null;
-    this._context = null;
-  }
+  getInitialState() {
+    return { currVal: 0.0 };
+  },
 
   /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    * Component Methods
@@ -51,11 +48,11 @@ export class Progress extends React.Component {
     this._context.fill();
     this._context.lineWidth = this.strokeStyle.width;
     this._context.globalAlpha = 0.33;
-  }
+  },
 
   componentDidUpdate() {
     this._updateProgress();
-  }
+  },
 
   handleProgressUpdate( newVal ) {
     let onEndFunc;
@@ -74,7 +71,7 @@ export class Progress extends React.Component {
       endValue: newVal,
       onEnd: onEndFunc
     });
-  }
+  },
 
   /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    * Behaviours
@@ -99,7 +96,7 @@ export class Progress extends React.Component {
       false // stroke counterclockwise?
     );
     this._context.stroke();
-  }
+  },
 
   /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    * Final Render
@@ -109,4 +106,6 @@ export class Progress extends React.Component {
     return( <canvas style={this.canvasStyle} width="50" height="50"></canvas> );
     /* jshint ignore: end */
   }
-}
+});
+
+export default Progress;
