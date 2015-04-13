@@ -93,7 +93,7 @@ export default class LegendItem extends React.Component {
     /* jshint ignore: start */
     return (
       <li style={this.legendItemStyle} className="series">
-        <a style={this.toggleLinkStyle} onClick={this.handleLinkClick} href="#">
+        <a style={this.toggleLinkStyle} onClick={this.handleLinkClick.bind(this)} href="#">
           <div style={this.circleStyle}></div> - {itemText}
         </a>
       </li>
