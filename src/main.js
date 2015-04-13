@@ -9,8 +9,8 @@ import * as geopins from './geopins';
 import * as constants from './constants';
 
 // React components
-// import Legend from './components/legend';
-// import Progress from './components/progress';
+import * as Legend from './components/legend.jsx';
+import * as Progress from './components/progress.jsx';
 
 const masterContainer = document.getElementById( 'visualization' );
 const overlay = document.getElementById( 'visualization' );
@@ -61,7 +61,7 @@ function startDataPump() {
     }
 
     visualize.initVisualization( dataToViz );
-    // progressViz.handleProgressUpdate( currPollingInterval / numPollingIntervals );
+    progressViz.handleProgressUpdate( currPollingInterval / numPollingIntervals );
 
   }, constants.VIZ_POLLING_INTERVAL );
 }
@@ -203,7 +203,7 @@ if( !Detector.webgl ) {
   visualize.initMeshPool( constants.MESH_POOL_SIZE, visualizationMesh );
 
   // Render our React components
-  // reactInit();
+  reactInit();
 
   dataLoading.loadCountryCodes( 'country_iso3166.json', ( isoData ) => {
     _countryLookup = isoData;
