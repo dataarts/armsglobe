@@ -209,6 +209,16 @@ if( !Detector.webgl ) {
     dataLoading.loadWorldPins( 'country_lat_lon.json', ( latLonData ) => {
       _latLonData = latLonData;
       dataLoading.loadRandomizedContentData( 2000, _countryLookup, ( sampleData ) => {
+        // need to convert all the timestamps to JS dates
+        sampleData = us.map( sampleData, function( point ) {
+          if( typeof point.time === Date ) {
+            return point;
+          } else {
+            point.time = new Date( point.time );
+            return point;
+          }
+        });
+
         _sampleData = us.sortBy( sampleData, 'time' );
         _minDataTimestamp = _sampleData[0].time;
         _maxDataTimestamp = _sampleData[ _sampleData.length - 1 ].time;
