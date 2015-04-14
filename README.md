@@ -51,6 +51,7 @@ Data does not need to be in any particular order; the visualization takes care o
 ## TODOs
 
 * [ ] Allow source/destination data to be specified as lat/long, rather than country names
+* [ ] Implement touch/pointer events for use on tablets/phones
 * [x] Consider updating repo to use es6 with Babel, rather than CoffeeScript
 * [x] Highlight the destination country when the particle "hits" it
 * [x] Create subtle trail effect for particles
