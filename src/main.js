@@ -204,6 +204,13 @@ if( !Detector.webgl ) {
   // Render our React components
   reactInit();
 
+  /*
+  FIXME: We really shouldn't be doing all this loading and data manipulation
+  client-side. The better solution is for a server-side process to combine
+  everything together so that our data source contains nothing but a lat/long.
+  That way, all we need to do is convert the lat/long to a vector in the scene's
+  co-ordinate space and then start visualizing it.
+  */
   dataLoading.loadCountryCodes( 'country_iso3166.json', ( isoData ) => {
     _countryLookup = isoData;
     dataLoading.loadWorldPins( 'country_lat_lon.json', ( latLonData ) => {
