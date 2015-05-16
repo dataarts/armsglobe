@@ -45,17 +45,19 @@ var d3Graphs = {
         d3Graphs.updateViz();
     },
     initGraphs: function() {
+        // return;
         this.showHud();
-        this.drawBarGraph();
-        this.drawHistogram();
+        // this.drawBarGraph();
+        // this.drawHistogram();
     },
     showHud: function() {
         if(this.inited) return;
         this.inited = true;
         d3Graphs.windowResize();
-        $("#hudHeader, #hudButtons").show();
-        $("#history").show();
-        $("#graphIcon").show();
+        $("#hudHeader").show();
+        // $("#hudButtons").show();
+        // $("#history").show();
+        // $("#graphIcon").show();
         $("#importExportBtns").show();
         $("#graphIcon").click(d3Graphs.graphIconClick);
         $("#history .close").click(d3Graphs.closeHistogram);
