@@ -274,39 +274,6 @@ function getVisualizedMesh( linearData, year, countries, exportCategories, impor
 }
 
 function selectVisualization( linearData, year, countries, exportCategories, importCategories ){
-	//	we're only doing one country for now so...
-	var cName = countries[0].toUpperCase();
-	
-	$("#hudButtons .countryTextInput").val(cName);
-	previouslySelectedCountry = selectedCountry;
-	selectedCountry = countryData[countries[0].toUpperCase()];
-    
-	selectedCountry.summary = {
-		imported: {
-			mil: 0,
-			civ: 0,
-			ammo: 0,
-			total: 0,
-		},
-		exported: {
-			mil: 0,
-			civ: 0,
-			ammo: 0,
-			total: 0,
-		},
-		total: 0,
-		historical: getHistoricalData(selectedCountry),
-	};
-
-	// console.log(selectedCountry);
-
-	//	clear off the country's internally held color data we used from last highlight
-	for( var i in countryData ){
-		var country = countryData[i];
-		country.exportedAmount = 0;
-		country.importedAmount = 0;
-		country.mapColor = 0;
-	}
 
 	//	clear markers
 	for( var i in selectableCountries ){
@@ -317,6 +284,42 @@ function selectVisualization( linearData, year, countries, exportCategories, imp
 	while( visualizationMesh.children.length > 0 ){
 		var c = visualizationMesh.children[0];
 		visualizationMesh.remove(c);
+	}
+
+	for(var i = 0; i < countries.length; i++) {
+		//	we're only doing one country for now so...
+		var cName = countries[i].toUpperCase();
+		
+		$("#hudButtons .countryTextInput").val(cName);
+		previouslySelectedCountry = selectedCountry;
+		selectedCountry = countryData[countries[i].toUpperCase()];
+	    
+		selectedCountry.summary = {
+			imported: {
+				mil: 0,
+				civ: 0,
+				ammo: 0,
+				total: 0,
+			},
+			exported: {
+				mil: 0,
+				civ: 0,
+				ammo: 0,
+				total: 0,
+			},
+			total: 0,
+			historical: getHistoricalData(selectedCountry),
+		};
+	}
+
+	// console.log(selectedCountry);
+
+	//	clear off the country's internally held color data we used from last highlight
+	for( var i in countryData ){
+		var country = countryData[i];
+		country.exportedAmount = 0;
+		country.importedAmount = 0;
+		country.mapColor = 0;
 	}
 
 	//	build the mesh
@@ -333,10 +336,11 @@ function selectVisualization( linearData, year, countries, exportCategories, imp
 		mesh.affectedCountries.push( cName );
 	}	
 
+	// attach markers to countries
 	for( var i in mesh.affectedCountries ){
 		var countryName = mesh.affectedCountries[i];
 		var country = countryData[countryName];
-		attachMarkerToCountry( countryName, country.mapColor );
+		// attachMarkerToCountry( countryName, country.mapColor );
 	}
 
 	// console.log( mesh.affectedCountries );

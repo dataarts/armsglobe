@@ -1,0 +1,225 @@
+{
+  "timeBins": [
+    {
+      "data": [
+        {
+          "i": "Spain",
+          "wc": "ammo",
+          "e": "Thailand",
+          "v": 1000
+        },
+        {
+          "i": "Thailand",
+          "wc": "ammo",
+          "e": "Israel",
+          "v": 500
+        },
+        {
+          "i": "Algeria",
+          "wc": "mil",
+          "e": "Australia",
+          "v": 2479
+        },
+        {
+          "i": "New Zealand",
+          "wc": "mil",
+          "e": "Australia",
+          "v": 1986
+        },
+        {
+          "i": "Singapore",
+          "wc": "mil",
+          "e": "Australia",
+          "v": 1233210
+        },
+        {
+          "i": "United Kingdom",
+          "wc": "mil",
+          "e": "Australia",
+          "v": 37576
+        },
+        {
+          "i": "United States",
+          "wc": "mil",
+          "e": "Australia",
+          "v": 58142
+        },
+        {
+          "i": "Indonesia",
+          "wc": "mil",
+          "e": "Austria",
+          "v": 1412190
+        },
+        {
+          "i": "New Zealand",
+          "wc": "mil",
+          "e": "Austria",
+          "v": 1296
+        },
+        {
+          "i": "Switzerland",
+          "wc": "mil",
+          "e": "Austria",
+          "v": 66412
+        },
+        {
+          "i": "Tunisia",
+          "wc": "mil",
+          "e": "Austria",
+          "v": 581163
+        },
+        {
+          "i": "United States",
+          "wc": "mil",
+          "e": "Austria",
+          "v": 87748
+        },
+        {
+          "i": "Australia",
+          "wc": "mil",
+          "e": "Belgium",
+          "v": 1466
+        },
+        {
+          "i": "Brazil",
+          "wc": "mil",
+          "e": "Belgium",
+          "v": 6718
+        },
+        {
+          "i": "Indonesia",
+          "wc": "mil",
+          "e": "Belgium",
+          "v": 66809
+        },
+        {
+          "i": "Saudi Arabia",
+          "wc": "mil",
+          "e": "Belgium",
+          "v": 4532115
+        },
+        {
+          "i": "Switzerland",
+          "wc": "mil",
+          "e": "Belgium",
+          "v": 23941
+        },
+        {
+          "i": "Tunisia",
+          "wc": "mil",
+          "e": "Belgium",
+          "v": 11520
+        },
+        {
+          "i": "United States",
+          "wc": "mil",
+          "e": "Belgium",
+          "v": 348696
+        },
+        {
+          "i": "Saudi Arabia",
+          "wc": "mil",
+          "e": "Brazil",
+          "v": 2503
+        },
+        {
+          "i": "United States",
+          "wc": "mil",
+          "e": "Brazil",
+          "v": 3135
+        },
+        {
+          "i": "Switzerland",
+          "wc": "mil",
+          "e": "Bulgaria",
+          "v": 291722
+        },
+        {
+          "i": "Australia",
+          "wc": "mil",
+          "e": "Canada",
+          "v": 6023
+        },
+        {
+          "i": "Hong Kong",
+          "wc": "mil",
+          "e": "Canada",
+          "v": 2553
+        },
+        {
+          "i": "Italy",
+          "wc": "mil",
+          "e": "Canada",
+          "v": 1327600
+        },
+        {
+          "i": "Malaysia",
+          "wc": "mil",
+          "e": "Canada",
+          "v": 266907
+        },
+        {
+          "i": "New Zealand",
+          "wc": "mil",
+          "e": "Canada",
+          "v": 6371
+        },
+        {
+          "i": "Norway",
+          "wc": "mil",
+          "e": "Canada",
+          "v": 959664
+        },
+        {
+          "i": "Saudi Arabia",
+          "wc": "mil",
+          "e": "Canada",
+          "v": 2640475
+        },
+        {
+          "i": "Tunisia",
+          "wc": "mil",
+          "e": "Canada",
+          "v": 1130
+        },
+        {
+          "i": "United States",
+          "wc": "mil",
+          "e": "Canada",
+          "v": 27565
+        },        
+        {
+          "i": "Canada",
+          "wc": "mil",
+          "e": "China",
+          "v": 1948
+        },
+        {
+          "i": "Indonesia",
+          "wc": "mil",
+          "e": "China",
+          "v": 559
+        },
+        {
+          "i": "Switzerland",
+          "wc": "mil",
+          "e": "China",
+          "v": 125647
+        },
+        {
+          "i": "United States",
+          "wc": "mil",
+          "e": "China",
+          "v": 9644522
+        },
+        {
+          "i": "Venezuela, Bolivarian Republic of",
+          "wc": "mil",
+          "e": "Colombia",
+          "v": 56000
+        }
+      ],
+      "t": 2010
+    }
+  ]
+}

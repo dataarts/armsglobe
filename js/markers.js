@@ -112,12 +112,12 @@ function attachMarkerToCountry( countryName, importance ){
 	
 	var importExportText = "";
 	if(country.exportedAmount > 0 && country.importedAmount > 0) {
-	   importExportText += "imported:&nbsp;$" + numberWithCommas(country.importedAmount) + "<br />" +
-	       "exported:&nbsp;$"+numberWithCommas(country.exportedAmount);
+	   importExportText += "leeching:&nbsp;" + numberWithCommas(country.importedAmount) + "<br />" +
+	       "seeding:&nbsp;"+numberWithCommas(country.exportedAmount);
 	} else if(country.exportedAmount > 0 && country.importedAmount == 0) {
-	   importExportText += "exported:&nbsp;$"+numberWithCommas(country.exportedAmount)+"<br />&nbsp;";
+	   importExportText += "seeding:&nbsp;"+numberWithCommas(country.exportedAmount)+"<br />&nbsp;";
 	} else if(country.exportedAmount == 0 && country.importedAmount > 0) {
-	   importExportText += "imported:&nbsp;$"+numberWithCommas(country.importedAmount)+"<br />&nbsp;";
+	   importExportText += "leeching:&nbsp;"+numberWithCommas(country.importedAmount)+"<br />&nbsp;";
 	}
 
 	marker.importExportText = importExportText;

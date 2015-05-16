@@ -94,6 +94,15 @@ var idle = false;
 //	deprecated, not using svg loading anymore
 var assetList = [];
 
+function refresh() {
+	loadContentData(
+		function(){
+			buildDataVizGeometries(timeBins);
+			selectVisualization( timeBins, '2010', selectableCountries, ['Military Weapons','Civilian Weapons', 'Ammunition'], ['Military Weapons','Civilian Weapons', 'Ammunition'] );
+		}
+	);
+}
+
 //	TODO
 //	use underscore and ".after" to load these in order
 //	don't look at me I'm ugly
@@ -114,10 +123,13 @@ function start( e ){
 					function(){
 						loadWorldPins(
 							function(){										
-								loadContentData(								
+								loadContentData(
 									function(){																	
 										initScene();
-										animate();		
+										animate();
+										setInterval(function() {
+											refresh();
+										}, 60 * 1000);
 									}
 								);														
 							}
@@ -280,7 +292,7 @@ function initScene() {
 	
 	// load geo data (country lat lons in this case)
 	console.time('loadGeoData');
-	loadGeoData( latlonData );				
+	loadGeoData( latlonData );
 	console.timeEnd('loadGeoData');				
 
 	console.time('buildDataVizGeometries');
@@ -292,9 +304,11 @@ function initScene() {
 
 	buildGUI();
 
-	selectVisualization( timeBins, '2010', ['UNITED STATES'], ['Military Weapons','Civilian Weapons', 'Ammunition'], ['Military Weapons','Civilian Weapons', 'Ammunition'] );					
-
-		// test for highlighting specific countries
+	// selectVisualization( timeBins, '2010', ['UNITED STATES'], ['Military Weapons','Civilian Weapons', 'Ammunition'], ['Military Weapons','Civilian Weapons', 'Ammunition'] );
+	selectVisualization( timeBins, '2010', selectableCountries, ['Military Weapons','Civilian Weapons', 'Ammunition'], ['Military Weapons','Civilian Weapons', 'Ammunition'] );
+	
+	
+	// test for highlighting specific countries
 	// highlightCountry( ["United States", "Switzerland", "China"] );
 
 

@@ -11,7 +11,7 @@
 	<body onload="start()" id="dataviz" class="">
 		<div id="wrapper">
 		<div id="loading">
-			<h2>Loading Small Arms and Ammunition Trade Data from 1992 to 2010. Please wait...</h2>
+			<h2>Please wait...</h2>
 		</div>
 
 		<div >
@@ -126,23 +126,10 @@
 
 		<script src="js/main.js" type="text/javascript"></script>
 
-		<script type="text/javascript">
-			var _gaq = _gaq || [];
-  			_gaq.push(['_setAccount', 'UA-7963116-1']);
-  			_gaq.push(['_setDomainName', 'chromeexperiments.com']);
-  			_gaq.push(['_trackPageview']);
-			  (function() {
-			    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-			    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-			    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-			  })();
-		</script>
-
-
 		<!-- All other hud can go here-->
         <div id="hudHeader" class="overlayCountries noPointer">
-            <h1 class="noPointer">Small Arms and Ammunition — Imports & Exports
-                <div class="subtitle">An interactive visualization of government-authorized small arms and ammunition transfers from 1992 to 2010. </div>
+            <h1 class="noPointer">Network sharing
+                <div class="subtitle">Data distribution relationships.</div>
 			</h1>
         </div>
 
@@ -189,21 +176,21 @@
         <div id="graphIcon" class="overlayCountries"></div>
         <div id="importExportBtns" class="overlayCountries">
             <div class="typeLabels">
-                <div class="mil">Military</div>
-                <div class="civ">Civilian</div>
-                <div class="ammo">Ammo</div><br class="clear">
+                <div class="mil"></div>
+                <div class="civ"></div>
+                <div class="ammo"></div><br class="clear">
             </div>
             <div class="imports imex">
                 <div class="mil"><div class="check"></div></div>
                 <div class="civ"><div class="check"></div></div>
                 <div class="ammo"><div class="check"></div></div>
-                <div class="label">Imports</div><br class="clear">
+                <div class="label">Leeching</div><br class="clear">
             </div>
             <div class="exports imex">
                 <div class="mil"><div class="check"></div></div>
                 <div class="civ"><div class="check"></div></div>
                 <div class="ammo"><div class="check"></div></div>
-                <div class="label">Exports</div><br class="clear">
+                <div class="label">Seeding</div><br class="clear">
             </div>
             <br class="clear" />
         </div>

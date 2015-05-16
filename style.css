@@ -482,7 +482,7 @@ Bar graph on left
 #importExportBtns .imex .check {
     width: 16px;
     height: 16px;
-    background: #262626 url('importExportIcons.png') 0 0 no-repeat;
+    /*background: #262626 url('importExportIcons.png') 0 0 no-repeat;*/
     margin: 6px auto;
 }
 #importExportBtns .imports .mil .check {
