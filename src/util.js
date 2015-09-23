@@ -1,21 +1,23 @@
 export function wrap( value, min, rangeSize ) {
-  rangeSize -= min;
-  while( value < min ) {
-    value += rangeSize;
+  const minRangeSize = rangeSize - min;
+  let modValue = value;
+
+  while (modValue < min) {
+    modValue += minRangeSize;
   }
 
-  return value % rangeSize;
+  return modValue % minRangeSize;
 }
 
 export function screenXY( vec3, camera ) {
-  let projector = new THREE.Projector();
-  let vector = projector.projectVector( vec3.clone(), camera );
-  let result = {};
+  const projector = new THREE.Projector();
+  const vector = projector.projectVector( vec3.clone(), camera );
+  const result = {};
 
-  let windowWidth = ( windowWidth < 1280 ) ? 1280 : window.innerWidth;
+  const windowWidth = ( windowWidth < 1280 ) ? 1280 : window.innerWidth;
 
-  result.x = Math.round( vector.x * (windowWidth/2) ) + windowWidth/2;
-  result.y = Math.round( (0-vector.y) * (window.innerHeight/2) ) + window.innerHeight/2;
+  result.x = Math.round( vector.x * (windowWidth / 2) ) + windowWidth / 2;
+  result.y = Math.round( (0 - vector.y) * (window.innerHeight / 2) ) + window.innerHeight / 2;
 
   return result;
 }

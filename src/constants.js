@@ -4,9 +4,9 @@ export const COLOUR_MAP = {
   o: new THREE.Color( 0xFF7F00 ),
   b: new THREE.Color( 0x008EAF ),
   g: new THREE.Color( 0x00CA35 ),
-  p: new THREE.Color( 0xDC0068 )
+  p: new THREE.Color( 0xDC0068 ),
 };
-export const COLOUR_TYPES = [ 'r', 'o','b', 'g', 'p' ];
+export const COLOUR_TYPES = [ 'r', 'o', 'b', 'g', 'p' ];
 
 export const PARTICLE_SPEED = 0.22;
 export const NUM_TRAIL_PARTICLES = 12;

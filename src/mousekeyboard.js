@@ -1,32 +1,30 @@
 import * as vizLines from './visualize_lines';
 
 // Ugly variable declarations
-const rotateXMax = 90 * Math.PI/180;
+const rotateXMax = 90 * Math.PI / 180;
 
-let rotateVX = 0.35 * Math.PI/180;
+let rotateVX = 0.35 * Math.PI / 180;
 let mouseX = 0;
 let mouseY = 0;
 let pmouseX = 0;
 let pmouseY = 0;
-let pressX = 0;
-let pressY = 0;
 let dragging = false;
 let rotateVY = 0;
 let rotateTargetX = 0;
 let rotateTargetY = 0;
 
 let _autoRotateId = null;
-let keyboard = new THREEx.KeyboardState();
+const keyboard = new THREEx.KeyboardState();
 
-export var rotateX = 0;
-export var rotateY = 0;
+export var rotateX = 0; // eslint-disable-line no-var, vars-on-top
+export var rotateY = 0; // eslint-disable-line no-var, vars-on-top
 
 export function updateRotation() {
-  if( rotateTargetX && rotateTargetY ) {
+  if (rotateTargetX && rotateTargetY) {
     rotateVX += (rotateTargetX - rotateX) * 0.012;
     rotateVY += (rotateTargetY - rotateY) * 0.012;
 
-    if( Math.abs(rotateTargetX - rotateX) < 0.1 && Math.abs(rotateTargetY - rotateY) < 0.1 ) {
+    if (Math.abs(rotateTargetX - rotateX) < 0.1 && Math.abs(rotateTargetY - rotateY) < 0.1) {
       rotateTargetX = undefined;
       rotateTargetY = undefined;
     }
@@ -38,23 +36,31 @@ export function updateRotation() {
   rotateVX *= 0.98;
   rotateVY *= 0.98;
 
-  if( dragging || rotateTargetX ) {
+  if (dragging || rotateTargetX) {
     rotateVX *= 0.6;
     rotateVY *= 0.6;
   }
 
   // constrain the pivot up/down to the poles
   // force a bit of bounce back action when hitting the poles
-  if( rotateX < -rotateXMax ) {
+  if (rotateX < -rotateXMax) {
     rotateX = -rotateXMax;
     rotateVX *= -0.95;
   }
 
-  if( rotateX > rotateXMax ) {
+  if (rotateX > rotateXMax) {
     rotateX = rotateXMax;
     rotateVX *= -0.95;
   }
 }
+
+export function startAutoRotate() {
+  _autoRotateId = window.setInterval( () => {
+    rotateVY += 0.1 * Math.PI / 180 * 0.3;
+  }, 100 );
+}
+
+export function stopAutoRotate() { window.clearInterval( _autoRotateId ); }
 
 export function onDocumentMouseMove( camera, event ) {
   pmouseX = mouseX;
@@ -63,8 +69,8 @@ export function onDocumentMouseMove( camera, event ) {
   mouseX = event.clientX - window.innerWidth * 0.5;
   mouseY = event.clientY - window.innerHeight * 0.5;
 
-  if( dragging ) {
-    if( !keyboard.pressed( "shift" ) ) {
+  if (dragging) {
+    if (!keyboard.pressed( 'shift' )) {
       rotateVY += (mouseX - pmouseX) / 2 * Math.PI / 180 * 0.3;
       rotateVX += (mouseY - pmouseY) / 2 * Math.PI / 180 * 0.3;
     } else {
@@ -75,7 +81,7 @@ export function onDocumentMouseMove( camera, event ) {
 }
 
 export function onDocumentMouseDown( event ) {
-  if( event.target.className.indexOf( 'noMapDrag' ) != -1 ) {
+  if (event.target.className.indexOf( 'noMapDrag' ) !== -1) {
     return;
   }
 
@@ -87,7 +93,7 @@ export function onDocumentMouseDown( event ) {
   stopAutoRotate();
 }
 
-export function onDocumentMouseUp( event ) {
+export function onDocumentMouseUp() {
   dragging = false;
   startAutoRotate();
 }
@@ -100,23 +106,15 @@ export function handleMWheel( delta, camera ) {
 export function onMouseWheel( camera, event ) {
   let delta = 0;
 
-  if( event.wheelDelta ) {
+  if (event.wheelDelta) {
     delta = event.wheelDelta / 120;
-  } else if( event.detail ) {
-    delta = -event.detail/3;
+  } else if (event.detail) {
+    delta = -event.detail / 3;
   }
 
-  if( delta ) {
+  if (delta) {
     handleMWheel( delta, camera );
   }
 
   event.returnValue = false;
 }
-
-export function startAutoRotate() {
-  _autoRotateId = window.setInterval( () => {
-    rotateVY += 0.1 * Math.PI / 180 * 0.3;
-  }, 100 );
-}
-
-export function stopAutoRotate() { window.clearInterval( _autoRotateId ); }

@@ -1,41 +1,27 @@
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * <Progress/> component definition
  *
  * This component inspired by:
  * http://jsfiddle.net/oskar/Aapn8/ and
  * https://github.com/pughpugh/react-countdown-clock
- *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-// Keep this in CommonJS syntax as third-party libraries aren't necessarily es6
-var tween = require( 'react-tween-state' );
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+/* eslint-disable react/react-in-jsx-scope */
+
+const tween = require( 'react-tween-state' );
 
 const Progress = React.createClass({
   mixins: [tween.Mixin],
-
-  /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   * Styles
-   *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-  canvasStyle: { display: 'block' },
-  strokeStyle: {
-    radius: 25,
-    width: 5.0,
-    color: '#008EAF'
-  },
-
-  /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   * Instance Variables
-   *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-  _canvas: null,
-  _context: null,
 
   getInitialState() {
     return { currVal: 0.0 };
   },
 
-  /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    * Component Methods
-   *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+   * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
   componentDidMount() {
-    if( this._canvas ) return;
+    if (this._canvas) return;
 
     this._canvas = this.getDOMNode();
     this._context = this._canvas.getContext( '2d' );
@@ -54,37 +40,54 @@ const Progress = React.createClass({
     this._updateProgress();
   },
 
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   * Styles
+   * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+  strokeStyle: {
+    radius: 25,
+    width: 5.0,
+    color: '#008EAF',
+  },
+  canvasStyle: { display: 'block' },
+
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   * Instance Variables
+   * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+  _canvas: null,
+  _context: null,
+
   handleProgressUpdate( newVal ) {
     let onEndFunc;
 
     // Handles weird case where a currVal of 1.0 gives us no circle. Basically
     // we tween to a value that will appear to be a full circle and then as soon
     // as it's done, tween back to the start value (i.e. empty circle)
-    if( newVal === 1.0 ) {
-      newVal = 0.99999;
+    let modNewVal = newVal;
+    if (newVal === 1.0) {
+      modNewVal = 0.99999;
       onEndFunc = () => {
         this.tweenState( 'currVal', { endValue: 0.0 } );
       };
     }
 
     this.tweenState( 'currVal', {
-      endValue: newVal,
-      onEnd: onEndFunc
+      endValue: modNewVal,
+      onEnd: onEndFunc,
     });
   },
 
-  /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    * Behaviours
-   *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+   * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
   _updateProgress() {
-    if( !this._context ) return;
+    if (!this._context) return;
 
     // Clear out our previous strokes
     this._context.clearRect( 0, 0, this._canvas.width, this._canvas.height );
 
     // Basic idea: angle has to be between PI * -0.5 (12 o'clock) and PI * 1.5
     // (full circle) - since a circle is 2PI radians
-    let endAngle = (2 * this.getTweeningValue( 'currVal' )) - 0.5;
+    const endAngle = (2 * this.getTweeningValue( 'currVal' )) - 0.5;
 
     this._context.beginPath();
     this._context.arc(
@@ -98,14 +101,14 @@ const Progress = React.createClass({
     this._context.stroke();
   },
 
-  /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    * Final Render
-   *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+   * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
   render() {
     /* jshint ignore: start */
-    return( <canvas style={this.canvasStyle} width="50" height="50"></canvas> );
+    return (<canvas style={this.canvasStyle} width="50" height="50"></canvas>);
     /* jshint ignore: end */
-  }
+  },
 });
 
 export default Progress;

@@ -11,6 +11,10 @@ module.exports = function( grunt ) {
       incr: [ 'build/tmp/components', 'build/tmp', 'build/*.js', 'public/public/<%= pkg.name %>.min.js' ]
     },
 
+    eslint: {
+      target: [ 'src/**/*.js', 'src/**/*.jsx' ]
+    },
+
     bower_concat: {
       all: {
         dest: 'build/bower.js',
@@ -95,9 +99,11 @@ module.exports = function( grunt ) {
   grunt.loadNpmTasks( 'grunt-contrib-clean' );
   grunt.loadNpmTasks( 'grunt-bower-concat' );
   grunt.loadNpmTasks( 'grunt-contrib-concat' );
+  grunt.loadNpmTasks( 'grunt-eslint' );
 
   grunt.registerTask( 'default', [
     'clean:all',
+    'eslint',
     'bower_concat:all',
     'concat:dist',
     'browserify:production',
@@ -106,6 +112,7 @@ module.exports = function( grunt ) {
 
   grunt.registerTask( 'incremental', [
     'clean:incr',
+    'eslint',
     'browserify:production',
     'uglify:incr'
   ]);
