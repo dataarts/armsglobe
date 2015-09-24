@@ -1,6 +1,11 @@
 .DS_Store
 app.yaml
 client
+.jshintrc
 
 hostery-files
 .hostery-config
+
+node_modules/
+bower_components/
+build/

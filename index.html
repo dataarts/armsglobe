@@ -1,24 +1,16 @@
 <!doctype html>
 <html lang="en">
 	<head>
-		<title>Interactive Globe: Small Arms Imports &amp; Exports</title>
+		<title>Interactive Globe: Source/Destination Data Visualization</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, initial-scale=1">
 		<link rel="stylesheet" type="text/css" href="style.css">
-
 	</head>
 
-	<body onload="start()" id="dataviz" class="">
+	<body id="dataviz" class="">
 		<div id="wrapper">
 		<div id="loading">
-			<h2>Loading Small Arms and Ammunition Trade Data from 1992 to 2010. Please wait...</h2>
-		</div>
-
-		<div >
-			<table id="marker_template" class="marker" style="left:'0px';top:'0px'"><tr><td><span id="countryText" class="country">
-			</span></td><td class="detail" id="detailText">
-			<!--<span id="detailText" class="detail">
-			</span>--></td></tr></table>
+			<h2>Loading Data. Please wait...</h2>
 		</div>
 
 		<div id="visualization" >
@@ -29,51 +21,44 @@
 			</div>
 		</div>
 
-		<script src="js/Detector.js"></script>
-		<script src="js/Tween.js"></script>
-		<script src="js/dat.gui.min.js"></script>
-		<script src="js/Three.js"></script>
-		<script src="js/THREEx.KeyboardState.js"></script>
-		<script src="js/THREEx.WindowResize.js"></script>
-		<script src="js/Stats.js"></script>
-		<script src="js/jquery-1.7.1.min.js"></script>
-    	<script src="js/jquery-ui-1.8.21.custom.min.js"></script>
-    	<script src="js/RequestAnimationFrame.js"></script>
-		<script src="js/ShaderExtras.js"></script>
-		<script src="js/canvg.js"></script>
-		<script src="js/rgbcolor.js"></script>
-		<script src="js/innersvg.js"></script>
+    <!-- All other hud can go here-->
+    <div id="hudHeader" class="overlayCountries noPointer">
+      <h1 class="noPointer">Data Visualization Globe
+        <div class="subtitle">An interactive visualization of source/destination data over time.</div>
+      </h1>
+    </div>
 
-		<script src="js/util.js"></script>
-		<script src="js/mousekeyboard.js"></script>
-		<script src="js/datguicontrol.js"></script>
-		<script src="js/dataloading.js"></script>
-		<script src="js/camerastates.js"></script>
-		<script src="js/geopins.js"></script>
-		<script src="js/visualize.js"></script>
-		<script src="js/visualize_lines.js"></script>
-		<script src="js/markers.js"></script>
-		<script src="js/svgtoy.js" type="text/javascript"></script>
-		<script src="js/d3.v2.min.js"></script>
-		<script src="js/ui.controls.js"></script>
+		<div id="legend" class="overlayCountries">
+		</div>
 
+		<div id="progress" class="overlayCountries">
+		</div>
+
+		<footer>
+			<span>Based on <a href="https://www.chromeexperiments.com/experiment/arms-globe">WebGL Arms Globe</a>, a <a href="https://www.chromeexperiments.com/">Chrome Experiment</a></span>
+		</footer>
+    </div> <!-- End tag for 'wrapper' div -->
+
+		<!--
+		Custom Shaders
+
+		Inspired by: https://github.com/mrdoob/three.js/issues/2118
+		and: http://stackoverflow.com/questions/12337660/three-js-adjusting-opacity-of-individual-particles
+		-->
 		<script type="x-shader/x-vertex" id="vertexshader">
-			uniform float amplitude;
-			attribute float size;
+			attribute float alpha;
 			attribute vec3 customColor;
 
+			varying float vAlpha;
 			varying vec3 vColor;
 
 			void main() {
-
+				vAlpha = alpha;
 				vColor = customColor;
 
 				vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
-
-				gl_PointSize = size;
-
+				gl_PointSize = 25.0;
 				gl_Position = projectionMatrix * mvPosition;
-
 			}
 		</script>
 
@@ -82,145 +67,16 @@
 			uniform sampler2D texture;
 
 			varying vec3 vColor;
+			varying float vAlpha;
 
 			void main() {
-
-				gl_FragColor = vec4( color * vColor, 1.0 );
+				gl_FragColor = vec4( color * vColor, 1 );
 				gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );
-
+				gl_FragColor.a *= vAlpha;
 			}
 		</script>
 
-		<script id="globeVertexShader" type="x-shader/x-vertex">
-			varying vec3 vNormal;
-			varying vec2 vUv;
-			void main() {
-				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0);
-				vNormal = normalize( normalMatrix * normal );
-				vUv = uv;
-			}
-		</script>
-
-		<script id="globeFragmentShader" type="x-shader/x-fragment">
-			uniform sampler2D mapIndex;
-			uniform sampler2D lookup;
-			uniform sampler2D outline;
-			uniform float outlineLevel;
-			varying vec3 vNormal;
-			varying vec2 vUv;
-			void main() {
-
-				vec4 mapColor = texture2D( mapIndex, vUv );
-				float indexedColor = mapColor.x;
-				vec2 lookupUV = vec2( indexedColor, 0. );
-				vec4 lookupColor = texture2D( lookup, lookupUV );
-				float mask = lookupColor.x + (1.-outlineLevel) * indexedColor;
-				mask = clamp(mask,0.,1.);
-				float outlineColor = texture2D( outline, vUv ).x * outlineLevel;
-				float diffuse = mask + outlineColor;
-				gl_FragColor = vec4( vec3(diffuse), 1.  );
-				// gl_FragColor = vec4( lookupColor );
-				// gl_FragColor = vec4(texture2D( lookup, vUv ).xyz,1.);
-			}
-		</script>
-
-		<script src="js/main.js" type="text/javascript"></script>
-
-		<script type="text/javascript">
-			var _gaq = _gaq || [];
-  			_gaq.push(['_setAccount', 'UA-7963116-1']);
-  			_gaq.push(['_setDomainName', 'chromeexperiments.com']);
-  			_gaq.push(['_trackPageview']);
-			  (function() {
-			    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-			    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-			    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-			  })();
-		</script>
-
-
-		<!-- All other hud can go here-->
-        <div id="hudHeader" class="overlayCountries noPointer">
-            <h1 class="noPointer">Small Arms and Ammunition — Imports & Exports
-                <div class="subtitle">An interactive visualization of government-authorized small arms and ammunition transfers from 1992 to 2010. </div>
-			</h1>
-        </div>
-
-		<div class="overlayCountries noPointer" id="hudButtons">
-            <input type="button" value="SEARCH" class="searchBtn armsBtn pointer">
-            <input type="text" name="country" class="countryTextInput pointer noMapDrag" value="UNITED STATES">
-            <input type="button" value="—" class="zoomBtn zoomOutBtn armsBtn pointer noMapDrag">
-            <input type="button" value="+" class="zoomBtn zoomInBtn armsBtn pointer noMapDrag">
-            <input type="button" value="ABOUT" class="aboutBtn armsBtn pointer"><br class="clear" />
-        </div>
-        <div id="history" class="overlayCountries noPointer">
-            <div class="graph">
-                <div class="close"></div>
-                <div class="labels">
-                    <div class="change">RELATIVE PERCENT CHANGE</div>
-                    <div class="exports">EXPORTS</div>
-                    <div class="imports">IMPORTS</div><br class="clear" />
-                </div>
-                <div class="container noPointer"></div>
-            </div>
-            <ul class="timeline pointer">
-                <li>1992</li>
-                <li>93</li>
-                <li>94</li>
-                <li>95</li>
-                <li>96</li>
-                <li>97</li>
-                <li>98</li>
-                <li>99</li>
-                <li>2000</li>
-                <li>01</li>
-                <li>02</li>
-                <li>03</li>
-                <li>04</li>
-                <li>05</li>
-                <li>06</li>
-                <li>07</li>
-                <li>08</li>
-                <li>09</li>
-                <li>2010</li>
-                <div id="handle" class="noMapDrag"></div>
-            </ul>
-        </div>
-        <div id="graphIcon" class="overlayCountries"></div>
-        <div id="importExportBtns" class="overlayCountries">
-            <div class="typeLabels">
-                <div class="mil">Military</div>
-                <div class="civ">Civilian</div>
-                <div class="ammo">Ammo</div><br class="clear">
-            </div>
-            <div class="imports imex">
-                <div class="mil"><div class="check"></div></div>
-                <div class="civ"><div class="check"></div></div>
-                <div class="ammo"><div class="check"></div></div>
-                <div class="label">Imports</div><br class="clear">
-            </div>
-            <div class="exports imex">
-                <div class="mil"><div class="check"></div></div>
-                <div class="civ"><div class="check"></div></div>
-                <div class="ammo"><div class="check"></div></div>
-                <div class="label">Exports</div><br class="clear">
-            </div>
-            <br class="clear" />
-        </div>
-
-        <div id="aboutContainer" class='overlayCountries'>
-            <div class="arrowUp"></div>
-            <div id="aboutBox">
-                <div class="title">Information about the data</div>
-                <div class="text">
-                    This data visualization was produced by Google as part of the <a href="http://www.google.com/ideas" target="_blank">Google Ideas</a> INFO (Illicit Networks, Forces in Opposition) Summit with support from the <a href="http://igarape.org.br/" target="_blank">Igarape Institute</a> and data provided by the <a href="http://www.prio.no/" target="_blank">Peace Research Institute Oslo (PRIO)</a> small arms database. The visualization includes >1 million individual import and export data points from annual custom reports and maps the transfer of small arms, light weapons and ammunition across 250 nation states and territories around the world between 1992 and 2010.
-                </div>
-                <div class="links">
-                	<br>
-                    For more info, please see the <a href="http://igarape.org.br/armsglobe" target="_blank">FAQs</a>.
-                </div>
-            </div>
-        </div>
-    </div>
+		<script src="public/thirdparty.min.js" type="text/javascript"></script>
+		<script src="public/dataglobe.min.js" type="text/javascript"></script>
 	</body>
 </html>
