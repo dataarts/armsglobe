@@ -8,11 +8,6 @@ import * as constants from '../constants';
  * <LegendItem /> Component definition
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 export default class LegendItem extends React.Component {
-  static propTypes = {
-    clickCallback: React.PropTypes.func.isRequired,
-    type: React.PropTypes.string.isRequired,
-  };
-
   constructor( props ) {
     super( props );
 
@@ -108,3 +103,8 @@ export default class LegendItem extends React.Component {
     );
   }
 }
+
+LegendItem.propTypes = {
+  clickCallback: React.PropTypes.func.isRequired,
+  type: React.PropTypes.string.isRequired,
+};

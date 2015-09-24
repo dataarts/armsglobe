@@ -1,45 +1,43 @@
 // Gruntfile for building the dataglobe project
 us = require( 'underscore' );
 
-module.exports = function( grunt ) {
-
+module.exports = function gruntInit( grunt ) {
   grunt.initConfig({
     pkg: grunt.file.readJSON( 'package.json' ),
 
     clean: {
       all: [ 'build/tmp/components', 'build/tmp', 'build/*.js', 'public/*.js' ],
-      incr: [ 'build/tmp/components', 'build/tmp', 'build/*.js', 'public/public/<%= pkg.name %>.min.js' ]
+      incr: [ 'build/tmp/components', 'build/tmp', 'build/*.js', 'public/public/<%= pkg.name %>.min.js' ],
     },
 
     eslint: {
-      target: [ 'src/**/*.js', 'src/**/*.jsx' ]
+      target: [ 'src/**/*.js', 'src/**/*.jsx' ],
     },
 
     bower_concat: {
       all: {
         dest: 'build/bower.js',
         // nice little callback to look for/use minified versions when available
-        callback: function( mainFiles, component ) {
-          return us.map( mainFiles, function( filepath ) {
+        callback: function findMinified( mainFiles ) {
+          return us.map( mainFiles, function minifiedMap( filepath ) {
             min = filepath.replace( /\.js$/, '.min.js' );
-            if( grunt.file.exists( min ) ) {
+            if (grunt.file.exists( min )) {
               return min;
-            } else {
-              return filepath;
             }
+            return filepath;
           });
-        }
-      }
+        },
+      },
     },
 
     concat: {
       options: {
-        separator: ';'
+        separator: ';',
       },
       dist: {
         src: ['<%= bower_concat.all.dest %>', 'thirdparty/*.js'],
-        dest: 'build/thirdparty.js'
-      }
+        dest: 'build/thirdparty.js',
+      },
     },
 
     browserify: {
@@ -47,39 +45,39 @@ module.exports = function( grunt ) {
         debug: true,
         destFile: 'build/bundle.js',
         src: [ 'src/**/*.js', 'src/**/*.jsx' ],
-        transform: ['babelify']
+        transform: ['babelify'],
       },
 
       dev: {
         src: '<%= browserify.options.src %>',
-        dest: '<%= browserify.options.destFile %>'
+        dest: '<%= browserify.options.destFile %>',
       },
 
       production: {
         options: {
-          debug: false
+          debug: false,
         },
         src: '<%= browserify.options.src %>',
-        dest: '<%= browserify.options.destFile %>'
-      }
+        dest: '<%= browserify.options.destFile %>',
+      },
     },
 
     uglify: {
       options: {
-        banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
+        banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n',
       },
 
       all: {
         files: {
           'public/<%= pkg.name %>.min.js': [ '<%= browserify.options.destFile %>' ],
-          'public/thirdparty.min.js': [ '<%= concat.dist.dest %>' ]
-        }
+          'public/thirdparty.min.js': [ '<%= concat.dist.dest %>' ],
+        },
       },
 
       incr: {
         files: {
-          'public/<%= pkg.name %>.min.js': [ '<%= browserify.options.destFile %>' ]
-        }
+          'public/<%= pkg.name %>.min.js': [ '<%= browserify.options.destFile %>' ],
+        },
       },
     },
 
@@ -87,9 +85,9 @@ module.exports = function( grunt ) {
       files: [
         'Gruntfile.js',
         'src/**/*.js',
-        'src/**/*.jsx'
+        'src/**/*.jsx',
       ],
-      tasks: 'incremental'
+      tasks: 'incremental',
     },
   });
 
@@ -107,13 +105,13 @@ module.exports = function( grunt ) {
     'bower_concat:all',
     'concat:dist',
     'browserify:production',
-    'uglify:all'
+    'uglify:all',
   ]);
 
   grunt.registerTask( 'incremental', [
     'clean:incr',
     'eslint',
     'browserify:production',
-    'uglify:incr'
+    'uglify:incr',
   ]);
 };

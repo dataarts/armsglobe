@@ -8,11 +8,6 @@ import LegendItem from './legend-item.jsx';
  * <Legend /> Component definition
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 export default class Legend extends React.Component {
-  static propTypes = {
-    clickCallback: React.PropTypes.func.isRequired,
-    types: React.PropTypes.array.isRequired,
-  };
-
   constructor( props ) {
     super( props );
 
@@ -49,3 +44,8 @@ export default class Legend extends React.Component {
     );
   }
 }
+
+Legend.propTypes = {
+  clickCallback: React.PropTypes.func.isRequired,
+  types: React.PropTypes.array.isRequired,
+};
